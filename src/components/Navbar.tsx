@@ -9,6 +9,7 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "Downloads", path: "/downloads" },
+    { name: "Contact", path: "/contact" },
   ];
 
   return (
@@ -19,7 +20,6 @@ const Navbar = () => {
             CS Experts
           </Link>
 
-          {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-white"
@@ -27,7 +27,6 @@ const Navbar = () => {
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          {/* Desktop menu */}
           <div className="hidden md:flex space-x-8">
             {navItems.map((item) => (
               <Link
@@ -41,7 +40,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile menu */}
         {isOpen && (
           <div className="md:hidden mt-4 space-y-4">
             {navItems.map((item) => (
