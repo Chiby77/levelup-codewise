@@ -2,41 +2,55 @@ import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, File } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Downloads = () => {
   const { toast } = useToast();
 
   const theory_papers = [
-    { year: "2023", link: "#" },
-    { year: "2022", link: "#" },
-    { year: "2021", link: "#" },
-    { year: "2020", link: "#" },
-    { year: "2019", link: "#" },
-    { year: "2018", link: "#" },
+    { year: "2023", link: "https://www.mediafire.com/file/7t4ok30r5fcm5rq/Computer_Science_MS2023_1-Edited.pdf/file" },
+    { year: "2022", link: "https://www.mediafire.com/file/ynzwanlu9y0atry/A_LEVEL_COMP_SCIE_2022_P1_MS.pdf/file" },
+    { year: "2021", link: "https://www.mediafire.com/file/bt0ziv07o2ubgk4/2021_bluebook_Computer_Science.pdf/file" },
+    { year: "2020", link: "https://www.mediafire.com/file/u21z60w1hgdyya8/2020_paper_1.pdf/file" },
+    { year: "2019", link: "https://www.mediafire.com/file/70ovlmxfpwmgix3/2019_paper_1.pdf/file" },
+    { year: "2018", link: "https://www.mediafire.com/file/kc8mbjqwmzkznoy/2018_paper_1.pdf/file" },
+    { year: "2017", link: "https://www.mediafire.com/file/10dfw9r7fn4jmlr/2017_paper_1.pdf/file" },
+    { year: "2016", link: "https://www.mediafire.com/file/j202ce5mgdri8c0/2016_paper_1.pdf/file" },
+    { year: "2015", link: "https://www.mediafire.com/file/vvlblbuawfxbfcw/2015_paper1.pdf/file" },
   ];
 
   const practical_papers = [
-    { year: "2023", link: "#" },
-    { year: "2022", link: "#" },
-    { year: "2021", link: "#" },
-    { year: "2020", link: "#" },
-    { year: "2019", link: "#" },
-    { year: "2018", link: "#" },
+    { year: "2023", link: "https://www.mediafire.com/file/dqv7qvajuewn9yi/6023_2023_2_CYBERWAVE_MS.pdf/file" },
+    { year: "2022", link: "https://www.mediafire.com/file/2ty2uux3z759i1z/Computer_Science_Paper_2_2022.pdf/file" },
+    { year: "2021", link: "https://www.mediafire.com/file/hnded91agzg2gjm/Computer_Science_6023-2_2021.pdf/file" },
+    { year: "2020", link: "https://www.mediafire.com/file/hotm1dd3sbu2awq/2020_paper_2.pdf/file" },
+    { year: "2019", link: "https://www.mediafire.com/file/ets75idtd2syutb/2019_paper_2.pdf/file" },
+    { year: "2018", link: "https://www.mediafire.com/file/z41u3ahebs7oqk6/2018_paper_2.pdf/file" },
+    { year: "2018 Specimen", link: "https://www.mediafire.com/file/mdypgh22bwi5gb6/2018_paper_2_specimen-1.pdf/file" },
+    { year: "2017", link: "https://www.mediafire.com/file/6p9r59bta2ni48y/2017_paper_2.pdf/file" },
   ];
 
   const programming_notes = [
-    { part: "1", link: "#" },
-    { part: "2", link: "#" },
-    { part: "3", link: "#" },
-    { part: "4", link: "#" },
-    { part: "5", link: "#" },
+    { part: "1", link: "https://www.mediafire.com/file/sm6mju7lumr2pzr/PROGRAMMING_PART_1.pdf/file" },
+    { part: "2", link: "https://www.mediafire.com/file/8n8x77e172pmm0x/PROGRAMMING_PART_2.pdf/file" },
+    { part: "3", link: "https://www.mediafire.com/file/lix0pihvmewndyi/Programming_Part_3.pdf/file" },
+    { part: "4", link: "https://www.mediafire.com/file/x21isg79y8w3qo0/programming_part_4.pdf/file" },
+    { part: "5", link: "https://www.mediafire.com/file/emvommfbnojk8ai/Programming_part_5%2528pure_coding_revision%2529.pdf/file" },
     { part: "6", link: "#" },
-    { part: "7", link: "#" },
-    { part: "8", link: "#" },
+    { part: "7", link: "https://www.mediafire.com/file/9l0r7qpjqc14hnq/programming_part_7.pdf/file" },
+    { part: "8", link: "https://www.mediafire.com/file/drhmgbatfp4qe7j/programming_part_8.pdf/file" },
   ];
 
-  const handleDownload = (type: string, identifier: string) => {
+  const handleDownload = (type: string, identifier: string, link: string) => {
+    if (link === "#") {
+      toast({
+        title: "Not Available",
+        description: `${type} ${identifier} is currently not available`,
+      });
+      return;
+    }
+    
+    window.open(link, '_blank');
     toast({
       title: "Download Started",
       description: `Downloading ${type} ${identifier}`,
@@ -63,7 +77,7 @@ const Downloads = () => {
                 key={paper.year}
                 variant="outline"
                 className="w-full"
-                onClick={() => handleDownload("Theory Paper", paper.year)}
+                onClick={() => handleDownload("Theory Paper", paper.year, paper.link)}
               >
                 <Download className="mr-2 h-4 w-4" />
                 {paper.year} Paper 1
@@ -86,7 +100,7 @@ const Downloads = () => {
                 key={paper.year}
                 variant="outline"
                 className="w-full"
-                onClick={() => handleDownload("Practical Paper", paper.year)}
+                onClick={() => handleDownload("Practical Paper", paper.year, paper.link)}
               >
                 <Download className="mr-2 h-4 w-4" />
                 {paper.year} Paper 2
@@ -109,7 +123,7 @@ const Downloads = () => {
                 key={note.part}
                 variant="outline"
                 className="w-full"
-                onClick={() => handleDownload("Programming Notes Part", note.part)}
+                onClick={() => handleDownload("Programming Notes Part", note.part, note.link)}
               >
                 <Download className="mr-2 h-4 w-4" />
                 Part {note.part}
