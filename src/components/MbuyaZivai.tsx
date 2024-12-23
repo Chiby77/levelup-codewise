@@ -10,35 +10,43 @@ interface Message {
   content: string;
 }
 
+const generateResponse = (input: string): string => {
+  const lowercaseInput = input.toLowerCase();
+  
+  // Basic pattern matching for common questions
+  if (lowercaseInput.includes("who started") || lowercaseInput.includes("history")) {
+    return "A Level Computer Science Experts started as a WhatsApp group in Masvingo with Brave Machangu. It grew to accommodate the whole of Zimbabwe with the help of L Chenyika, J Mapasure and T Chibi.";
+  }
+  
+  if (lowercaseInput.includes("programming") || lowercaseInput.includes("code")) {
+    return "We offer comprehensive programming tutorials and resources. Check our Downloads page for detailed programming notes divided into 8 parts covering various programming concepts.";
+  }
+  
+  if (lowercaseInput.includes("past papers") || lowercaseInput.includes("exam")) {
+    return "We provide access to past papers from 2015 to 2023, including both theory and practical papers. Visit our Downloads page to access these resources.";
+  }
+  
+  if (lowercaseInput.includes("help") || lowercaseInput.includes("support")) {
+    return "We offer support through our community of learners and experienced educators. Feel free to ask specific questions about computer science concepts!";
+  }
+  
+  if (lowercaseInput.includes("hello") || lowercaseInput.includes("hi")) {
+    return "Maswera sei! I'm Mbuya Zivai, your AI assistant for A Level Computer Science. How can I help you today?";
+  }
+
+  // Default response for unmatched patterns
+  return "I understand you're asking about computer science. Could you please be more specific about what you'd like to know? I can help with programming concepts, past papers, or general information about our program.";
+};
+
 export default function MbuyaZivai() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const [apiKey, setApiKey] = useState("");
-  const [showApiKeyInput, setShowApiKeyInput] = useState(true);
-
-  const systemPrompt = `You are Mbuya Zivai, a knowledgeable AI assistant for A Level Computer Science Experts in Zimbabwe. 
-You help students with computer science concepts and programming questions.
-You should be friendly, patient, and explain concepts clearly.
-Base your knowledge on the following context about the organization:
-- A Level Computer Science Experts started as a WhatsApp group in Masvingo
-- It was founded by Brave Machangu and grew with help from L Chenyika, J Mapasure and T Chibi
-- They provide computer science education and career guidance across Zimbabwe
-- They offer programming tutorials and past exam papers
-When answering programming questions, provide clear explanations and example code when relevant.`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-    if (!apiKey) {
-      toast({
-        title: "API Key Required",
-        description: "Please enter your Perplexity API key to continue.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const userMessage = { role: "user" as const, content: input };
     setMessages((prev) => [...prev, userMessage]);
@@ -46,35 +54,13 @@ When answering programming questions, provide clear explanations and example cod
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://api.perplexity.ai/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama-3.1-sonar-small-128k-online",
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt,
-            },
-            ...messages,
-            userMessage,
-          ],
-          temperature: 0.7,
-          max_tokens: 1000,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to get response");
-      }
-
-      const data = await response.json();
+      // Simulate a brief delay for more natural interaction
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const response = generateResponse(input);
       const assistantMessage = {
         role: "assistant" as const,
-        content: data.choices[0].message.content,
+        content: response,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
@@ -87,40 +73,6 @@ When answering programming questions, provide clear explanations and example cod
       setIsLoading(false);
     }
   };
-
-  const handleApiKeySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (apiKey.trim()) {
-      setShowApiKeyInput(false);
-      toast({
-        title: "API Key Set",
-        description: "You can now chat with Mbuya Zivai!",
-      });
-    }
-  };
-
-  if (showApiKeyInput) {
-    return (
-      <Card className="w-full max-w-md mx-auto mt-8">
-        <CardHeader>
-          <CardTitle>Enter Perplexity API Key</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleApiKeySubmit} className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Enter your Perplexity API key"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-            />
-            <Button type="submit" className="w-full">
-              Set API Key
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
