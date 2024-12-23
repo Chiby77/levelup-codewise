@@ -13,7 +13,122 @@ interface Message {
 const generateResponse = (input: string): string => {
   const lowercaseInput = input.toLowerCase();
   
-  // Basic pattern matching for common questions
+  // Programming-related responses
+  if (lowercaseInput.includes("python") || lowercaseInput.includes("visual basic")) {
+    if (lowercaseInput.includes("loop") || lowercaseInput.includes("for") || lowercaseInput.includes("while")) {
+      if (lowercaseInput.includes("python")) {
+        return `In Python, you can use loops like this:
+
+For loop:
+for i in range(5):
+    print(i)
+
+While loop:
+i = 0
+while i < 5:
+    print(i)
+    i += 1`;
+      } else {
+        return `In Visual Basic, you can use loops like this:
+
+For loop:
+For i As Integer = 0 To 4
+    Console.WriteLine(i)
+Next
+
+While loop:
+Dim i As Integer = 0
+While i < 5
+    Console.WriteLine(i)
+    i += 1
+End While`;
+      }
+    }
+
+    if (lowercaseInput.includes("array") || lowercaseInput.includes("list")) {
+      if (lowercaseInput.includes("python")) {
+        return `In Python, you can work with lists like this:
+
+# Create a list
+numbers = [1, 2, 3, 4, 5]
+
+# Add an item
+numbers.append(6)
+
+# Access an item
+print(numbers[0])
+
+# Loop through list
+for num in numbers:
+    print(num)`;
+      } else {
+        return `In Visual Basic, you can work with arrays like this:
+
+' Declare and initialize array
+Dim numbers() As Integer = {1, 2, 3, 4, 5}
+
+' Access an element
+Console.WriteLine(numbers(0))
+
+' Loop through array
+For Each num As Integer In numbers
+    Console.WriteLine(num)
+Next`;
+      }
+    }
+
+    if (lowercaseInput.includes("function") || lowercaseInput.includes("sub")) {
+      if (lowercaseInput.includes("python")) {
+        return `In Python, you can create functions like this:
+
+def greet(name):
+    return f"Hello, {name}!"
+
+# Call the function
+message = greet("John")
+print(message)`;
+      } else {
+        return `In Visual Basic, you can create functions and subs like this:
+
+' Function (returns a value)
+Function Greet(name As String) As String
+    Return "Hello, " & name & "!"
+End Function
+
+' Sub (doesn't return a value)
+Sub PrintGreeting(name As String)
+    Console.WriteLine("Hello, " & name & "!")
+End Sub`;
+      }
+    }
+
+    if (lowercaseInput.includes("if") || lowercaseInput.includes("condition")) {
+      if (lowercaseInput.includes("python")) {
+        return `In Python, you can use conditional statements like this:
+
+age = 18
+if age >= 18:
+    print("Adult")
+elif age >= 13:
+    print("Teenager")
+else:
+    print("Child")`;
+      } else {
+        return `In Visual Basic, you can use conditional statements like this:
+
+Dim age As Integer = 18
+If age >= 18 Then
+    Console.WriteLine("Adult")
+ElseIf age >= 13 Then
+    Console.WriteLine("Teenager")
+Else
+    Console.WriteLine("Child")
+End If`;
+      }
+    }
+  }
+  
+  // Keep existing general responses
   if (lowercaseInput.includes("who started") || lowercaseInput.includes("history")) {
     return "A Level Computer Science Experts started as a WhatsApp group in Masvingo with Brave Machangu. It grew to accommodate the whole of Zimbabwe with the help of L Chenyika, J Mapasure and T Chibi.";
   }
@@ -27,15 +142,15 @@ const generateResponse = (input: string): string => {
   }
   
   if (lowercaseInput.includes("help") || lowercaseInput.includes("support")) {
-    return "We offer support through our community of learners and experienced educators. Feel free to ask specific questions about computer science concepts!";
+    return "I can help you with Python and Visual Basic programming questions, as well as general computer science concepts. Feel free to ask specific questions!";
   }
   
   if (lowercaseInput.includes("hello") || lowercaseInput.includes("hi")) {
-    return "Maswera sei! I'm Mbuya Zivai, your AI assistant for A Level Computer Science. How can I help you today?";
+    return "Maswera sei! I'm Mbuya Zivai, your AI assistant for A Level Computer Science. I can help you with Python and Visual Basic programming, as well as general computer science concepts. How can I help you today?";
   }
 
-  // Default response for unmatched patterns
-  return "I understand you're asking about computer science. Could you please be more specific about what you'd like to know? I can help with programming concepts, past papers, or general information about our program.";
+  // Default response
+  return "I can help you with Python and Visual Basic programming, as well as general information about our program. Could you please be more specific about what you'd like to know?";
 };
 
 export default function MbuyaZivai() {

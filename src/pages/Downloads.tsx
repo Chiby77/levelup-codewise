@@ -1,7 +1,6 @@
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import MbuyaZivai from "@/components/MbuyaZivai";
 
 const Downloads = () => {
   const { toast } = useToast();
@@ -24,7 +23,7 @@ const Downloads = () => {
     { part: "3", link: "https://example.com/programming_notes_part3.pdf" },
   ];
 
-  const handleDownload = (link: string, type: string, identifier: string) => {
+  const handleDownload = (link: string, type: string) => {
     if (link === "#") {
       toast({
         title: "Not Available",
@@ -33,78 +32,71 @@ const Downloads = () => {
       });
       return;
     }
-    
     window.open(link, "_blank");
     toast({
       title: "Download Started",
-      description: `${type} ${identifier} will begin downloading shortly.`,
+      description: `Your ${type} download should begin shortly.`,
     });
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Resources</h1>
-        
-        <div className="grid gap-8 md:grid-cols-2">
-          <div className="space-y-8">
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Theory Papers</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {theory_papers.map((paper) => (
-                  <Button
-                    key={paper.year}
-                    onClick={() => handleDownload(paper.link, "Theory Paper", paper.year)}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    {paper.year}
-                  </Button>
-                ))}
-              </div>
-            </section>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-8">Downloads</h1>
+      
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Theory Papers</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            {theory_papers.map((paper) => (
+              <Button
+                key={paper.year}
+                onClick={() => handleDownload(paper.link, `${paper.year} Theory Paper`)}
+                variant="outline"
+                className="w-full"
+              >
+                {paper.year} Paper
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Practical Papers</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {practical_papers.map((paper) => (
-                  <Button
-                    key={paper.year}
-                    onClick={() => handleDownload(paper.link, "Practical Paper", paper.year)}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    {paper.year}
-                  </Button>
-                ))}
-              </div>
-            </section>
+        <Card>
+          <CardHeader>
+            <CardTitle>Practical Papers</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            {practical_papers.map((paper) => (
+              <Button
+                key={paper.year}
+                onClick={() => handleDownload(paper.link, `${paper.year} Practical Paper`)}
+                variant="outline"
+                className="w-full"
+              >
+                {paper.year} Paper
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Programming Notes</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {programming_notes.map((note) => (
-                  <Button
-                    key={note.part}
-                    onClick={() => handleDownload(note.link, "Programming Notes Part", note.part)}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    Part {note.part}
-                  </Button>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          <div className="space-y-8">
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Need Help?</h2>
-              <MbuyaZivai />
-            </section>
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Programming Notes</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            {programming_notes.map((note) => (
+              <Button
+                key={note.part}
+                onClick={() => handleDownload(note.link, `Programming Notes Part ${note.part}`)}
+                variant="outline"
+                className="w-full"
+              >
+                Part {note.part}
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
