@@ -41,11 +41,22 @@ const Downloads = () => {
     { part: "8", link: "https://www.mediafire.com/file/drhmgbatfp4qe7j/programming_part_8.pdf/file" },
   ];
 
-  
-  const handleDownload = (type: string, identifier: string) => {
+  const handleDownload = (type: string, identifier: string, link: string) => {
+    if (link === "#") {
+      toast({
+        title: "Not Available",
+        description: `${type} ${identifier} is currently not available`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Open in new tab to trigger MediaFire's download page
+    window.open(link, '_blank');
+    
     toast({
       title: "Download Started",
-      description: `Downloading ${type} ${identifier}`,
+      description: `Opening ${type} ${identifier} in new tab. Click the download button on MediaFire's page.`,
     });
   };
 
@@ -53,23 +64,23 @@ const Downloads = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-12">
       <Navbar />
       <div className="container mx-auto px-4 pt-24 space-y-8">
-        <h1 className="text-4xl font-bold text-primary mb-6">Study Resources</h1>
+        <h1 className="text-4xl font-bold text-primary mb-6 animate-fadeIn">Study Resources</h1>
 
         {/* Theory Papers Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-6 w-6" />
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-primary/5">
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <FileText className="h-6 w-6 text-primary" />
               Paper 1 (Theory) Past Papers
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
             {theory_papers.map((paper) => (
               <Button
                 key={paper.year}
                 variant="outline"
-                className="w-full"
-                onClick={() => handleDownload("Theory Paper", paper.year)}
+                className="w-full hover:bg-primary/5 hover:text-primary transition-colors"
+                onClick={() => handleDownload("Theory Paper", paper.year, paper.link)}
               >
                 <Download className="mr-2 h-4 w-4" />
                 {paper.year} Paper 1
@@ -79,20 +90,20 @@ const Downloads = () => {
         </Card>
 
         {/* Practical Papers Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <File className="h-6 w-6" />
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-secondary/5">
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <File className="h-6 w-6 text-secondary" />
               Paper 2 (Practical) Past Papers
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
             {practical_papers.map((paper) => (
               <Button
                 key={paper.year}
                 variant="outline"
-                className="w-full"
-                onClick={() => handleDownload("Practical Paper", paper.year)}
+                className="w-full hover:bg-secondary/5 hover:text-secondary transition-colors"
+                onClick={() => handleDownload("Practical Paper", paper.year, paper.link)}
               >
                 <Download className="mr-2 h-4 w-4" />
                 {paper.year} Paper 2
@@ -102,20 +113,25 @@ const Downloads = () => {
         </Card>
 
         {/* Programming Notes Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-6 w-6" />
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-accent/5">
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <FileText className="h-6 w-6 text-accent" />
               Programming Notes
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
             {programming_notes.map((note) => (
               <Button
                 key={note.part}
                 variant="outline"
-                className="w-full"
-                onClick={() => handleDownload("Programming Notes Part", note.part)}
+                className={`w-full ${
+                  note.link === "#" 
+                    ? "opacity-50 cursor-not-allowed" 
+                    : "hover:bg-accent/5 hover:text-accent transition-colors"
+                }`}
+                onClick={() => handleDownload("Programming Notes Part", note.part, note.link)}
+                disabled={note.link === "#"}
               >
                 <Download className="mr-2 h-4 w-4" />
                 Part {note.part}
