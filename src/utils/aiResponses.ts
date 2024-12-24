@@ -55,6 +55,113 @@ Next`,
   }
 };
 
+const practicalExamples: Record<string, ProgrammingConcept> = {
+  "calculator": {
+    python: `# Python Calculator Program
+def calculator():
+    print("Simple Calculator")
+    print("1. Add")
+    print("2. Subtract")
+    print("3. Multiply")
+    print("4. Divide")
+    
+    choice = input("Enter choice (1-4): ")
+    num1 = float(input("Enter first number: "))
+    num2 = float(input("Enter second number: "))
+    
+    if choice == '1':
+        print(f"{num1} + {num2} = {num1 + num2}")
+    elif choice == '2':
+        print(f"{num1} - {num2} = {num1 - num2}")
+    elif choice == '3':
+        print(f"{num1} * {num2} = {num1 * num2}")
+    elif choice == '4':
+        if num2 != 0:
+            print(f"{num1} / {num2} = {num1 / num2}")
+        else:
+            print("Error: Cannot divide by zero")
+    else:
+        print("Invalid input")
+
+calculator()`,
+    visualBasic: `' Visual Basic Calculator Program
+Module Calculator
+    Sub Main()
+        Console.WriteLine("Simple Calculator")
+        Console.WriteLine("1. Add")
+        Console.WriteLine("2. Subtract")
+        Console.WriteLine("3. Multiply")
+        Console.WriteLine("4. Divide")
+        
+        Console.Write("Enter choice (1-4): ")
+        Dim choice As String = Console.ReadLine()
+        
+        Console.Write("Enter first number: ")
+        Dim num1 As Double = Double.Parse(Console.ReadLine())
+        
+        Console.Write("Enter second number: ")
+        Dim num2 As Double = Double.Parse(Console.ReadLine())
+        
+        Select Case choice
+            Case "1"
+                Console.WriteLine($"{num1} + {num2} = {num1 + num2}")
+            Case "2"
+                Console.WriteLine($"{num1} - {num2} = {num1 - num2}")
+            Case "3"
+                Console.WriteLine($"{num1} * {num2} = {num1 * num2}")
+            Case "4"
+                If num2 <> 0 Then
+                    Console.WriteLine($"{num1} / {num2} = {num1 / num2}")
+                Else
+                    Console.WriteLine("Error: Cannot divide by zero")
+                End If
+            Case Else
+                Console.WriteLine("Invalid input")
+        End Select
+    End Sub
+End Module`,
+    explanation: "A simple calculator program that performs basic arithmetic operations (addition, subtraction, multiplication, division) based on user input."
+  },
+  "temperature converter": {
+    python: `# Python Temperature Converter
+def celsius_to_fahrenheit(celsius):
+    return (celsius * 9/5) + 32
+
+def fahrenheit_to_celsius(fahrenheit):
+    return (fahrenheit - 32) * 5/9
+
+# Example usage
+celsius = 25
+fahrenheit = celsius_to_fahrenheit(celsius)
+print(f"{celsius}°C is equal to {fahrenheit}°F")
+
+fahrenheit = 77
+celsius = fahrenheit_to_celsius(fahrenheit)
+print(f"{fahrenheit}°F is equal to {celsius}°C")`,
+    visualBasic: `' Visual Basic Temperature Converter
+Module TemperatureConverter
+    Function CelsiusToFahrenheit(celsius As Double) As Double
+        Return (celsius * 9/5) + 32
+    End Function
+    
+    Function FahrenheitToCelsius(fahrenheit As Double) As Double
+        Return (fahrenheit - 32) * 5/9
+    End Function
+    
+    Sub Main()
+        Dim celsius As Double = 25
+        Dim fahrenheit As Double = CelsiusToFahrenheit(celsius)
+        Console.WriteLine($"{celsius}°C is equal to {fahrenheit}°F")
+        
+        fahrenheit = 77
+        celsius = FahrenheitToCelsius(fahrenheit)
+        Console.WriteLine($"{fahrenheit}°F is equal to {celsius}°C")
+    End Sub
+End Module`,
+    explanation: "A temperature converter program that converts between Celsius and Fahrenheit scales using conversion formulas."
+  }
+};
+
 const universityPrograms: Record<string, UniversityProgram> = {
   "bsc computer science": {
     description: "The Bachelor of Science in Computer Science at NUST Zimbabwe is a comprehensive four-year degree program that provides a strong foundation in computing principles, software development, and problem-solving skills. The program covers essential areas such as programming languages, algorithms, database systems, artificial intelligence, and software engineering. Students also engage in practical projects and industrial attachments to gain hands-on experience.",
@@ -109,6 +216,30 @@ const universityPrograms: Record<string, UniversityProgram> = {
 export const generateResponse = (input: string): string => {
   const lowercaseInput = input.toLowerCase();
   
+  // Check for programming task requests
+  if (lowercaseInput.includes("program") || lowercaseInput.includes("code") || lowercaseInput.includes("write")) {
+    // Check for specific program requests
+    for (const [program, details] of Object.entries(practicalExamples)) {
+      if (lowercaseInput.includes(program)) {
+        if (lowercaseInput.includes("python")) {
+          return `Here's a ${program} program in Python:\n\n${details.python}\n\n${details.explanation}`;
+        }
+        if (lowercaseInput.includes("visual basic") || lowercaseInput.includes("vb")) {
+          return `Here's a ${program} program in Visual Basic:\n\n${details.visualBasic}\n\n${details.explanation}`;
+        }
+        return `Here are examples of a ${program} program:\n\nPython:\n${details.python}\n\nVisual Basic:\n${details.visualBasic}\n\n${details.explanation}`;
+      }
+    }
+    
+    // Generic programming request
+    return "I can help you with programming tasks! Here are some examples I can provide:\n" +
+           "1. Calculator program\n" +
+           "2. Temperature converter\n" +
+           "\nJust ask for a specific program in Python or Visual Basic, for example:\n" +
+           "- 'Write a calculator program in Python'\n" +
+           "- 'Show me a temperature converter in Visual Basic'";
+  }
+
   // Check for university programs and career guidance
   for (const [program, details] of Object.entries(universityPrograms)) {
     if (lowercaseInput.includes(program) || 
