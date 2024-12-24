@@ -4,6 +4,13 @@ interface ProgrammingConcept {
   explanation: string;
 }
 
+interface UniversityProgram {
+  description: string;
+  universities: string[];
+  requirements: string;
+  careerPaths: string[];
+}
+
 const programmingConcepts: Record<string, ProgrammingConcept> = {
   variable: {
     python: `# Python Variable Example
@@ -48,9 +55,42 @@ End If`,
   }
 };
 
+const universityPrograms: Record<string, UniversityProgram> = {
+  "bsc computer science": {
+    description: "Bachelor of Science in Computer Science is a degree program that focuses on the theoretical and practical aspects of computing. It covers programming, algorithms, data structures, software engineering, and more.",
+    universities: ["University of Zimbabwe", "National University of Science and Technology (NUST)", "Harare Institute of Technology (HIT)"],
+    requirements: "Mathematics A Level (C or better), Computing/Physics/Chemistry",
+    careerPaths: ["Software Developer", "Systems Analyst", "Database Administrator", "AI/ML Engineer"]
+  },
+  "btech information technology": {
+    description: "Bachelor of Technology in Information Technology is a practical-oriented degree focusing on IT infrastructure, networking, and system administration.",
+    universities: ["Harare Institute of Technology (HIT)", "Chinhoyi University of Technology (CUT)"],
+    requirements: "Mathematics A Level (D or better), Computing/Physics/Chemistry",
+    careerPaths: ["Network Administrator", "IT Support Specialist", "Systems Engineer", "Cloud Administrator"]
+  },
+  "bachelor of engineering": {
+    description: "Bachelor of Engineering in Computer/Software Engineering combines computer science with engineering principles to design and develop complex software systems and hardware interfaces.",
+    universities: ["University of Zimbabwe", "NUST", "HIT"],
+    requirements: "Mathematics and Physics A Level (C or better)",
+    careerPaths: ["Software Engineer", "Hardware Engineer", "Systems Architect", "IoT Developer"]
+  }
+};
+
 export const generateResponse = (input: string): string => {
   const lowercaseInput = input.toLowerCase();
   
+  // Check for university programs and career guidance
+  for (const [program, details] of Object.entries(universityPrograms)) {
+    if (lowercaseInput.includes(program) || 
+        (lowercaseInput.includes("degree") && lowercaseInput.includes(program.split(" ")[0]))) {
+      return `${details.description}\n\nOffered at:\n${details.universities.join("\n")}\n\nEntry Requirements:\n${details.requirements}\n\nPotential Career Paths:\n${details.careerPaths.join("\n")}`;
+    }
+  }
+
+  if (lowercaseInput.includes("career") || lowercaseInput.includes("guidance")) {
+    return "I can help you explore various tech-related degree programs and career paths in Zimbabwe. Try asking about:\n- BSc Computer Science\n- BTech Information Technology\n- Bachelor of Engineering\n\nOr ask specific questions about career paths in programming, networking, or system administration.";
+  }
+
   // Check for programming concepts
   for (const [concept, details] of Object.entries(programmingConcepts)) {
     if (lowercaseInput.includes(concept)) {
@@ -75,5 +115,5 @@ export const generateResponse = (input: string): string => {
   }
 
   // Default response
-  return "I can help you with Python and Visual Basic programming concepts. Try asking about specific topics like variables, if statements, loops, or arrays. You can also ask for general explanations about Python or Visual Basic.";
+  return "I can help you with:\n1. Python programming\n2. Visual Basic programming\n3. Programming concepts\n4. Career guidance\n5. University programs in Zimbabwe\n\nFeel free to ask any questions!";
 };
