@@ -24,7 +24,7 @@ Dim price As Double = 19.99`,
     explanation: "A variable is a container for storing data values. Variables can hold different types of data like numbers, text, or boolean values."
   },
   "if statement": {
-    python: `# Python If Statement
+    python: `# Python If Statement Example
 age = 18
 if age >= 18:
     print("You are an adult")
@@ -32,7 +32,7 @@ elif age >= 13:
     print("You are a teenager")
 else:
     print("You are a child")`,
-    visualBasic: `' Visual Basic If Statement
+    visualBasic: `' Visual Basic If Statement Example
 Dim age As Integer = 18
 If age >= 18 Then
     Console.WriteLine("You are an adult")
@@ -43,36 +43,66 @@ Else
 End If`,
     explanation: "An If statement is a control structure that allows your program to make decisions based on conditions. It executes different code blocks depending on whether conditions are true or false."
   },
-  python: {
-    python: "",
-    visualBasic: "",
-    explanation: "Python is a high-level, interpreted programming language known for its simplicity and readability. It's widely used in web development, data science, artificial intelligence, and automation. Python uses indentation to define code blocks and supports both procedural and object-oriented programming paradigms."
-  },
-  "visual basic": {
-    python: "",
-    visualBasic: "",
-    explanation: "Visual Basic (VB) is a programming language developed by Microsoft. It's designed to be easy to learn and uses a more verbose, English-like syntax. VB is commonly used for Windows desktop applications, database applications, and automation tasks. It's part of the .NET framework and uses explicit code block declarations with End statements."
+  loop: {
+    python: `# Python For Loop Example
+for i in range(5):
+    print(f"Count: {i}")`,
+    visualBasic: `' Visual Basic For Loop Example
+For i As Integer = 0 To 4
+    Console.WriteLine("Count: " & i)
+Next`,
+    explanation: "A loop is a programming construct that allows you to repeat a block of code multiple times. It's useful for automating repetitive tasks."
   }
 };
 
 const universityPrograms: Record<string, UniversityProgram> = {
   "bsc computer science": {
-    description: "Bachelor of Science in Computer Science is a degree program that focuses on the theoretical and practical aspects of computing. It covers programming, algorithms, data structures, software engineering, and more.",
-    universities: ["University of Zimbabwe", "National University of Science and Technology (NUST)", "Harare Institute of Technology (HIT)"],
-    requirements: "Mathematics A Level (C or better), Computing/Physics/Chemistry",
-    careerPaths: ["Software Developer", "Systems Analyst", "Database Administrator", "AI/ML Engineer"]
+    description: "The Bachelor of Science in Computer Science at NUST Zimbabwe is a comprehensive four-year degree program that provides a strong foundation in computing principles, software development, and problem-solving skills. The program covers essential areas such as programming languages, algorithms, database systems, artificial intelligence, and software engineering. Students also engage in practical projects and industrial attachments to gain hands-on experience.",
+    universities: [
+      "National University of Science and Technology (NUST)",
+      "University of Zimbabwe",
+      "Harare Institute of Technology (HIT)"
+    ],
+    requirements: "Mathematics A Level (C or better), Computing/Physics/Chemistry A Level, English Language O Level",
+    careerPaths: [
+      "Software Developer",
+      "Systems Analyst",
+      "Database Administrator",
+      "AI/ML Engineer",
+      "Web Developer",
+      "Research and Development"
+    ]
   },
   "btech information technology": {
-    description: "Bachelor of Technology in Information Technology is a practical-oriented degree focusing on IT infrastructure, networking, and system administration.",
-    universities: ["Harare Institute of Technology (HIT)", "Chinhoyi University of Technology (CUT)"],
-    requirements: "Mathematics A Level (D or better), Computing/Physics/Chemistry",
-    careerPaths: ["Network Administrator", "IT Support Specialist", "Systems Engineer", "Cloud Administrator"]
+    description: "The Bachelor of Technology in Information Technology is a hands-on degree focusing on practical IT skills, system administration, and network management. The program emphasizes real-world applications and includes industrial attachment opportunities.",
+    universities: [
+      "Harare Institute of Technology (HIT)",
+      "Chinhoyi University of Technology (CUT)"
+    ],
+    requirements: "Mathematics A Level (D or better), Computing/Physics/Chemistry A Level",
+    careerPaths: [
+      "Network Administrator",
+      "IT Support Specialist",
+      "Systems Engineer",
+      "Cloud Administrator",
+      "IT Project Manager"
+    ]
   },
   "bachelor of engineering": {
-    description: "Bachelor of Engineering in Computer/Software Engineering combines computer science with engineering principles to design and develop complex software systems and hardware interfaces.",
-    universities: ["University of Zimbabwe", "NUST", "HIT"],
-    requirements: "Mathematics and Physics A Level (C or better)",
-    careerPaths: ["Software Engineer", "Hardware Engineer", "Systems Architect", "IoT Developer"]
+    description: "The Bachelor of Engineering program combines computer science with engineering principles to design and develop complex software systems and hardware interfaces. Students learn about embedded systems, digital electronics, and software architecture.",
+    universities: [
+      "University of Zimbabwe",
+      "National University of Science and Technology (NUST)",
+      "Harare Institute of Technology (HIT)"
+    ],
+    requirements: "Mathematics and Physics A Level (C or better), Chemistry A Level recommended",
+    careerPaths: [
+      "Software Engineer",
+      "Hardware Engineer",
+      "Systems Architect",
+      "IoT Developer",
+      "Robotics Engineer"
+    ]
   }
 };
 
@@ -85,6 +115,12 @@ export const generateResponse = (input: string): string => {
         (lowercaseInput.includes("degree") && lowercaseInput.includes(program.split(" ")[0]))) {
       return `${details.description}\n\nOffered at:\n${details.universities.join("\n")}\n\nEntry Requirements:\n${details.requirements}\n\nPotential Career Paths:\n${details.careerPaths.join("\n")}`;
     }
+  }
+
+  // Check for specific university mentions
+  if (lowercaseInput.includes("nust") && lowercaseInput.includes("computer science")) {
+    const program = universityPrograms["bsc computer science"];
+    return `BSc Computer Science at NUST (National University of Science and Technology)\n\n${program.description}\n\nEntry Requirements:\n${program.requirements}\n\nCareer Opportunities:\n${program.careerPaths.join("\n")}`;
   }
 
   if (lowercaseInput.includes("career") || lowercaseInput.includes("guidance")) {
@@ -100,7 +136,7 @@ export const generateResponse = (input: string): string => {
       if ((lowercaseInput.includes("visual basic") || lowercaseInput.includes("vb")) && details.visualBasic) {
         return `${details.explanation}\n\nHere's how to use it in Visual Basic:\n${details.visualBasic}`;
       }
-      return details.explanation;
+      return `${details.explanation}\n\nPython Example:\n${details.python}\n\nVisual Basic Example:\n${details.visualBasic}`;
     }
   }
 
@@ -115,5 +151,5 @@ export const generateResponse = (input: string): string => {
   }
 
   // Default response
-  return "I can help you with:\n1. Python programming\n2. Visual Basic programming\n3. Programming concepts\n4. Career guidance\n5. University programs in Zimbabwe\n\nFeel free to ask any questions!";
+  return "I can help you with:\n1. Python programming\n2. Visual Basic programming\n3. Programming concepts\n4. Career guidance\n5. University programs in Zimbabwe\n\nFeel free to ask any specific questions about:\n- Programming concepts (e.g., 'explain if statement')\n- Degree programs (e.g., 'tell me about BSc Computer Science at NUST')\n- Career paths in technology";
 };
