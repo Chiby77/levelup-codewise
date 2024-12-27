@@ -1,13 +1,33 @@
 import { programmingConcepts } from './responses/programmingConcepts';
 import { practicalExamples } from './responses/practicalExamples';
 import { universityPrograms } from './responses/universityPrograms';
+import { sqlExamples } from './responses/sqlExamples';
+import { mentalHealthResponses } from './responses/mentalHealthSupport';
 
 export const generateResponse = (input: string): string => {
   const lowercaseInput = input.toLowerCase();
   
+  // Check for mental health support needs
+  const mentalHealthKeywords = ['depressed', 'depression', 'anxiety', 'stressed', 'stress', 'overwhelmed', 'suicide', 'help'];
+  if (mentalHealthKeywords.some(keyword => lowercaseInput.includes(keyword))) {
+    for (const [condition, response] of Object.entries(mentalHealthResponses)) {
+      if (lowercaseInput.includes(condition)) {
+        return `${response.message}\n\nHere are some resources that might help:\n${response.resources.join('\n')}\n\n${response.followUp}`;
+      }
+    }
+  }
+
+  // Check for SQL queries
+  if (lowercaseInput.includes('sql') || lowercaseInput.includes('database') || lowercaseInput.includes('query')) {
+    for (const [command, details] of Object.entries(sqlExamples)) {
+      if (lowercaseInput.includes(command)) {
+        return `Here's how to use the ${command.toUpperCase()} command in SQL:\n\n${details.query}\n\n${details.explanation}`;
+      }
+    }
+  }
+
   // Check for programming task requests
   if (lowercaseInput.includes("program") || lowercaseInput.includes("code") || lowercaseInput.includes("write")) {
-    // Check for specific program requests
     for (const [program, details] of Object.entries(practicalExamples)) {
       if (lowercaseInput.includes(program)) {
         if (lowercaseInput.includes("python")) {
@@ -54,14 +74,16 @@ export const generateResponse = (input: string): string => {
     }
   }
 
-  // Default response
-  return "I can help you with:\n" +
-         "1. Programming tasks and examples\n" +
-         "2. Programming concepts\n" +
-         "3. Career guidance\n" +
-         "4. University programs in Zimbabwe\n\n" +
-         "Try asking for:\n" +
-         "- Specific programming examples (e.g., 'Write a calculator program')\n" +
-         "- Programming concepts (e.g., 'Explain if statement')\n" +
-         "- University programs (e.g., 'Tell me about BSc Computer Science at NUST')";
+  // Default response with website promotion
+  return "Welcome to our comprehensive tech education platform! I'm Mbuya Zivai, your AI assistant. I can help you with:\n\n" +
+         "1. Programming tasks and examples in Python and Visual Basic\n" +
+         "2. SQL database queries and commands\n" +
+         "3. Career guidance for tech-related degrees\n" +
+         "4. Mental health support and counseling\n" +
+         "5. University programs in Zimbabwe\n\n" +
+         "How can I assist you today? Feel free to:\n" +
+         "- Ask for programming help (e.g., 'Write a calculator program')\n" +
+         "- Learn about SQL (e.g., 'How to use JOIN in SQL')\n" +
+         "- Get career advice (e.g., 'Tell me about BSc Computer Science at NUST')\n" +
+         "- Discuss any concerns - I'm here to listen and support you";
 };

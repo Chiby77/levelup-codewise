@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
 import { useToast } from "./ui/use-toast";
 import { generateResponse } from "@/utils/aiResponses";
-import { MessageCircle, Send, Bot } from "lucide-react";
+import { MessageCircle, Send, Bot, Heart } from "lucide-react";
 
 interface Message {
   role: "assistant" | "user";
@@ -59,6 +59,7 @@ export default function MbuyaZivai() {
         <CardTitle className="flex items-center gap-2 text-2xl">
           <Bot className="w-8 h-8 text-primary" />
           <span>Chat with Mbuya Zivai</span>
+          <Heart className="w-5 h-5 text-red-500 ml-2" />
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -69,12 +70,13 @@ export default function MbuyaZivai() {
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-4 text-muted-foreground">
               <MessageCircle className="w-12 h-12" />
-              <p className="text-lg">Welcome! Ask me anything about:</p>
+              <p className="text-lg">Welcome! I can help you with:</p>
               <ul className="space-y-2">
                 <li>• Programming in Python or Visual Basic</li>
-                <li>• Programming concepts and theory</li>
+                <li>• SQL Database Queries</li>
                 <li>• Career guidance in tech</li>
                 <li>• University programs in Zimbabwe</li>
+                <li>• Mental health support and counseling</li>
               </ul>
             </div>
           )}
@@ -123,7 +125,7 @@ export default function MbuyaZivai() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about programming, careers, or university programs..."
+            placeholder="Ask about programming, careers, SQL, or share your concerns..."
             disabled={isLoading}
             className="flex-1"
           />
