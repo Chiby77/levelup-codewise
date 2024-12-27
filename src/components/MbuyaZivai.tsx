@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
 import { useToast } from "./ui/use-toast";
 import { generateResponse } from "@/utils/aiResponses";
-import { MessageCircle, Send, Bot, Heart } from "lucide-react";
+import { MessageCircle, Send, Bot, Heart, Code, School, Database, Brain } from "lucide-react";
 
 interface Message {
   role: "assistant" | "user";
@@ -72,11 +72,26 @@ export default function MbuyaZivai() {
               <MessageCircle className="w-12 h-12" />
               <p className="text-lg">Welcome! I can help you with:</p>
               <ul className="space-y-2">
-                <li>• Programming in Python or Visual Basic</li>
-                <li>• SQL Database Queries</li>
-                <li>• Career guidance in tech</li>
-                <li>• University programs in Zimbabwe</li>
-                <li>• Mental health support and counseling</li>
+                <li className="flex items-center gap-2">
+                  <Code className="w-4 h-4" />
+                  Programming in various languages
+                </li>
+                <li className="flex items-center gap-2">
+                  <Database className="w-4 h-4" />
+                  SQL and Database concepts
+                </li>
+                <li className="flex items-center gap-2">
+                  <School className="w-4 h-4" />
+                  Tech career guidance
+                </li>
+                <li className="flex items-center gap-2">
+                  <Brain className="w-4 h-4" />
+                  Computer Science topics
+                </li>
+                <li className="flex items-center gap-2">
+                  <Heart className="w-4 h-4" />
+                  Mental health support
+                </li>
               </ul>
             </div>
           )}
@@ -125,7 +140,7 @@ export default function MbuyaZivai() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about programming, careers, SQL, or share your concerns..."
+            placeholder="Ask about programming, computer science, careers, or share your concerns..."
             disabled={isLoading}
             className="flex-1"
           />
