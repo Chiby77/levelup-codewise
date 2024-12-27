@@ -35,8 +35,44 @@ const generateGreeting = (): string => {
 export const generateResponse = (input: string): string => {
   const correctedInput = correctSpelling(input.toLowerCase());
   
+  // Handle health-related queries
+  const healthKeywords = ['headache', 'sick', 'pain', 'tired', 'unwell', 'ill'];
+  if (healthKeywords.some(keyword => correctedInput.includes(keyword))) {
+    return "I'm sorry to hear you're not feeling well. While I can provide general wellness tips, it's important to:\n\n" +
+           "1. Take a break from your screen\n" +
+           "2. Stay hydrated\n" +
+           "3. Consider resting in a quiet, dark room\n" +
+           "4. If symptoms persist, please consult a healthcare professional\n\n" +
+           "Would you like to take a break from our discussion and resume when you're feeling better?";
+  }
+
   if (/^(hi|hello|hey|greetings|hie)/i.test(input)) {
     return generateGreeting();
+  }
+
+  // Handle degree-related queries
+  const degreeKeywords = ['degree', 'course', 'study', 'university', 'college'];
+  if (degreeKeywords.some(keyword => correctedInput.includes(keyword))) {
+    // Check for specific degrees in universityPrograms
+    for (const [program, details] of Object.entries(universityPrograms)) {
+      if (correctedInput.includes(program) || 
+          (correctedInput.includes("computer") && correctedInput.includes("science")) ||
+          (correctedInput.includes("it") && correctedInput.includes("degree"))) {
+        return `${details.description}\n\nOffered at:\n${details.universities.join("\n")}\n\nEntry Requirements:\n${details.requirements}\n\nPotential Career Paths:\n${details.careerPaths.join("\n")}`;
+      }
+    }
+    
+    // General response for degree inquiries
+    return "A degree in Computer Science or Information Technology offers excellent career prospects! Here's what you should know:\n\n" +
+           "1. High demand in job market\n" +
+           "2. Competitive salaries\n" +
+           "3. Diverse career paths (Software Development, AI, Cybersecurity, etc.)\n" +
+           "4. Opportunities for innovation and entrepreneurship\n\n" +
+           "Would you like specific information about:\n" +
+           "- BSc Computer Science\n" +
+           "- BTech Information Technology\n" +
+           "- Bachelor of Engineering\n" +
+           "Just ask about any of these programs!";
   }
 
   if (correctedInput.includes('flowchart')) {
@@ -104,17 +140,10 @@ export const generateResponse = (input: string): string => {
       if (correctedInput.includes("python")) {
         return `${details.explanation}\n\nHere's how to use it in Python:\n${details.python}`;
       }
-      if ((correctedInput.includes("visual basic") || correctedInput.includes("vb"))) {
+      if (correctedInput.includes("visual basic") || correctedInput.includes("vb")) {
         return `${details.explanation}\n\nHere's how to use it in Visual Basic:\n${details.visualBasic}`;
       }
       return `${details.explanation}\n\nPython Example:\n${details.python}\n\nVisual Basic Example:\n${details.visualBasic}`;
-    }
-  }
-
-  for (const [program, details] of Object.entries(universityPrograms)) {
-    if (correctedInput.includes(program) || 
-        (correctedInput.includes("degree") && correctedInput.includes(program.split(" ")[0]))) {
-      return `${details.description}\n\nOffered at:\n${details.universities.join("\n")}\n\nEntry Requirements:\n${details.requirements}\n\nPotential Career Paths:\n${details.careerPaths.join("\n")}`;
     }
   }
 
