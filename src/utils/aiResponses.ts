@@ -1,8 +1,8 @@
 import { programmingConcepts } from './responses/programmingConcepts';
 import { basicPrograms } from './responses/programming/basicPrograms';
 import { algorithms } from './responses/programming/algorithms';
-import { universityPrograms } from './universityPrograms';
-import { sqlExamples } from './sqlExamples';
+import { universityPrograms } from './responses/universityPrograms';
+import { sqlExamples } from './responses/sqlExamples';
 import { mentalHealthResponses } from './responses/mentalHealthSupport';
 import { networkingConcepts } from './responses/computerScience/networking';
 import { flowchartExamples } from './responses/computerScience/flowcharts';
@@ -15,7 +15,6 @@ const correctSpelling = (input: string): string => {
     'javascript': 'JavaScript',
     'python': 'Python',
     'sql': 'SQL',
-    // Add more common misspellings
   };
 
   return input.split(' ').map(word => {
@@ -34,21 +33,17 @@ const generateGreeting = (): string => {
 };
 
 export const generateResponse = (input: string): string => {
-  // Correct any spelling mistakes
   const correctedInput = correctSpelling(input.toLowerCase());
   
-  // Handle greetings
   if (/^(hi|hello|hey|greetings|hie)/i.test(input)) {
     return generateGreeting();
   }
 
-  // Check for flowchart requests
   if (correctedInput.includes('flowchart')) {
     const flowchartInfo = flowchartExamples.basic;
     return `${flowchartInfo.explanation}\n\nFlowchart Symbols:\n${Object.entries(flowchartInfo.symbols).map(([symbol, desc]) => `${symbol}: ${desc}`).join('\n')}\n\n${flowchartInfo.example}`;
   }
 
-  // Check for networking concepts
   if (correctedInput.includes('tcp/ip') || correctedInput.includes('dns')) {
     for (const [concept, details] of Object.entries(networkingConcepts)) {
       if (correctedInput.includes(concept)) {
@@ -64,7 +59,6 @@ export const generateResponse = (input: string): string => {
     }
   }
 
-  // Check for mental health support needs
   const mentalHealthKeywords = ['depressed', 'depression', 'anxiety', 'stressed', 'stress', 'overwhelmed', 'suicide', 'help'];
   if (mentalHealthKeywords.some(keyword => correctedInput.includes(keyword))) {
     for (const [condition, response] of Object.entries(mentalHealthResponses)) {
@@ -74,7 +68,6 @@ export const generateResponse = (input: string): string => {
     }
   }
 
-  // Check for SQL queries
   if (correctedInput.includes('sql') || correctedInput.includes('database') || correctedInput.includes('query')) {
     for (const [command, details] of Object.entries(sqlExamples)) {
       if (correctedInput.includes(command)) {
@@ -83,7 +76,6 @@ export const generateResponse = (input: string): string => {
     }
   }
 
-  // Check for programming task requests
   if (correctedInput.includes("program") || correctedInput.includes("code") || correctedInput.includes("write")) {
     for (const [program, details] of Object.entries(basicPrograms)) {
       if (correctedInput.includes(program)) {
@@ -97,7 +89,6 @@ export const generateResponse = (input: string): string => {
       }
     }
     
-    // If no specific program is found, provide a list of available examples
     return "I can help you with programming tasks! Here are some examples I can provide:\n" +
            "1. Calculator program\n" +
            "2. Temperature converter\n" +
@@ -108,7 +99,6 @@ export const generateResponse = (input: string): string => {
            "- 'How to find prime numbers in Python'";
   }
 
-  // Check for programming concepts
   for (const [concept, details] of Object.entries(programmingConcepts)) {
     if (correctedInput.includes(concept)) {
       if (correctedInput.includes("python")) {
@@ -121,7 +111,6 @@ export const generateResponse = (input: string): string => {
     }
   }
 
-  // Check for university programs and career guidance
   for (const [program, details] of Object.entries(universityPrograms)) {
     if (correctedInput.includes(program) || 
         (correctedInput.includes("degree") && correctedInput.includes(program.split(" ")[0]))) {
@@ -129,7 +118,6 @@ export const generateResponse = (input: string): string => {
     }
   }
 
-  // Default response with website promotion
   return "Welcome to our comprehensive tech education platform! I'm Mbuya Zivai, your AI assistant. I can help you with:\n\n" +
          "1. Programming tasks and examples in Python and Visual Basic\n" +
          "2. SQL database queries and commands\n" +
