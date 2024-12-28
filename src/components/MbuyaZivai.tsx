@@ -4,7 +4,7 @@ import { Input } from "./ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
 import { useToast } from "./ui/use-toast";
-import { generateResponse } from "@/utils/aiResponses";
+import { generateResponse, generateGreeting } from "@/utils/aiResponses";
 import { MessageCircle, Send, Bot, Heart, Code, School, Database, Brain } from "lucide-react";
 
 interface Message {
@@ -26,7 +26,6 @@ export default function MbuyaZivai() {
   }, [messages]);
 
   useEffect(() => {
-    // Show initial greeting after a short delay
     const timer = setTimeout(() => {
       setMessages([{
         role: "assistant",

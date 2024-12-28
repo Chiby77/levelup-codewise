@@ -23,7 +23,7 @@ const correctSpelling = (input: string): string => {
   }).join(' ');
 };
 
-const generateGreeting = (): string => {
+export const generateGreeting = (): string => {
   const greetings = [
     "Makorokoto! I'm Mbuya Zivai, your wise tech companion. How may I assist you today? Whether it's programming help, career guidance, or just someone to talk to, I'm here for you. 💫",
     "Mhoro! I'm Mbuya Zivai, and I'm delighted to chat with you. What's on your mind? I can help with coding, career choices, or lend a listening ear if you need one. 🌟",
