@@ -41,7 +41,7 @@ const Downloads = () => {
     { part: "8", link: "https://www.mediafire.com/file/drhmgbatfp4qe7j/programming_part_8.pdf/file" },
   ];
 
-  const handleDownload = (type: string, identifier: string, link: string) => {
+  const handleDownload = async (type: string, identifier: string, link: string) => {
     if (link === "#") {
       toast({
         title: "Not Available",
@@ -51,13 +51,36 @@ const Downloads = () => {
       return;
     }
 
-    // Open in new tab to trigger MediaFire's download page
-    window.open(link, '_blank');
-    
-    toast({
-      title: "Download Started",
-      description: `Opening ${type} ${identifier} in new tab. Click the download button on MediaFire's page.`,
-    });
+    try {
+      // Show loading toast
+      toast({
+        title: "Starting Download",
+        description: "Opening MediaFire in a new tab...",
+      });
+
+      // Create a temporary anchor element
+      const a = document.createElement('a');
+      a.href = link;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Show success toast after a delay
+      setTimeout(() => {
+        toast({
+          title: "Download Ready",
+          description: "Click the download button on MediaFire's page to get your file.",
+        });
+      }, 2000);
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Please try again or contact support if the issue persists.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
