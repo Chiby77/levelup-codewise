@@ -65,7 +65,7 @@ export default function MbuyaZivai() {
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto bg-gradient-to-br from-background to-secondary/5">
+    <Card className="w-full h-full max-w-3xl mx-auto bg-gradient-to-br from-background to-secondary/5">
       <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2 text-2xl">
           <Bot className="w-8 h-8 text-primary" />
@@ -73,11 +73,8 @@ export default function MbuyaZivai() {
           <Heart className="w-5 h-5 text-red-500 ml-2" />
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <ScrollArea 
-          ref={scrollRef}
-          className="h-[500px] p-4"
-        >
+      <CardContent className="p-0 flex flex-col h-[calc(80vh-4rem)]">
+        <ScrollArea className="flex-1 p-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-4 text-muted-foreground">
               <MessageCircle className="w-12 h-12" />

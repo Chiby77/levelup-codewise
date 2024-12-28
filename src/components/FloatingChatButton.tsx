@@ -19,7 +19,7 @@ const FloatingChatButton = () => {
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl h-[80vh]">
+        <DialogContent className="max-w-4xl h-[80vh] p-0 gap-0">
           <MbuyaZivai />
         </DialogContent>
       </Dialog>
