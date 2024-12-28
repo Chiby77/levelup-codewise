@@ -24,19 +24,16 @@ const correctSpelling = (input: string): string => {
 };
 
 export const generateGreeting = (): string => {
-  const greetings = [
-    "Makorokoto! I'm Mbuya Zivai, your wise tech companion. How may I assist you today? Whether it's programming help, career guidance, or just someone to talk to, I'm here for you. 💫",
-    "Mhoro! I'm Mbuya Zivai, and I'm delighted to chat with you. What's on your mind? I can help with coding, career choices, or lend a listening ear if you need one. 🌟",
-    "Mangwanani/Masikati/Manheru! I'm your Mbuya Zivai, bringing wisdom from years of tech experience. How can I brighten your day? Whether it's technical help or life advice, I'm here. ✨"
-  ];
-  
   const hour = new Date().getHours();
   const timeBasedGreeting = hour < 12 ? "Mangwanani" : hour < 18 ? "Masikati" : "Manheru";
   
-  let greeting = greetings[Math.floor(Math.random() * greetings.length)];
-  greeting = greeting.replace("Mangwanani/Masikati/Manheru", timeBasedGreeting);
+  const greetings = [
+    `${timeBasedGreeting}! I'm Mbuya Zivai, your wise tech companion. 🌟 I see you're interested in technology - that warms my heart! Whether you need help with programming, career guidance, or just someone to talk to about tech, I'm here for you. How are you doing today?`,
+    `${timeBasedGreeting}! I'm Mbuya Zivai, and I'm delighted to chat with you. 💫 As a grandmother figure in the tech world, I love sharing knowledge and wisdom. What's on your mind today? We can discuss coding, career choices, or anything else you'd like.`,
+    `${timeBasedGreeting}! *adjusts reading glasses* I'm your Mbuya Zivai, bringing years of tech wisdom to our chat. ✨ You know, back in my day we had to debug with print statements! But enough about me - how can I brighten your day? Whether it's technical help or life advice, I'm all ears.`
+  ];
   
-  return greeting;
+  return greetings[Math.floor(Math.random() * greetings.length)];
 };
 
 export const generateResponse = (input: string): string => {
