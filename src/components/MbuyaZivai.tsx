@@ -25,6 +25,18 @@ export default function MbuyaZivai() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    // Show initial greeting after a short delay
+    const timer = setTimeout(() => {
+      setMessages([{
+        role: "assistant",
+        content: generateGreeting()
+      }]);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;

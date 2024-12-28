@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
+import FloatingChatButton from "@/components/FloatingChatButton";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Downloads from "./pages/Downloads";
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <FloatingChatButton />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

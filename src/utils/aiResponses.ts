@@ -25,11 +25,18 @@ const correctSpelling = (input: string): string => {
 
 const generateGreeting = (): string => {
   const greetings = [
-    "Hello! I'm Mbuya Zivai, your friendly tech assistant. How can I help you today?",
-    "Hi there! I'm here to help with programming, career guidance, or any tech-related questions.",
-    "Greetings! I'm your AI assistant, ready to help with coding, career advice, or tech support.",
+    "Makorokoto! I'm Mbuya Zivai, your wise tech companion. How may I assist you today? Whether it's programming help, career guidance, or just someone to talk to, I'm here for you. 💫",
+    "Mhoro! I'm Mbuya Zivai, and I'm delighted to chat with you. What's on your mind? I can help with coding, career choices, or lend a listening ear if you need one. 🌟",
+    "Mangwanani/Masikati/Manheru! I'm your Mbuya Zivai, bringing wisdom from years of tech experience. How can I brighten your day? Whether it's technical help or life advice, I'm here. ✨"
   ];
-  return greetings[Math.floor(Math.random() * greetings.length)];
+  
+  const hour = new Date().getHours();
+  const timeBasedGreeting = hour < 12 ? "Mangwanani" : hour < 18 ? "Masikati" : "Manheru";
+  
+  let greeting = greetings[Math.floor(Math.random() * greetings.length)];
+  greeting = greeting.replace("Mangwanani/Masikati/Manheru", timeBasedGreeting);
+  
+  return greeting;
 };
 
 export const generateResponse = (input: string): string => {
