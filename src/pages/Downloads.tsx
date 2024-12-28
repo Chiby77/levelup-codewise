@@ -61,16 +61,16 @@ const Downloads = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-12">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="container mx-auto px-4 pt-24 space-y-8">
-        <h1 className="text-4xl font-bold text-primary mb-6 animate-fadeIn">Study Resources</h1>
+        <h1 className="text-4xl font-bold text-foreground mb-6 animate-fadeIn">Study Resources</h1>
 
         {/* Theory Papers Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-background border-border">
           <CardHeader className="bg-primary/5">
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <FileText className="h-6 w-6 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
+              <FileText className="h-6 w-6" />
               Paper 1 (Theory) Past Papers
             </CardTitle>
           </CardHeader>
@@ -79,7 +79,7 @@ const Downloads = () => {
               <Button
                 key={paper.year}
                 variant="outline"
-                className="w-full hover:bg-primary/5 hover:text-primary transition-colors"
+                className="w-full hover:bg-primary/5 transition-colors border-border"
                 onClick={() => handleDownload("Theory Paper", paper.year, paper.link)}
               >
                 <Download className="mr-2 h-4 w-4" />
@@ -90,10 +90,10 @@ const Downloads = () => {
         </Card>
 
         {/* Practical Papers Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-background border-border">
           <CardHeader className="bg-secondary/5">
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <File className="h-6 w-6 text-secondary" />
+            <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
+              <File className="h-6 w-6" />
               Paper 2 (Practical) Past Papers
             </CardTitle>
           </CardHeader>
@@ -102,7 +102,7 @@ const Downloads = () => {
               <Button
                 key={paper.year}
                 variant="outline"
-                className="w-full hover:bg-secondary/5 hover:text-secondary transition-colors"
+                className="w-full hover:bg-secondary/5 transition-colors border-border"
                 onClick={() => handleDownload("Practical Paper", paper.year, paper.link)}
               >
                 <Download className="mr-2 h-4 w-4" />
@@ -113,10 +113,10 @@ const Downloads = () => {
         </Card>
 
         {/* Programming Notes Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-background border-border">
           <CardHeader className="bg-accent/5">
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <FileText className="h-6 w-6 text-accent" />
+            <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
+              <FileText className="h-6 w-6" />
               Programming Notes
             </CardTitle>
           </CardHeader>
@@ -125,10 +125,10 @@ const Downloads = () => {
               <Button
                 key={note.part}
                 variant="outline"
-                className={`w-full ${
+                className={`w-full border-border ${
                   note.link === "#" 
                     ? "opacity-50 cursor-not-allowed" 
-                    : "hover:bg-accent/5 hover:text-accent transition-colors"
+                    : "hover:bg-accent/5 transition-colors"
                 }`}
                 onClick={() => handleDownload("Programming Notes Part", note.part, note.link)}
                 disabled={note.link === "#"}
