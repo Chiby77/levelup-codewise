@@ -7,7 +7,6 @@ import EnhancedQuoteRotator from "./EnhancedQuoteRotator";
 import AnimatedButton from "./AnimatedButton";
 import AnimatedHeading from "./AnimatedHeading";
 import AnimatedLogo from "./AnimatedLogo";
-import MotionToggle from "./MotionToggle";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -18,9 +17,6 @@ const Hero = () => {
       <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
         <AnimatedHeroBackground />
-        
-        {/* Motion Reduction Toggle */}
-        <MotionToggle />
         
         {/* Hero Content */}
         <div className="container mx-auto px-4 text-center relative z-10 py-16">
@@ -95,14 +91,23 @@ const Hero = () => {
         </Dialog>
       </div>
 
-      <style>
-        {`
-          .reduce-motion * {
-            animation: none !important;
-            transition: none !important;
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
           }
-        `}
-      </style>
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+          opacity: 0;
+        }
+      `}</style>
     </>
   );
 };
