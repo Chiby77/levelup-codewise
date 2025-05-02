@@ -48,7 +48,7 @@ const AnimatedLogo = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>{`
         @keyframes logoEntrance {
           0% {
             opacity: 0;

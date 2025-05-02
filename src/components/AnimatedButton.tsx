@@ -96,7 +96,7 @@ const AnimatedButton = ({
         {icon && <ArrowRight className={`ml-2 h-4 w-4 ${isHovered ? "animate-bounce-x" : ""}`} />}
       </Button>
       
-      <style jsx>{`
+      <style>{`
         .animated-button {
           animation: pulse 2s infinite;
         }

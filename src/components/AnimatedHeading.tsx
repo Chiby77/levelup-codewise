@@ -60,7 +60,7 @@ const AnimatedHeading = ({ text, className = "", delay = 0 }: AnimatedHeadingPro
         {text}
       </h1>
 
-      <style jsx>{`
+      <style>{`
         @keyframes headingEntrance {
           0% {
             opacity: 0;
