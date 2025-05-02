@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, File, BookOpen, Code, Database, Braces } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 const Downloads = () => {
   const { toast } = useToast();
+  const [downloadInProgress, setDownloadInProgress] = useState<string | null>(null);
 
   const theory_papers = [
     { year: "2023", link: "https://www.mediafire.com/file/7t4ok30r5fcm5rq/Computer_Science_MS2023_1-Edited.pdf/file" },
@@ -101,6 +103,8 @@ const Downloads = () => {
     }
 
     try {
+      setDownloadInProgress(`${type}-${identifier}`);
+      
       // Show loading toast
       toast({
         title: "Starting Download",
@@ -126,6 +130,7 @@ const Downloads = () => {
             ? "Click the download button on Google Drive to get your file."
             : "Click the download button on MediaFire's page to get your file.",
         });
+        setDownloadInProgress(null);
       }, 2000);
     } catch (error) {
       toast({
@@ -133,6 +138,7 @@ const Downloads = () => {
         description: "Please try again or contact support if the issue persists.",
         variant: "destructive",
       });
+      setDownloadInProgress(null);
     }
   };
 
@@ -140,115 +146,212 @@ const Downloads = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] text-white">
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-12 space-y-8">
-        <h1 className="text-4xl font-bold text-accent mb-6 animate-fadeIn">Study Resources</h1>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-accent mb-4 animate-fadeIn">Study Resources</h1>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            Access our comprehensive collection of learning materials to help you excel in your A Level Computer Science studies.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div onClick={() => document.getElementById('programming-notes')?.scrollIntoView({behavior: 'smooth'})}
+            className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mr-4">
+                <Code className="h-6 w-6 text-accent" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white">Programming Notes</h2>
+                <p className="text-sm text-gray-400">{programming_notes.length} resources</p>
+              </div>
+            </div>
+            <p className="text-gray-300 mb-4">
+              Comprehensive programming guides covering all syllabus topics.
+            </p>
+          </div>
+          
+          <div onClick={() => document.getElementById('special-resources')?.scrollIntoView({behavior: 'smooth'})}
+            className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mr-4">
+                <BookOpen className="h-6 w-6 text-accent" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white">Special Resources</h2>
+                <p className="text-sm text-gray-400">{special_resources.length} resources</p>
+              </div>
+            </div>
+            <p className="text-gray-300 mb-4">
+              Advanced topics and specialized learning materials for deeper understanding.
+            </p>
+          </div>
+          
+          <div onClick={() => document.getElementById('past-papers')?.scrollIntoView({behavior: 'smooth'})}
+            className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mr-4">
+                <FileText className="h-6 w-6 text-accent" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white">Past Papers</h2>
+                <p className="text-sm text-gray-400">{theory_papers.length + practical_papers.length} papers</p>
+              </div>
+            </div>
+            <p className="text-gray-300 mb-4">
+              Previous exam papers with marking schemes for effective revision.
+            </p>
+          </div>
+        </div>
 
         {/* Programming Notes Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
-          <CardHeader className="bg-accent/10">
-            <CardTitle className="flex items-center gap-2 text-2xl text-white">
-              <Code className="h-6 w-6 text-accent" />
-              Programming Notes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-6">
-            {programming_notes.map((note) => (
-              <Button
-                key={note.part}
-                variant="outline"
-                className="w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors"
-                onClick={() => handleDownload("Programming Notes Part", note.part, note.link)}
-              >
-                <Download className="mr-2 h-4 w-4 text-accent" />
-                Part {note.part}
-              </Button>
-            ))}
-          </CardContent>
-        </Card>
+        <div id="programming-notes" className="scroll-mt-24">
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+            <CardHeader className="bg-gradient-to-r from-accent/20 to-transparent">
+              <CardTitle className="flex items-center gap-2 text-2xl text-white">
+                <Code className="h-6 w-6 text-accent" />
+                Programming Notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-6">
+              {programming_notes.map((note) => (
+                <Button
+                  key={note.part}
+                  variant="outline"
+                  className={`w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors ${
+                    downloadInProgress === `Programming Notes Part-${note.part}` ? 'opacity-70 cursor-wait' : ''
+                  }`}
+                  onClick={() => handleDownload("Programming Notes Part", note.part, note.link)}
+                  disabled={downloadInProgress === `Programming Notes Part-${note.part}`}
+                >
+                  {downloadInProgress === `Programming Notes Part-${note.part}` ? (
+                    <div className="animate-spin h-4 w-4 mr-2 border-2 border-accent border-t-transparent rounded-full" />
+                  ) : (
+                    <Download className="mr-2 h-4 w-4 text-accent" />
+                  )}
+                  Part {note.part}
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Special Resources Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
-          <CardHeader className="bg-accent/10">
-            <CardTitle className="flex items-center gap-2 text-2xl text-white">
-              <BookOpen className="h-6 w-6 text-accent" />
-              Special Topics & Advanced Resources
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
-            {special_resources.map((resource, index) => (
-              <div 
-                key={index} 
-                className="bg-[#1a1a1a] rounded-lg p-4 border border-accent/10 hover:border-accent/30 transition-all cursor-pointer"
-                onClick={() => handleDownload(resource.title, "", resource.link)}
-              >
-                <div className="flex items-center gap-3">
-                  <resource.icon className="h-8 w-8 text-accent" />
-                  <div>
-                    <h3 className="font-medium text-white">{resource.title}</h3>
-                    <p className="text-sm text-gray-400">{resource.category}</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full mt-3 text-accent hover:bg-accent/10"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDownload(resource.title, "", resource.link);
-                  }}
+        <div id="special-resources" className="scroll-mt-24">
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+            <CardHeader className="bg-gradient-to-r from-accent/20 to-transparent">
+              <CardTitle className="flex items-center gap-2 text-2xl text-white">
+                <BookOpen className="h-6 w-6 text-accent" />
+                Special Topics & Advanced Resources
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+              {special_resources.map((resource, index) => (
+                <div 
+                  key={index} 
+                  className="bg-[#1a1a1a] rounded-lg p-4 border border-accent/10 hover:border-accent/30 transition-all cursor-pointer"
+                  onClick={() => handleDownload(resource.title, "", resource.link)}
                 >
-                  <Download className="mr-2 h-4 w-4" />
-                  Download
-                </Button>
+                  <div className="flex items-center gap-3">
+                    <resource.icon className="h-8 w-8 text-accent" />
+                    <div>
+                      <h3 className="font-medium text-white">{resource.title}</h3>
+                      <p className="text-sm text-gray-400">{resource.category}</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={`w-full mt-3 text-accent hover:bg-accent/10 ${
+                      downloadInProgress === `${resource.title}-` ? 'opacity-70 cursor-wait' : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDownload(resource.title, "", resource.link);
+                    }}
+                    disabled={downloadInProgress === `${resource.title}-`}
+                  >
+                    {downloadInProgress === `${resource.title}-` ? (
+                      <div className="animate-spin h-4 w-4 mr-2 border-2 border-accent border-t-transparent rounded-full" />
+                    ) : (
+                      <Download className="mr-2 h-4 w-4" />
+                    )}
+                    Download
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Past Papers Section */}
+        <div id="past-papers" className="scroll-mt-24">
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+            <CardHeader className="bg-gradient-to-r from-accent/20 to-transparent">
+              <CardTitle className="flex items-center gap-2 text-2xl text-white">
+                <FileText className="h-6 w-6 text-accent" />
+                Past Papers
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-4 text-accent">Paper 1 (Theory)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {theory_papers.map((paper) => (
+                    <Button
+                      key={paper.year}
+                      variant="outline"
+                      className={`w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors ${
+                        downloadInProgress === `Theory Paper-${paper.year}` ? 'opacity-70 cursor-wait' : ''
+                      }`}
+                      onClick={() => handleDownload("Theory Paper", paper.year, paper.link)}
+                      disabled={downloadInProgress === `Theory Paper-${paper.year}`}
+                    >
+                      {downloadInProgress === `Theory Paper-${paper.year}` ? (
+                        <div className="animate-spin h-4 w-4 mr-2 border-2 border-accent border-t-transparent rounded-full" />
+                      ) : (
+                        <Download className="mr-2 h-4 w-4 text-accent" />
+                      )}
+                      {paper.year} Paper 1
+                    </Button>
+                  ))}
+                </div>
               </div>
-            ))}
-          </CardContent>
-        </Card>
+              
+              <div>
+                <h3 className="text-xl font-semibold mb-4 text-accent">Paper 2 (Practical)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {practical_papers.map((paper) => (
+                    <Button
+                      key={paper.year}
+                      variant="outline"
+                      className={`w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors ${
+                        downloadInProgress === `Practical Paper-${paper.year}` ? 'opacity-70 cursor-wait' : ''
+                      }`}
+                      onClick={() => handleDownload("Practical Paper", paper.year, paper.link)}
+                      disabled={downloadInProgress === `Practical Paper-${paper.year}`}
+                    >
+                      {downloadInProgress === `Practical Paper-${paper.year}` ? (
+                        <div className="animate-spin h-4 w-4 mr-2 border-2 border-accent border-t-transparent rounded-full" />
+                      ) : (
+                        <Download className="mr-2 h-4 w-4 text-accent" />
+                      )}
+                      {paper.year} Paper 2
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Theory Papers Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
-          <CardHeader className="bg-accent/10">
-            <CardTitle className="flex items-center gap-2 text-2xl text-white">
-              <FileText className="h-6 w-6 text-accent" />
-              Paper 1 (Theory) Past Papers
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-            {theory_papers.map((paper) => (
-              <Button
-                key={paper.year}
-                variant="outline"
-                className="w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors"
-                onClick={() => handleDownload("Theory Paper", paper.year, paper.link)}
-              >
-                <Download className="mr-2 h-4 w-4 text-accent" />
-                {paper.year} Paper 1
-              </Button>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Practical Papers Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
-          <CardHeader className="bg-accent/10">
-            <CardTitle className="flex items-center gap-2 text-2xl text-white">
-              <File className="h-6 w-6 text-accent" />
-              Paper 2 (Practical) Past Papers
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-            {practical_papers.map((paper) => (
-              <Button
-                key={paper.year}
-                variant="outline"
-                className="w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors"
-                onClick={() => handleDownload("Practical Paper", paper.year, paper.link)}
-              >
-                <Download className="mr-2 h-4 w-4 text-accent" />
-                {paper.year} Paper 2
-              </Button>
-            ))}
-          </CardContent>
-        </Card>
+        <div className="mt-12 text-center">
+          <p className="text-gray-400">
+            Having trouble downloading? Contact us at 
+            <a href="mailto:support@csexperts.co.zw" className="text-accent hover:underline ml-1">
+              support@csexperts.co.zw
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

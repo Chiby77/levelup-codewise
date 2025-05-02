@@ -49,26 +49,28 @@ const About = () => {
           </div>
 
           <div className="bg-[#111] rounded-lg p-8 shadow-lg border border-accent/20 mb-12 animate-fadeIn">
-            <h2 className="text-2xl font-semibold text-accent mb-4">Meet Our Founder</h2>
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-accent via-[#8B5CF6] to-[#D946EF] p-1">
-                <div className="w-full h-full bg-[#111] rounded-full flex items-center justify-center">
-                  <span className="text-4xl font-bold text-accent">TC</span>
+            <h2 className="text-2xl font-semibold text-accent mb-4">Our Team</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-accent via-[#8B5CF6] to-[#D946EF] p-1 mb-4">
+                  <div className="w-full h-full bg-[#111] rounded-full flex items-center justify-center">
+                    <span className="text-3xl font-bold text-accent">TC</span>
+                  </div>
                 </div>
+                <h3 className="text-xl font-semibold mb-1">T Chibi</h3>
+                <p className="text-accent/80 mb-2">Lead Educator</p>
+                <p className="text-gray-400 text-sm">Programming & Algorithm Specialist</p>
               </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold">Tinodaishe M Chibi</h3>
-                <p className="text-accent/80 mb-2">Founder & Lead Mentor</p>
-                <p className="text-gray-300">
-                  A software engineering student from Mutare who has tutored over 500 students in 
-                  programming. With more than 3 years of experience in coding, Tinodaishe is passionate 
-                  about making computer science education accessible to all Zimbabwean students.
-                </p>
-                <div className="flex gap-4 mt-4">
-                  <a href="tel:+263781081816" className="text-accent hover:text-white">+263 781 081 816</a>
-                  <a href="https://linkedin.com/in/tinodaishechibi" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-white">LinkedIn</a>
-                  <a href="https://wa.me/263718176525" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-white">WhatsApp</a>
+              
+              <div className="flex flex-col items-center text-center">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-accent via-[#8B5CF6] to-[#D946EF] p-1 mb-4">
+                  <div className="w-full h-full bg-[#111] rounded-full flex items-center justify-center">
+                    <span className="text-3xl font-bold text-accent">JM</span>
+                  </div>
                 </div>
+                <h3 className="text-xl font-semibold mb-1">J Mapesure</h3>
+                <p className="text-accent/80 mb-2">Senior Educator</p>
+                <p className="text-gray-400 text-sm">Theory & Systems Architecture</p>
               </div>
             </div>
           </div>
@@ -99,6 +101,30 @@ const About = () => {
               To empower Zimbabwean students with the knowledge and skills needed to excel in 
               Computer Science, fostering innovation and technological advancement across the nation.
             </p>
+          </div>
+
+          <div className="mt-12 bg-[#111] rounded-lg p-8 shadow-lg border border-accent/20 animate-fadeIn">
+            <h2 className="text-2xl font-semibold text-accent mb-4">Programmes We Offer</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-[#1a1a1a] p-6 rounded-lg border border-accent/10">
+                <h3 className="text-xl font-semibold mb-3 text-accent">A Level Computer Science</h3>
+                <ul className="list-disc pl-5 space-y-2 text-gray-300">
+                  <li>Theory and practical exam preparation</li>
+                  <li>Programming fundamentals</li>
+                  <li>Past paper review sessions</li>
+                  <li>One-on-one tutoring</li>
+                </ul>
+              </div>
+              <div className="bg-[#1a1a1a] p-6 rounded-lg border border-accent/10">
+                <h3 className="text-xl font-semibold mb-3 text-accent">Career Development</h3>
+                <ul className="list-disc pl-5 space-y-2 text-gray-300">
+                  <li>University application guidance</li>
+                  <li>Career path exploration</li>
+                  <li>Portfolio development</li>
+                  <li>Work experience opportunities</li>
+                </ul>
+              </div>
+            </div>
           </div>
 
           <div className="mt-12 bg-[#111] rounded-lg p-8 shadow-lg border border-accent/20 animate-fadeIn">
