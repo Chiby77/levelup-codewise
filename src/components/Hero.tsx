@@ -1,44 +1,64 @@
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import QuoteRotator from "./QuoteRotator";
+
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import AnimatedHeroBackground from "./AnimatedHeroBackground";
+import EnhancedQuoteRotator from "./EnhancedQuoteRotator";
+import AnimatedButton from "./AnimatedButton";
+import AnimatedHeading from "./AnimatedHeading";
+import AnimatedLogo from "./AnimatedLogo";
+import MotionToggle from "./MotionToggle";
 
 const Hero = () => {
   const navigate = useNavigate();
   const [showDialog, setShowDialog] = useState(false);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary to-secondary pt-16">
-      <div className="absolute inset-0 bg-black/50" />
-      <div className="container mx-auto px-4 text-center relative z-10">
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fadeIn">
-          Master A Level Computer Science
-        </h1>
-        <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto animate-fadeIn" style={{ animationDelay: "0.2s" }}>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Animated Background */}
+      <AnimatedHeroBackground />
+      
+      {/* Motion Reduction Toggle */}
+      <MotionToggle />
+      
+      {/* Hero Content */}
+      <div className="container mx-auto px-4 text-center relative z-10 py-16">
+        {/* Animated Logo */}
+        <div className="absolute top-0 left-4 md:left-8">
+          <AnimatedLogo />
+        </div>
+        
+        {/* Main Heading */}
+        <AnimatedHeading 
+          text="Master A Level Computer Science" 
+          className="mb-6"
+          delay={800}
+        />
+        
+        <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto animate-fadeIn" style={{ animationDelay: "1s" }}>
           Expert guidance, comprehensive resources, and a supportive community to help you excel in your studies.
         </p>
         
-        <QuoteRotator />
+        {/* Quote Rotator */}
+        <EnhancedQuoteRotator />
         
-        <div className="space-x-4 animate-fadeIn mt-8" style={{ animationDelay: "0.4s" }}>
-          <Button
-            size="lg"
-            className="bg-accent hover:bg-accent/90 text-white"
+        {/* Action Buttons */}
+        <div className="space-x-4 mt-8 animate-fadeIn" style={{ animationDelay: "1.2s" }}>
+          <AnimatedButton 
+            variant="primary" 
+            icon 
+            pulseEffect
             onClick={() => navigate("/about")}
           >
             Get Started
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="bg-white/10 hover:bg-white/20 text-white border-white"
+          </AnimatedButton>
+          
+          <AnimatedButton 
+            variant="secondary"
             onClick={() => setShowDialog(true)}
           >
             Learn More
-          </Button>
+          </AnimatedButton>
         </div>
       </div>
 
@@ -72,6 +92,14 @@ const Hero = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Global Styles */}
+      <style jsx global>{`
+        .reduce-motion * {
+          animation: none !important;
+          transition: none !important;
+        }
+      `}</style>
     </div>
   );
 };

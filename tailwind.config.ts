@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -43,11 +44,34 @@ export default {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        gradientShift: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        pulse: {
+          "0%": { boxShadow: "0 0 0 0 rgba(249, 115, 22, 0.7)" },
+          "70%": { boxShadow: "0 0 0 15px rgba(249, 115, 22, 0)" },
+          "100%": { boxShadow: "0 0 0 0 rgba(249, 115, 22, 0)" },
+        },
+        float: {
+          "0%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+          "100%": { transform: "translateY(0px)" },
+        },
+        spin: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         fadeIn: "fadeIn 0.5s ease-out forwards",
+        gradientShift: "gradientShift 8s ease infinite",
+        pulse: "pulse 2s infinite",
+        float: "float 3s ease-in-out infinite",
+        spin: "spin 10s linear infinite",
       },
     },
   },
