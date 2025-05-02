@@ -49,53 +49,57 @@ const AnimatedButton = ({
     : "";
 
   return (
-    <Button
-      size="lg"
-      className={cn(
-        baseClasses,
-        animationClass,
-        hoverClass,
-        "transition-all duration-300",
-        className
-      )}
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {children}
-      {icon && <ArrowRight className={`ml-2 h-4 w-4 ${isHovered && !prefersReducedMotion ? "animate-bounce-x" : ""}`} />}
+    <>
+      <Button
+        size="lg"
+        className={cn(
+          baseClasses,
+          animationClass,
+          hoverClass,
+          "transition-all duration-300",
+          className
+        )}
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {children}
+        {icon && <ArrowRight className={`ml-2 h-4 w-4 ${isHovered && !prefersReducedMotion ? "animate-bounce-x" : ""}`} />}
+      </Button>
+      
+      <style>
+        {`
+          .animated-button {
+            animation: pulse 2s infinite;
+          }
 
-      <style jsx global>{`
-        .animated-button {
-          animation: pulse 2s infinite;
-        }
+          .border-glow {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+          }
 
-        .border-glow {
-          box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
+          @keyframes pulse {
+            0% {
+              box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7);
+            }
+            70% {
+              box-shadow: 0 0 0 10px rgba(249, 115, 22, 0);
+            }
+            100% {
+              box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
+            }
+          }
 
-        @keyframes pulse {
-          0% {
-            box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7);
+          @keyframes bounce-x {
+            0%, 100% {
+              transform: translateX(0);
+            }
+            50% {
+              transform: translateX(4px);
+            }
           }
-          70% {
-            box-shadow: 0 0 0 10px rgba(249, 115, 22, 0);
-          }
-          100% {
-            box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
-          }
-        }
-
-        @keyframes bounce-x {
-          0%, 100% {
-            transform: translateX(0);
-          }
-          50% {
-            transform: translateX(4px);
-          }
-        }
-      `}</style>
-    </Button>
+        `}
+      </style>
+    </>
   );
 };
 

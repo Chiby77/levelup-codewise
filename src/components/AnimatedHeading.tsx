@@ -29,32 +29,36 @@ const AnimatedHeading = ({ text, className = "", delay = 0 }: AnimatedHeadingPro
   }, [delay]);
 
   return (
-    <h1 
-      className={`text-4xl md:text-6xl font-bold text-white ${className} ${
-        animate && !prefersReducedMotion 
-          ? "animate-heading-entrance" 
-          : ""
-      }`}
-    >
-      {text}
+    <>
+      <h1 
+        className={`text-4xl md:text-6xl font-bold text-white ${className} ${
+          animate && !prefersReducedMotion 
+            ? "animate-heading-entrance" 
+            : ""
+        }`}
+      >
+        {text}
+      </h1>
 
-      <style jsx global>{`
-        @keyframes headingEntrance {
-          0% {
-            opacity: 0;
-            transform: translateY(-30px) scale(0.9);
+      <style>
+        {`
+          @keyframes headingEntrance {
+            0% {
+              opacity: 0;
+              transform: translateY(-30px) scale(0.9);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
           }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
+          
+          .animate-heading-entrance {
+            animation: headingEntrance 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
           }
-        }
-        
-        .animate-heading-entrance {
-          animation: headingEntrance 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
-        }
-      `}</style>
-    </h1>
+        `}
+      </style>
+    </>
   );
 };
 

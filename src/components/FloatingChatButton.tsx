@@ -56,27 +56,30 @@ const FloatingChatButton = () => {
     ? "" 
     : "animate-float hover:scale-110";
 
+  const buttonStyle = {
+    background: haloGradients[haloColor],
+    boxShadow: "0 10px 25px -5px rgba(249, 115, 22, 0.4)",
+    animation: prefersReducedMotion ? 
+      "none" : 
+      "gradientShift 8s ease infinite, float 3s ease-in-out infinite, pulse 2s infinite"
+  };
+
+  const iconContainerStyle = {
+    background: "linear-gradient(45deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4))",
+    backdropFilter: "blur(4px)",
+    animation: prefersReducedMotion ? "none" : "spin 10s linear infinite"
+  };
+
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
         className={`fixed bottom-6 right-6 p-4 text-white rounded-full shadow-lg hover:shadow-xl transition-all transform z-50 flex items-center gap-2 group border-2 border-white/40 ${animationClass}`}
-        style={{
-          background: haloGradients[haloColor],
-          backgroundSize: "300% 300%",
-          animation: prefersReducedMotion 
-            ? "none" 
-            : "gradientShift 8s ease infinite, float 3s ease-in-out infinite, pulse 2s infinite",
-          boxShadow: "0 10px 25px -5px rgba(249, 115, 22, 0.4)"
-        }}
+        style={buttonStyle}
       >
         <div 
           className={`w-10 h-10 rounded-full flex items-center justify-center ${prefersReducedMotion ? "" : "animate-spin"}`}
-          style={{
-            background: "linear-gradient(45deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4))",
-            backdropFilter: "blur(4px)",
-            animation: prefersReducedMotion ? "none" : "spin 10s linear infinite"
-          }}
+          style={iconContainerStyle}
         >
           <UserRound className="w-6 h-6" />
         </div>
@@ -94,6 +97,34 @@ const FloatingChatButton = () => {
           <MbuyaZivai />
         </DialogContent>
       </Dialog>
+
+      <style>
+        {`
+          @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+          }
+          
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          
+          .animate-float {
+            animation: float 3s ease-in-out infinite;
+          }
+          
+          .animate-spin {
+            animation: spin 10s linear infinite;
+          }
+        `}
+      </style>
     </>
   );
 };

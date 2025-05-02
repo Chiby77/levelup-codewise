@@ -23,39 +23,43 @@ const AnimatedLogo = () => {
   }, []);
 
   return (
-    <div className="relative">
-      <div 
-        className={`font-bold text-2xl md:text-3xl text-white ${
-          animate && !prefersReducedMotion 
-            ? "animate-logo-entrance" 
-            : ""
-        }`}
-      >
-        <span className="text-white">CS</span>
-        <span className="text-accent ml-2">Experts</span>
-        <span className="text-white ml-2">Zimbabwe</span>
+    <>
+      <div className="relative">
+        <div 
+          className={`font-bold text-2xl md:text-3xl text-white ${
+            animate && !prefersReducedMotion 
+              ? "animate-logo-entrance" 
+              : ""
+          }`}
+        >
+          <span className="text-white">CS</span>
+          <span className="text-accent ml-2">Experts</span>
+          <span className="text-white ml-2">Zimbabwe</span>
+        </div>
       </div>
       
-      <style jsx global>{`
-        @keyframes logoEntrance {
-          0% {
-            opacity: 0;
-            transform: scale(0.5) rotate(-10deg);
+      <style>
+        {`
+          @keyframes logoEntrance {
+            0% {
+              opacity: 0;
+              transform: scale(0.5) rotate(-10deg);
+            }
+            50% {
+              transform: scale(1.2) rotate(5deg);
+            }
+            100% {
+              opacity: 1;
+              transform: scale(1) rotate(0);
+            }
           }
-          50% {
-            transform: scale(1.2) rotate(5deg);
+          
+          .animate-logo-entrance {
+            animation: logoEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
           }
-          100% {
-            opacity: 1;
-            transform: scale(1) rotate(0);
-          }
-        }
-        
-        .animate-logo-entrance {
-          animation: logoEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-      `}</style>
-    </div>
+        `}
+      </style>
+    </>
   );
 };
 

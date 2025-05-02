@@ -66,18 +66,22 @@ const EnhancedQuoteRotator = () => {
     : `transition-all duration-500 ${isTransitioning ? "opacity-0 transform translate-y-4" : "opacity-100 transform translate-y-0"}`;
 
   return (
-    <div className="h-24 flex items-center justify-center">
-      <div className={`text-white/90 max-w-2xl text-center ${transitionClass}`}>
-        <p className="text-lg md:text-xl italic mb-2 text-glow">{quotes[currentQuote].text}</p>
-        <p className="text-sm md:text-base">- {quotes[currentQuote].author}</p>
+    <>
+      <div className="h-24 flex items-center justify-center">
+        <div className={`text-white/90 max-w-2xl text-center ${transitionClass}`}>
+          <p className="text-lg md:text-xl italic mb-2 text-glow">{quotes[currentQuote].text}</p>
+          <p className="text-sm md:text-base">- {quotes[currentQuote].author}</p>
+        </div>
       </div>
 
-      <style jsx global>{`
-        .text-glow {
-          text-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
-        }
-      `}</style>
-    </div>
+      <style>
+        {`
+          .text-glow {
+            text-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+          }
+        `}
+      </style>
+    </>
   );
 };
 
