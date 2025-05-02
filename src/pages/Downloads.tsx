@@ -1,7 +1,8 @@
+
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, File } from "lucide-react";
+import { Download, FileText, File, BookOpen, Code, Database, Braces } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 const Downloads = () => {
@@ -34,11 +35,59 @@ const Downloads = () => {
     { part: "1", link: "https://www.mediafire.com/file/sm6mju7lumr2pzr/PROGRAMMING_PART_1.pdf/file" },
     { part: "2", link: "https://www.mediafire.com/file/8n8x77e172pmm0x/PROGRAMMING_PART_2.pdf/file" },
     { part: "3", link: "https://www.mediafire.com/file/lix0pihvmewndyi/Programming_Part_3.pdf/file" },
+    { part: "3B", link: "https://drive.google.com/file/d/1e_QWZC9aSYoVE70UB_Mk4Jh3TfMQtd96/view?usp=sharing" },
     { part: "4", link: "https://www.mediafire.com/file/x21isg79y8w3qo0/programming_part_4.pdf/file" },
     { part: "5", link: "https://www.mediafire.com/file/emvommfbnojk8ai/Programming_part_5%2528pure_coding_revision%2529.pdf/file" },
-    { part: "6", link: "#" },
     { part: "7", link: "https://www.mediafire.com/file/9l0r7qpjqc14hnq/programming_part_7.pdf/file" },
+    { part: "7B", link: "https://drive.google.com/file/d/1Cftnuiym3Dz9lLaj7l0m75nZbR-B5l2U/view?usp=sharing" },
     { part: "8", link: "https://www.mediafire.com/file/drhmgbatfp4qe7j/programming_part_8.pdf/file" },
+    { part: "9", link: "https://drive.google.com/file/d/1g27E94rbIYrAIHE_zagnWWzY8L03MEKe/view?usp=sharing" },
+    { part: "10", link: "https://drive.google.com/file/d/15O6h21gjQjEpDlJ1ZnoEY6N39RgS0PVF/view?usp=sharing" },
+  ];
+
+  const special_resources = [
+    { 
+      title: "String Manipulation Q&S", 
+      link: "https://drive.google.com/file/d/1ZhHeAPIGxg_c8RV33sI90mvInNY94whx/view?usp=sharing",
+      category: "Examples",
+      icon: Code
+    },
+    { 
+      title: "Python eBook 3.0", 
+      link: "https://drive.google.com/file/d/1HTjHYUAl5QVxGHadMIP5pOsxjDk6IkzV/view?usp=sharing",
+      category: "Python",
+      icon: Braces
+    },
+    { 
+      title: "Kapondeni", 
+      link: "https://drive.google.com/file/d/1dS0KnWMR0a4wGwsisN_dyw0roJDsfMOe/view?usp=sharing",
+      category: "Reference",
+      icon: BookOpen
+    },
+    { 
+      title: "Connecting Database to VB", 
+      link: "https://drive.google.com/file/d/1mrA_FXuPiStEljyjV4tR8sQIPttLK84l/view?usp=sharing",
+      category: "Database",
+      icon: Database
+    },
+    { 
+      title: "Coding Essentials (Series 1)", 
+      link: "https://drive.google.com/file/d/1oOdhlumAxjnw-HAjJ8WEVymo8mdvgxmP/view?usp=sharing",
+      category: "Essentials",
+      icon: Code
+    },
+    { 
+      title: "Array Binary Tree", 
+      link: "https://drive.google.com/file/d/1MvLow2HUZ5zNx_lnZvGwh6kGFqbY6Qvh/view?usp=sharing",
+      category: "Data Structures",
+      icon: Braces
+    },
+    { 
+      title: "Structured Programming", 
+      link: "https://drive.google.com/file/d/1kTssJpL29snEsn0e6isKJgcCle4ItCGE/view?usp=sharing",
+      category: "Principles",
+      icon: Code
+    },
   ];
 
   const handleDownload = async (type: string, identifier: string, link: string) => {
@@ -55,7 +104,9 @@ const Downloads = () => {
       // Show loading toast
       toast({
         title: "Starting Download",
-        description: "Opening MediaFire in a new tab...",
+        description: link.includes("drive.google.com") 
+          ? "Opening Google Drive in a new tab..." 
+          : "Opening MediaFire in a new tab...",
       });
 
       // Create a temporary anchor element
@@ -71,7 +122,9 @@ const Downloads = () => {
       setTimeout(() => {
         toast({
           title: "Download Ready",
-          description: "Click the download button on MediaFire's page to get your file.",
+          description: link.includes("drive.google.com") 
+            ? "Click the download button on Google Drive to get your file."
+            : "Click the download button on MediaFire's page to get your file.",
         });
       }, 2000);
     } catch (error) {
@@ -84,28 +137,90 @@ const Downloads = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] text-white">
       <Navbar />
-      <div className="container mx-auto px-4 pt-24 space-y-8">
-        <h1 className="text-4xl font-bold text-foreground mb-6 animate-fadeIn">Study Resources</h1>
+      <div className="container mx-auto px-4 pt-24 pb-12 space-y-8">
+        <h1 className="text-4xl font-bold text-accent mb-6 animate-fadeIn">Study Resources</h1>
 
-        {/* Theory Papers Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-background border-border">
-          <CardHeader className="bg-primary/5">
-            <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
-              <FileText className="h-6 w-6" />
-              Paper 1 (Theory) Past Papers
+        {/* Programming Notes Section */}
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+          <CardHeader className="bg-accent/10">
+            <CardTitle className="flex items-center gap-2 text-2xl text-white">
+              <Code className="h-6 w-6 text-accent" />
+              Programming Notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-6">
+            {programming_notes.map((note) => (
+              <Button
+                key={note.part}
+                variant="outline"
+                className="w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors"
+                onClick={() => handleDownload("Programming Notes Part", note.part, note.link)}
+              >
+                <Download className="mr-2 h-4 w-4 text-accent" />
+                Part {note.part}
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Special Resources Section */}
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+          <CardHeader className="bg-accent/10">
+            <CardTitle className="flex items-center gap-2 text-2xl text-white">
+              <BookOpen className="h-6 w-6 text-accent" />
+              Special Topics & Advanced Resources
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+            {special_resources.map((resource, index) => (
+              <div 
+                key={index} 
+                className="bg-[#1a1a1a] rounded-lg p-4 border border-accent/10 hover:border-accent/30 transition-all cursor-pointer"
+                onClick={() => handleDownload(resource.title, "", resource.link)}
+              >
+                <div className="flex items-center gap-3">
+                  <resource.icon className="h-8 w-8 text-accent" />
+                  <div>
+                    <h3 className="font-medium text-white">{resource.title}</h3>
+                    <p className="text-sm text-gray-400">{resource.category}</p>
+                  </div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full mt-3 text-accent hover:bg-accent/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownload(resource.title, "", resource.link);
+                  }}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Theory Papers Section */}
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+          <CardHeader className="bg-accent/10">
+            <CardTitle className="flex items-center gap-2 text-2xl text-white">
+              <FileText className="h-6 w-6 text-accent" />
+              Paper 1 (Theory) Past Papers
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
             {theory_papers.map((paper) => (
               <Button
                 key={paper.year}
                 variant="outline"
-                className="w-full hover:bg-primary/5 transition-colors border-border"
+                className="w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors"
                 onClick={() => handleDownload("Theory Paper", paper.year, paper.link)}
               >
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="mr-2 h-4 w-4 text-accent" />
                 {paper.year} Paper 1
               </Button>
             ))}
@@ -113,51 +228,23 @@ const Downloads = () => {
         </Card>
 
         {/* Practical Papers Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-background border-border">
-          <CardHeader className="bg-secondary/5">
-            <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
-              <File className="h-6 w-6" />
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+          <CardHeader className="bg-accent/10">
+            <CardTitle className="flex items-center gap-2 text-2xl text-white">
+              <File className="h-6 w-6 text-accent" />
               Paper 2 (Practical) Past Papers
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
             {practical_papers.map((paper) => (
               <Button
                 key={paper.year}
                 variant="outline"
-                className="w-full hover:bg-secondary/5 transition-colors border-border"
+                className="w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors"
                 onClick={() => handleDownload("Practical Paper", paper.year, paper.link)}
               >
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="mr-2 h-4 w-4 text-accent" />
                 {paper.year} Paper 2
-              </Button>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Programming Notes Section */}
-        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-background border-border">
-          <CardHeader className="bg-accent/5">
-            <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
-              <FileText className="h-6 w-6" />
-              Programming Notes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
-            {programming_notes.map((note) => (
-              <Button
-                key={note.part}
-                variant="outline"
-                className={`w-full border-border ${
-                  note.link === "#" 
-                    ? "opacity-50 cursor-not-allowed" 
-                    : "hover:bg-accent/5 transition-colors"
-                }`}
-                onClick={() => handleDownload("Programming Notes Part", note.part, note.link)}
-                disabled={note.link === "#"}
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Part {note.part}
               </Button>
             ))}
           </CardContent>
