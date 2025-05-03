@@ -6,6 +6,7 @@ import { sqlExamples } from './responses/sqlExamples';
 import { mentalHealthResponses } from './responses/mentalHealthSupport';
 import { networkingConcepts } from './responses/computerScience/networking';
 import { flowchartExamples } from './responses/computerScience/flowcharts';
+import { UniversityDetail } from "../types/universityPrograms";
 
 // Enhanced spelling and grammar correction
 const correctInput = (input: string): string => {
@@ -947,3 +948,41 @@ export const generateResponse = (input: string): string => {
          "14. Data Representation: Binary, hexadecimal, and encoding systems\n\n" +
          "What topic would you like to explore today?";
 };
+
+export const generateUniversityResponse = (program: string, university: string, details: UniversityDetail): string => {
+  return `
+# ${university} - ${program}
+
+${details.description}
+
+## Entry Requirements
+${details.entry_requirements}
+
+## Duration
+${details.duration}
+
+## Key Courses
+${details.key_courses.join(', ')}
+
+## Career Paths
+${details.career_paths.join(', ')}
+
+## Fees
+${details.fees}
+
+## Contact
+${details.contact}
+
+## Notable Alumni
+${details.notable_alumni}
+
+${details.location ? `## Location\n${details.location}` : ''}
+
+${details.campus_facilities ? `## Campus Facilities\n${details.campus_facilities.join(', ')}` : ''}
+
+${details.international_options ? `## International Options\n${details.international_options}` : ''}
+
+${details.scholarships ? `## Scholarships\n${details.scholarships}` : ''}
+
+${details.research_areas ? `## Research Areas\n${details.research_areas.join(', ')}` : ''}
+`;
