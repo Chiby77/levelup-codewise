@@ -82,14 +82,13 @@ export function QuizStats({ stats }: QuizStatsProps) {
             <div className="text-muted-foreground text-sm font-medium mb-2">Overall Score</div>
             <div className="flex items-center gap-2">
               <div className="text-3xl font-bold">{overallPercentage}%</div>
-              <Badge variant={overallPercentage >= 80 ? "success" : overallPercentage >= 60 ? "default" : "destructive"} className="ml-2">
+              <Badge variant={overallPercentage >= 80 ? "secondary" : overallPercentage >= 60 ? "default" : "destructive"} className="ml-2">
                 {overallPercentage >= 80 ? "Excellent" : overallPercentage >= 60 ? "Good" : "Needs Improvement"}
               </Badge>
             </div>
             <Progress 
               value={overallPercentage} 
-              className="h-2 mt-2" 
-              indicatorClassName={overallPercentage >= 80 ? "bg-green-500" : overallPercentage >= 60 ? "bg-blue-500" : "bg-red-500"}
+              className={`h-2 mt-2 ${overallPercentage >= 80 ? "bg-green-500" : overallPercentage >= 60 ? "bg-blue-500" : "bg-red-500"}`} 
             />
           </div>
         </div>
@@ -143,7 +142,7 @@ export function QuizStats({ stats }: QuizStatsProps) {
                 return (
                   <div key={index} className="flex justify-between items-center p-2 border rounded-md">
                     <div className="font-medium">{category.name}</div>
-                    <Badge variant={percentage >= 80 ? "success" : percentage >= 60 ? "default" : "destructive"}>
+                    <Badge variant={percentage >= 80 ? "secondary" : percentage >= 60 ? "default" : "destructive"}>
                       {percentage}% ({category.correct}/{category.total})
                     </Badge>
                   </div>

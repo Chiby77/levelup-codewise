@@ -69,25 +69,26 @@ export const generateResponse = (userInput: string): string => {
     return csTopics.binaryTrees.explanation;
   }
   
+  // Remove references to non-existent topics
   if ((processedInput.includes('intellectual') && processedInput.includes('property')) || 
       processedInput.includes('copyright') || processedInput.includes('trademark') || 
       processedInput.includes('patent')) {
-    return csTopics.enterprisingIP.explanation;
+    return "Intellectual property (IP) refers to creations of the mind, such as inventions, literary and artistic works, designs, symbols, names, and images used in commerce. It's protected by laws through patents, copyright, and trademarks, allowing creators to earn recognition or financial benefit. In software development, IP is particularly important as code, algorithms, and interfaces may all be protected under various IP rights.";
   }
   
   if (processedInput.includes('budget') || processedInput.includes('finance') || 
       (processedInput.includes('enterprise') && processedInput.includes('money'))) {
-    return csTopics.enterprisingBudget.explanation;
+    return "Enterprise budgeting is the process of creating a plan for how a business will spend its resources over a specific period. It involves forecasting revenue, planning expenses, and allocating resources to different departments or projects. In technology projects, budgeting includes hardware costs, software licenses, development hours, maintenance, and operational expenses. Effective budget management is critical for ensuring that technology initiatives align with business goals and deliver ROI.";
   }
   
   if (processedInput.includes('hack') || processedInput.includes('penetration test') || 
       processedInput.includes('cyber') || processedInput.includes('security test')) {
-    return csTopics.hackingEthical.explanation;
+    return "Ethical hacking involves authorized professionals attempting to bypass system security to identify weaknesses that could be exploited by malicious hackers. Unlike malicious hacking, ethical hackers work with permission and report vulnerabilities to be fixed. Common approaches include penetration testing, vulnerability assessments, and security audits. These practices are essential for organizations to proactively identify and address security issues before they can be exploited.";
   }
   
   if (processedInput.includes('data representation') || processedInput.includes('binary') || 
       processedInput.includes('hex') || (processedInput.includes('number') && processedInput.includes('system'))) {
-    return csTopics.dataRepresentation.explanation;
+    return "Data representation refers to how computers store and manipulate data using binary (base-2) number system. All data - whether text, images, audio, or instructions - is ultimately represented as sequences of 0s and 1s. Different number systems used in computing include binary (base-2), decimal (base-10), and hexadecimal (base-16). Understanding data representation is fundamental to computer science as it underlies all computing operations, from basic arithmetic to complex data processing.";
   }
 
   // Enhanced degree information handling
