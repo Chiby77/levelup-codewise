@@ -1,3 +1,4 @@
+
 import { programmingConcepts } from './responses/programmingConcepts';
 import { basicPrograms } from './responses/programming/basicPrograms';
 import { algorithms } from './responses/programming/algorithms';
@@ -947,3 +948,4 @@ export const generateResponse = (input: string): string => {
          "14. Data Representation: Binary, hexadecimal, and encoding systems\n\n" +
          "What topic would you like to explore today?";
 };
+
