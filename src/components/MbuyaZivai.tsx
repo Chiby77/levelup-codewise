@@ -10,7 +10,8 @@ import {
   Database, 
   Loader2,
   ShieldCheck,
-  TreePine 
+  TreePine,
+  BookCheck
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { ChatHeader } from "./chat/ChatHeader";
@@ -18,6 +19,7 @@ import { ChatMessage } from "./chat/ChatMessage";
 import { MessageInput } from "./chat/MessageInput";
 import { QuickActions } from "./chat/QuickActions";
 import { QuizComponent } from "./quiz/QuizComponent";
+import { QuizAccess } from "./quiz/QuizAccess";
 
 interface Message {
   role: "assistant" | "user";
@@ -33,6 +35,7 @@ export default function MbuyaZivai() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDropdownHint, setShowDropdownHint] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [showQuizAccess, setShowQuizAccess] = useState(false);
   const [quizCategory, setQuizCategory] = useState<string | undefined>(undefined);
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -74,6 +77,11 @@ export default function MbuyaZivai() {
     setShowQuickActions(false);
     
     // Handle quiz commands
+    if (query.toLowerCase().includes('quiz') || query.toLowerCase().includes('test my knowledge')) {
+      setShowQuizAccess(true);
+      return;
+    }
+    
     if (query.toLowerCase().includes('start quiz') || query.toLowerCase().includes('take quiz')) {
       const categoryMatch = query.match(/quiz\s+on\s+(\w+)/i) || 
                             query.match(/(\w+)\s+quiz/i);
@@ -158,9 +166,9 @@ export default function MbuyaZivai() {
       query: "Tell me about ethical hacking and cybersecurity"
     },
     { 
-      icon: <BookOpenCheck className="mr-2 h-4 w-4 text-amber-500" />,
-      text: "Intellectual property types",
-      query: "Explain different types of intellectual property"
+      icon: <BookCheck className="mr-2 h-4 w-4 text-amber-500" />,
+      text: "Take a quiz",
+      query: "I want to take a quiz"
     }
   ];
 
@@ -175,6 +183,8 @@ export default function MbuyaZivai() {
       <CardContent className="p-0 flex flex-col h-[calc(80vh-4rem)]">
         {showQuiz ? (
           <QuizComponent onFinish={() => setShowQuiz(false)} category={quizCategory} />
+        ) : showQuizAccess ? (
+          <QuizAccess onClose={() => setShowQuizAccess(false)} />
         ) : (
           <>
             <ScrollArea className="flex-1 px-4 py-6" ref={scrollRef}>
