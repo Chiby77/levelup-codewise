@@ -1,3 +1,4 @@
+
 import { programmingConcepts } from './responses/programmingConcepts';
 import { basicPrograms } from './responses/programming/basicPrograms';
 import { algorithms } from './responses/programming/algorithms';
@@ -7,23 +8,288 @@ import { mentalHealthResponses } from './responses/mentalHealthSupport';
 import { networkingConcepts } from './responses/computerScience/networking';
 import { flowchartExamples } from './responses/computerScience/flowcharts';
 
-const correctSpelling = (input: string): string => {
-  const commonMisspellings: Record<string, string> = {
+// Enhanced spelling and grammar correction
+const correctInput = (input: string): string => {
+  // Common spelling corrections
+  const spellingCorrections: Record<string, string> = {
     'programing': 'programming',
+    'programm': 'program',
     'flowchart': 'flowchart',
     'databse': 'database',
     'javascript': 'JavaScript',
     'python': 'Python',
     'sql': 'SQL',
+    'computa': 'computer',
+    'computar': 'computer',
+    'degre': 'degree',
+    'univsity': 'university',
+    'universti': 'university',
+    'cours': 'course',
+    'netwok': 'network',
+    'netwrk': 'network',
+    'programer': 'programmer',
+    'programmar': 'programmer',
+    'algoritm': 'algorithm',
+    'algorthm': 'algorithm',
   };
 
-  return input.split(' ').map(word => {
-    const lowerWord = word.toLowerCase();
-    return commonMisspellings[lowerWord] || word;
+  // Replace misspelled words
+  const processedInput = input.split(' ').map(word => {
+    const lowerWord = word.toLowerCase().replace(/[.,?!;:]/g, '');
+    return spellingCorrections[lowerWord] || word;
   }).join(' ');
+
+  return processedInput;
 };
 
-// Define new CS topics for Mbuya Zivai
+// Enhanced degree information
+const detailedDegreeInfo = {
+  "bsc computer science": {
+    "NUST": {
+      description: "The BSc in Computer Science at the National University of Science and Technology (NUST) is a premier four-year program that provides comprehensive education in computing fundamentals, software engineering, artificial intelligence, and data structures. The program combines theoretical knowledge with practical laboratory work and an industrial attachment in the third year.",
+      entry_requirements: "Mathematics A Level (C or better), Computing/Physics A Level (C or better), English Language O Level (B or better)",
+      duration: "4 years (including 1 year industrial attachment)",
+      key_courses: [
+        "Data Structures and Algorithms",
+        "Database Management Systems",
+        "Operating Systems",
+        "Software Engineering",
+        "Computer Networks",
+        "Artificial Intelligence",
+        "Web Application Development",
+        "Mobile Computing",
+        "Computer Graphics",
+        "Distributed Systems"
+      ],
+      career_paths: [
+        "Software Developer",
+        "Systems Analyst",
+        "Database Administrator",
+        "Network Engineer",
+        "AI/ML Engineer",
+        "Web Developer",
+        "Research Scientist",
+        "IT Project Manager"
+      ],
+      fees: "Approximately USD 1,500 - 2,500 per semester (varies by residence status)",
+      contact: "admissions@nust.ac.zw, +263-9-282842",
+      notable_alumni: "Many graduates work at leading tech companies like Econet, TelOne, and international firms."
+    },
+    "UZ": {
+      description: "The University of Zimbabwe offers a comprehensive BSc Honors degree in Computer Science focused on developing skilled professionals in computing theory and practice. The program emphasizes programming skills, algorithms, database systems, and software development methodologies.",
+      entry_requirements: "Mathematics A Level (B or better), Computing/Physics A Level, English Language O Level",
+      duration: "4 years",
+      key_courses: [
+        "Programming Fundamentals",
+        "Data Structures and Algorithms",
+        "Database Systems",
+        "Computer Architecture",
+        "Software Engineering",
+        "Computer Networks",
+        "Machine Learning",
+        "Web Technologies",
+        "Information Security",
+        "Distributed Computing"
+      ],
+      career_paths: [
+        "Software Developer",
+        "Systems Analyst",
+        "IT Consultant",
+        "Web Developer",
+        "Database Administrator",
+        "Network Administrator",
+        "Academic/Researcher"
+      ],
+      fees: "Approximately USD 1,200 - 2,000 per semester (varies by residence status)",
+      contact: "admissions@uz.ac.zw, +263-4-303211",
+      notable_alumni: "Graduates hold key positions in financial institutions, telecoms, and government offices across Zimbabwe."
+    },
+    "HIT": {
+      description: "Harare Institute of Technology's BSc in Computer Science program focuses on delivering hands-on, industry-relevant skills in software development, cyber security, and emerging technologies. The program has a strong entrepreneurial component.",
+      entry_requirements: "Mathematics A Level (C or better), Physics/Computing A Level, English Language O Level",
+      duration: "4 years",
+      key_courses: [
+        "Object-Oriented Programming",
+        "Data Structures and Algorithms",
+        "Database Design",
+        "Computer Networks and Security",
+        "Mobile Application Development",
+        "Cloud Computing",
+        "Internet of Things",
+        "Entrepreneurship in ICT",
+        "Artificial Intelligence",
+        "Blockchain Technologies"
+      ],
+      career_paths: [
+        "Software Engineer",
+        "Security Specialist",
+        "Mobile App Developer",
+        "Cloud Solutions Architect",
+        "Startup Founder",
+        "Systems Engineer"
+      ],
+      fees: "Approximately USD 1,300 - 2,200 per semester",
+      contact: "admissions@hit.ac.zw, +263-4-741422-36",
+      notable_alumni: "HIT graduates have founded several tech startups in Zimbabwe's innovation ecosystem."
+    }
+  },
+  "btech information technology": {
+    "HIT": {
+      description: "The BTech Information Technology program at Harare Institute of Technology emphasizes practical IT skills like system administration, network management, and IT service delivery. The program includes substantial hands-on laboratory work and industry attachments.",
+      entry_requirements: "Mathematics A Level (D or better), Computing/Physics/Chemistry A Level, English Language O Level",
+      duration: "4 years",
+      key_courses: [
+        "IT Service Management",
+        "Network Administration",
+        "System Administration",
+        "Cloud Infrastructure",
+        "IT Project Management",
+        "Database Administration",
+        "Web Technologies",
+        "Cybersecurity Essentials",
+        "Virtualization Technologies"
+      ],
+      career_paths: [
+        "Network Administrator",
+        "IT Support Specialist",
+        "Systems Engineer",
+        "Cloud Administrator",
+        "IT Project Manager",
+        "Database Administrator",
+        "Security Operations Analyst"
+      ]
+    },
+    "CUT": {
+      description: "Chinhoyi University of Technology offers a practical BTech in Information Technology focusing on IT infrastructure, enterprise systems, and business technology integration. The program prepares graduates to manage and implement IT solutions across various industries.",
+      entry_requirements: "Mathematics A Level (D or better), Computing/Physics/Chemistry A Level, English Language O Level",
+      duration: "4 years",
+      key_courses: [
+        "Enterprise Systems",
+        "IT Infrastructure",
+        "Business Process Integration",
+        "Systems Analysis and Design",
+        "Database Management",
+        "Network Security",
+        "IT Governance",
+        "Mobile Computing",
+        "IT Service Delivery"
+      ],
+      career_paths: [
+        "IT Infrastructure Specialist",
+        "Business Systems Analyst",
+        "IT Service Manager",
+        "Network Security Specialist",
+        "Enterprise Systems Administrator",
+        "IT Compliance Officer"
+      ]
+    }
+  },
+  "bachelor of engineering software": {
+    "NUST": {
+      description: "The Bachelor of Engineering in Software Engineering at NUST is an accredited engineering program that combines computer science fundamentals with engineering principles to develop robust software systems. The program has a strong focus on software architecture, quality assurance, and large-scale systems development.",
+      entry_requirements: "Mathematics A Level (B or better), Physics A Level (C or better), Chemistry/Computing A Level, English Language O Level",
+      duration: "5 years (including industrial attachment)",
+      key_courses: [
+        "Software Architecture",
+        "Software Quality Assurance",
+        "Requirements Engineering",
+        "Software Project Management",
+        "Embedded Systems",
+        "High-Performance Computing",
+        "Real-time Systems",
+        "Human-Computer Interaction",
+        "Formal Methods in Software Engineering"
+      ],
+      career_paths: [
+        "Software Architect",
+        "Quality Assurance Engineer",
+        "DevOps Engineer",
+        "Systems Engineer",
+        "Requirements Engineer",
+        "Product Manager",
+        "Full-Stack Developer"
+      ]
+    },
+    "HIT": {
+      description: "HIT's Bachelor of Engineering in Software Engineering program emphasizes innovation and entrepreneurship alongside technical skills. The program focuses on cutting-edge software development methodologies, emerging technologies, and engineering principles for building resilient software systems.",
+      entry_requirements: "Mathematics A Level (C or better), Physics A Level, Chemistry/Computing A Level, English Language O Level",
+      duration: "5 years",
+      key_courses: [
+        "Software Design and Architecture",
+        "Agile Development Methodologies",
+        "DevOps and Continuous Integration",
+        "Mobile Engineering",
+        "Cloud-Native Applications",
+        "Engineering Economics",
+        "Software Testing and Validation",
+        "IP and Technology Law",
+        "Technology Entrepreneurship"
+      ],
+      career_paths: [
+        "Software Engineer",
+        "Technical Lead",
+        "DevOps Specialist",
+        "Technology Entrepreneur",
+        "Cloud Engineer",
+        "R&D Engineer"
+      ]
+    }
+  },
+  "data science": {
+    "NUST": {
+      description: "The BSc in Data Science at NUST is an interdisciplinary program combining statistics, computing, and domain expertise to prepare students for careers in data analytics and machine learning. The program teaches how to extract insights from complex data sets to inform business and research decisions.",
+      entry_requirements: "Mathematics A Level (B or better), Computing/Physics A Level, English Language O Level",
+      duration: "4 years",
+      key_courses: [
+        "Statistical Computing",
+        "Machine Learning",
+        "Data Mining",
+        "Big Data Analytics",
+        "Data Visualization",
+        "Time Series Analysis",
+        "Natural Language Processing",
+        "Deep Learning",
+        "Business Intelligence"
+      ],
+      career_paths: [
+        "Data Scientist",
+        "Data Analyst",
+        "Machine Learning Engineer",
+        "Business Intelligence Analyst",
+        "Research Scientist",
+        "Data Engineer"
+      ]
+    }
+  },
+  "cyber security": {
+    "HIT": {
+      description: "The BSc in Cyber Security and Forensics at HIT prepares students to protect information systems from cyber threats and investigate digital crimes. The program covers defensive and offensive security techniques, digital forensics, and security governance.",
+      entry_requirements: "Mathematics A Level (C or better), Computing/Physics A Level, English Language O Level",
+      duration: "4 years",
+      key_courses: [
+        "Network Security",
+        "Ethical Hacking",
+        "Digital Forensics",
+        "Cryptography",
+        "Security Governance",
+        "Incident Response",
+        "Malware Analysis",
+        "Security Architecture",
+        "Penetration Testing"
+      ],
+      career_paths: [
+        "Security Analyst",
+        "Penetration Tester",
+        "Digital Forensic Investigator",
+        "Security Consultant",
+        "Compliance Specialist",
+        "Security Operations Center Analyst"
+      ]
+    }
+  }
+};
+
+// Define CS topics for Mbuya Zivai
 const csTopics = {
   fetchDecodeExecute: {
     topic: "Fetch-Decode-Execute Cycle",
@@ -168,61 +434,129 @@ export const generateGreeting = (): string => {
   const greetings = [
     `${timeBasedGreeting}! I'm Mbuya Zivai, your wise tech companion. 🌟 I can help with computer science topics from basic programming to advanced concepts. Ask me about the Fetch-Decode-Execute cycle, OSI model, data structures, algorithms, database theory, or programming in Visual Basic!`,
     `${timeBasedGreeting}! I'm Mbuya Zivai, and I'm delighted to chat with you. 💫 As a grandmother figure in the tech world, I love sharing knowledge about computer architecture, networking protocols, algorithms, database systems, or numerical errors. What would you like to learn today?`,
-    `${timeBasedGreeting}! *adjusts reading glasses* I'm your Mbuya Zivai, bringing years of tech wisdom to our chat. ✨ Whether you need help understanding logic gates, interrupts, ethical considerations in computing, or Visual Basic programming, I'm here to assist!`
+    `${timeBasedGreeting}! *adjusts reading glasses* I'm your Mbuya Zivai, bringing years of tech wisdom to our chat. ✨ Whether you need help understanding logic gates, interrupts, ethical considerations in computing, or Visual Basic programming, I'm here to assist!`,
+    `${timeBasedGreeting}! I'm Mbuya Zivai, your AI guide for all things Computer Science. 🎓 I specialize in explaining A-Level concepts, university programs, and career paths. What can I help you discover today?`
   ];
   
   return greetings[Math.floor(Math.random() * greetings.length)];
 };
 
 export const generateResponse = (input: string): string => {
-  const correctedInput = correctSpelling(input.toLowerCase());
+  // Process input to handle broken English and spelling mistakes
+  const processedInput = correctInput(input.toLowerCase());
   
-  // Check for CS topics from our new definitions
-  if (correctedInput.includes('fetch') || correctedInput.includes('cycle') || correctedInput.includes('execute')) {
+  // Check for CS topics from our definitions
+  if (processedInput.includes('fetch') || processedInput.includes('cycle') || processedInput.includes('execute')) {
     return csTopics.fetchDecodeExecute.explanation;
   }
   
-  if (correctedInput.includes('logic gate')) {
+  if (processedInput.includes('logic gate')) {
     return csTopics.logicGates.explanation;
   }
   
-  if (correctedInput.includes('interrupt')) {
+  if (processedInput.includes('interrupt')) {
     return csTopics.interrupts.explanation;
   }
   
-  if (correctedInput.includes('overflow') || correctedInput.includes('underflow') || 
-      correctedInput.includes('numerical error')) {
+  if (processedInput.includes('overflow') || processedInput.includes('underflow') || 
+      processedInput.includes('numerical error')) {
     return csTopics.numericalErrors.explanation;
   }
   
-  if (correctedInput.includes('database') || correctedInput.includes('sql') || 
-      correctedInput.includes('relational')) {
+  if (processedInput.includes('database') || processedInput.includes('sql') || 
+      processedInput.includes('relational')) {
     return csTopics.databaseTheory.explanation;
   }
   
-  if (correctedInput.includes('osi') || correctedInput.includes('networking') || 
-      correctedInput.includes('network model')) {
+  if (processedInput.includes('osi') || processedInput.includes('networking') || 
+      processedInput.includes('network model')) {
     return csTopics.osiModel.explanation;
   }
   
-  if (correctedInput.includes('data structure') || correctedInput.includes('algorithm') || 
-      correctedInput.includes('big o')) {
+  if (processedInput.includes('data structure') || processedInput.includes('algorithm') || 
+      processedInput.includes('big o')) {
     return csTopics.dataStructures.explanation;
   }
   
-  if (correctedInput.includes('security') || correctedInput.includes('ethics') || 
-      correctedInput.includes('ethical')) {
+  if (processedInput.includes('security') || processedInput.includes('ethics') || 
+      processedInput.includes('ethical')) {
     return csTopics.computerSecurity.explanation;
   }
   
-  if (correctedInput.includes('visual basic') || correctedInput.includes('vb') || 
-      correctedInput.includes('vba')) {
+  if (processedInput.includes('visual basic') || processedInput.includes('vb') || 
+      processedInput.includes('vba')) {
     return csTopics.visualBasic.explanation;
+  }
+
+  // Enhanced degree information handling
+  if (processedInput.includes('degree') || 
+      processedInput.includes('university') || 
+      processedInput.includes('college') || 
+      processedInput.includes('study') || 
+      processedInput.includes('course')) {
+    
+    // Check for specific degree inquiries
+    if (processedInput.includes('computer science') || processedInput.includes('comp sci') || processedInput.includes('cs degree')) {
+      const university = processedInput.includes('nust') ? 'NUST' : 
+                       processedInput.includes('uz') ? 'UZ' : 
+                       processedInput.includes('hit') ? 'HIT' : null;
+      
+      if (university && detailedDegreeInfo["bsc computer science"][university]) {
+        const info = detailedDegreeInfo["bsc computer science"][university];
+        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact}`;
+      }
+      
+      // General info about Computer Science degree
+      return `**BSc Computer Science in Zimbabwe**\n\nA Bachelor of Science in Computer Science is offered at several universities in Zimbabwe, including NUST, UZ, and HIT. The program typically spans 4 years and covers programming, algorithms, databases, software engineering, and specialized areas like AI and networking.\n\n**Where to Study:**\n- National University of Science and Technology (NUST)\n- University of Zimbabwe (UZ)\n- Harare Institute of Technology (HIT)\n\n**Typical Entry Requirements:**\n- Mathematics A Level (C or better)\n- Computing or Physics A Level\n- English Language O Level\n\nFor more specific information about a particular university's program, please ask about "computer science at [university name]".\n\n**Career Prospects:**\nGraduates work as software developers, systems analysts, database administrators, network engineers, and more, with organizations like Econet, TelOne, banks, and government institutions.`;
+    }
+    
+    if (processedInput.includes('information technology') || processedInput.includes('it degree')) {
+      const university = processedInput.includes('hit') ? 'HIT' : 
+                       processedInput.includes('cut') ? 'CUT' : null;
+      
+      if (university && detailedDegreeInfo["btech information technology"][university]) {
+        const info = detailedDegreeInfo["btech information technology"][university];
+        return `**BTech Information Technology at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}`;
+      }
+      
+      // General info about IT degree
+      return `**BTech Information Technology in Zimbabwe**\n\nThe Bachelor of Technology in Information Technology focuses on practical IT skills, system management, and IT service delivery. This program emphasizes hands-on skills with industry attachments.\n\n**Where to Study:**\n- Harare Institute of Technology (HIT)\n- Chinhoyi University of Technology (CUT)\n\n**Typical Entry Requirements:**\n- Mathematics A Level (D or better)\n- Computing/Physics/Chemistry A Level\n- English Language O Level\n\n**Career Prospects:**\nGraduates work as network administrators, IT support specialists, systems engineers, database administrators, and IT project managers.`;
+    }
+    
+    if (processedInput.includes('software engineering') || processedInput.includes('software engineer')) {
+      const university = processedInput.includes('nust') ? 'NUST' : 
+                       processedInput.includes('hit') ? 'HIT' : null;
+      
+      if (university && detailedDegreeInfo["bachelor of engineering software"][university]) {
+        const info = detailedDegreeInfo["bachelor of engineering software"][university];
+        return `**Bachelor of Engineering in Software Engineering at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}`;
+      }
+      
+      // General info about Software Engineering degree
+      return `**Bachelor of Engineering in Software Engineering**\n\nThis engineering program combines computer science with engineering principles to design and develop complex software systems. It has a strong focus on software architecture, quality assurance, and systems development methodologies.\n\n**Where to Study:**\n- National University of Science and Technology (NUST)\n- Harare Institute of Technology (HIT)\n\n**Typical Entry Requirements:**\n- Mathematics A Level (B or better)\n- Physics A Level\n- Chemistry/Computing A Level\n- English Language O Level\n\n**Career Prospects:**\nGraduates work as software architects, quality assurance engineers, systems engineers, and technical leads in various industries.`;
+    }
+    
+    if (processedInput.includes('data science')) {
+      if (detailedDegreeInfo["data science"]["NUST"]) {
+        const info = detailedDegreeInfo["data science"]["NUST"];
+        return `**BSc in Data Science at NUST**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}`;
+      }
+    }
+    
+    if (processedInput.includes('cyber security') || processedInput.includes('cybersecurity') || processedInput.includes('security degree')) {
+      if (detailedDegreeInfo["cyber security"]["HIT"]) {
+        const info = detailedDegreeInfo["cyber security"]["HIT"];
+        return `**BSc in Cyber Security and Forensics at HIT**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}`;
+      }
+    }
+    
+    // General degree inquiry
+    return `**Computer Science and IT Degrees in Zimbabwe**\n\nZimbabwe offers several excellent degree programs in computing fields:\n\n1. **BSc Computer Science**\n   - Offered at: NUST, UZ, HIT\n   - Focus: Programming, algorithms, software development\n   - Duration: 4 years\n\n2. **BTech Information Technology**\n   - Offered at: HIT, CUT\n   - Focus: IT systems, networks, practical applications\n   - Duration: 4 years\n\n3. **Bachelor of Engineering in Software Engineering**\n   - Offered at: NUST, HIT\n   - Focus: Software architecture, quality assurance, engineering principles\n   - Duration: 5 years\n\n4. **BSc in Data Science**\n   - Offered at: NUST\n   - Focus: Data analytics, machine learning, statistical computing\n   - Duration: 4 years\n\n5. **BSc in Cyber Security and Forensics**\n   - Offered at: HIT\n   - Focus: Network security, ethical hacking, digital forensics\n   - Duration: 4 years\n\nFor detailed information about a specific degree, please ask about it by name.`;
   }
 
   // Handle health-related queries
   const healthKeywords = ['headache', 'sick', 'pain', 'tired', 'unwell', 'ill'];
-  if (healthKeywords.some(keyword => correctedInput.includes(keyword))) {
+  if (healthKeywords.some(keyword => processedInput.includes(keyword))) {
     return "I'm sorry to hear you're not feeling well. While I can provide general wellness tips, it's important to:\n\n" +
            "1. Take a break from your screen\n" +
            "2. Stay hydrated\n" +
@@ -235,39 +569,14 @@ export const generateResponse = (input: string): string => {
     return generateGreeting();
   }
 
-  // Handle degree-related queries
-  const degreeKeywords = ['degree', 'course', 'study', 'university', 'college'];
-  if (degreeKeywords.some(keyword => correctedInput.includes(keyword))) {
-    // Check for specific degrees in universityPrograms
-    for (const [program, details] of Object.entries(universityPrograms)) {
-      if (correctedInput.includes(program) || 
-          (correctedInput.includes("computer") && correctedInput.includes("science")) ||
-          (correctedInput.includes("it") && correctedInput.includes("degree"))) {
-        return `${details.description}\n\nOffered at:\n${details.universities.join("\n")}\n\nEntry Requirements:\n${details.requirements}\n\nPotential Career Paths:\n${details.careerPaths.join("\n")}`;
-      }
-    }
-    
-    // General response for degree inquiries
-    return "A degree in Computer Science or Information Technology offers excellent career prospects! Here's what you should know:\n\n" +
-           "1. High demand in job market\n" +
-           "2. Competitive salaries\n" +
-           "3. Diverse career paths (Software Development, AI, Cybersecurity, etc.)\n" +
-           "4. Opportunities for innovation and entrepreneurship\n\n" +
-           "Would you like specific information about:\n" +
-           "- BSc Computer Science\n" +
-           "- BTech Information Technology\n" +
-           "- Bachelor of Engineering\n" +
-           "Just ask about any of these programs!";
-  }
-
-  if (correctedInput.includes('flowchart')) {
+  if (processedInput.includes('flowchart')) {
     const flowchartInfo = flowchartExamples.basic;
     return `${flowchartInfo.explanation}\n\nFlowchart Symbols:\n${Object.entries(flowchartInfo.symbols).map(([symbol, desc]) => `${symbol}: ${desc}`).join('\n')}\n\n${flowchartInfo.example}`;
   }
 
-  if (correctedInput.includes('tcp/ip') || correctedInput.includes('dns')) {
+  if (processedInput.includes('tcp/ip') || processedInput.includes('dns')) {
     for (const [concept, details] of Object.entries(networkingConcepts)) {
-      if (correctedInput.includes(concept)) {
+      if (processedInput.includes(concept)) {
         let response = details.explanation;
         if (details.example) {
           response += `\n\nExample:\n${details.example}`;
@@ -281,29 +590,29 @@ export const generateResponse = (input: string): string => {
   }
 
   const mentalHealthKeywords = ['depressed', 'depression', 'anxiety', 'stressed', 'stress', 'overwhelmed', 'suicide', 'help'];
-  if (mentalHealthKeywords.some(keyword => correctedInput.includes(keyword))) {
+  if (mentalHealthKeywords.some(keyword => processedInput.includes(keyword))) {
     for (const [condition, response] of Object.entries(mentalHealthResponses)) {
-      if (correctedInput.includes(condition)) {
+      if (processedInput.includes(condition)) {
         return `${response.message}\n\nHere are some resources that might help:\n${response.resources.join('\n')}\n\n${response.followUp}`;
       }
     }
   }
 
-  if (correctedInput.includes('sql') || correctedInput.includes('database') || correctedInput.includes('query')) {
+  if (processedInput.includes('sql') || processedInput.includes('database') || processedInput.includes('query')) {
     for (const [command, details] of Object.entries(sqlExamples)) {
-      if (correctedInput.includes(command)) {
+      if (processedInput.includes(command)) {
         return `Here's how to use the ${command.toUpperCase()} command in SQL:\n\n${details.query}\n\n${details.explanation}`;
       }
     }
   }
 
-  if (correctedInput.includes("program") || correctedInput.includes("code") || correctedInput.includes("write")) {
+  if (processedInput.includes("program") || processedInput.includes("code") || processedInput.includes("write")) {
     for (const [program, details] of Object.entries(basicPrograms)) {
-      if (correctedInput.includes(program)) {
-        if (correctedInput.includes("python")) {
+      if (processedInput.includes(program)) {
+        if (processedInput.includes("python")) {
           return `Here's a ${program} program in Python:\n\n${details.python}\n\n${details.explanation}`;
         }
-        if (correctedInput.includes("visual basic") || correctedInput.includes("vb")) {
+        if (processedInput.includes("visual basic") || processedInput.includes("vb")) {
           return `Here's a ${program} program in Visual Basic:\n\n${details.visualBasic}\n\n${details.explanation}`;
         }
         return `Here are examples of a ${program} program:\n\nPython:\n${details.python}\n\nVisual Basic:\n${details.visualBasic}\n\n${details.explanation}`;
@@ -321,11 +630,11 @@ export const generateResponse = (input: string): string => {
   }
 
   for (const [concept, details] of Object.entries(programmingConcepts)) {
-    if (correctedInput.includes(concept)) {
-      if (correctedInput.includes("python")) {
+    if (processedInput.includes(concept)) {
+      if (processedInput.includes("python")) {
         return `${details.explanation}\n\nHere's how to use it in Python:\n${details.python}`;
       }
-      if (correctedInput.includes("visual basic") || correctedInput.includes("vb")) {
+      if (processedInput.includes("visual basic") || processedInput.includes("vb")) {
         return `${details.explanation}\n\nHere's how to use it in Visual Basic:\n${details.visualBasic}`;
       }
       return `${details.explanation}\n\nPython Example:\n${details.python}\n\nVisual Basic Example:\n${details.visualBasic}`;
@@ -339,6 +648,7 @@ export const generateResponse = (input: string): string => {
          "4. Computer Networking: OSI model, TCP/IP, protocols\n" +
          "5. Visual Basic Programming: Syntax, event-driven programming\n" +
          "6. Computer Security and Ethics: Principles and considerations\n" +
-         "7. Algorithms and Data Structures: Common implementations and complexity\n\n" +
+         "7. Algorithms and Data Structures: Common implementations and complexity\n" +
+         "8. University Degrees: Information about Computer Science and IT programs in Zimbabwe\n\n" +
          "What topic would you like to explore today?";
 };
