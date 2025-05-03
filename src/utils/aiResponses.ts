@@ -1,3 +1,4 @@
+
 import { programmingConcepts } from './responses/programmingConcepts';
 import { basicPrograms } from './responses/programming/basicPrograms';
 import { algorithms } from './responses/programming/algorithms';
@@ -968,13 +969,13 @@ ${details.key_courses.join(', ')}
 ${details.career_paths.join(', ')}
 
 ## Fees
-${details.fees}
+${details.fees || 'Information not available'}
 
 ## Contact
-${details.contact}
+${details.contact || 'Information not available'}
 
 ## Notable Alumni
-${details.notable_alumni}
+${details.notable_alumni || 'Information not available'}
 
 ${details.location ? `## Location\n${details.location}` : ''}
 
@@ -986,3 +987,4 @@ ${details.scholarships ? `## Scholarships\n${details.scholarships}` : ''}
 
 ${details.research_areas ? `## Research Areas\n${details.research_areas.join(', ')}` : ''}
 `;
+};

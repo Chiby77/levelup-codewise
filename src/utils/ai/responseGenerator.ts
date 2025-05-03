@@ -1,3 +1,4 @@
+
 import { UniversityDetail } from "../../types/universityPrograms";
 import { csTopics } from "./topics/computerScience";
 import { detailedDegreeInfo } from "./topics/education";
@@ -5,6 +6,9 @@ import { getQuizQuestions } from "./quiz/quizData";
 import { generateGreeting } from "./greetings";
 import { correctInput } from "./textCorrection";
 import { QuizStats } from "../../types/quizStats";
+
+// Re-export generateGreeting from greetings.ts
+export { generateGreeting };
 
 // Improved response generation with contextual understanding
 export const generateResponse = (userInput: string): string => {
@@ -195,13 +199,13 @@ ${details.key_courses.join(', ')}
 ${details.career_paths.join(', ')}
 
 ## Fees
-${details.fees}
+${details.fees || 'Information not available'}
 
 ## Contact
-${details.contact}
+${details.contact || 'Information not available'}
 
 ## Notable Alumni
-${details.notable_alumni}
+${details.notable_alumni || 'Information not available'}
 
 ${details.location ? `## Location\n${details.location}` : ''}
 
