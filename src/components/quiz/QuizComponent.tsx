@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -21,13 +21,18 @@ import {
   Network, 
   Shield, 
   Brain, 
-  Code
+  Code,
+  BarChart4,
+  RefreshCcw
 } from 'lucide-react';
 import { QuizQuestion } from '@/types/universityPrograms';
 import { getQuizQuestions } from '@/utils/ai/quiz/quizData';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { toast } from '../ui/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { QuizStats } from './QuizStats';
+import { getFormattedQuizStats, updateQuizStats, resetQuizStats } from './QuizService';
 
 interface QuizComponentProps {
   onFinish: () => void;
@@ -41,6 +46,14 @@ export function QuizComponent({ onFinish, category }: QuizComponentProps) {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("quiz");
+  const [startTime, setStartTime] = useState<number>(Date.now());
+  const [quizStats, setQuizStats] = useState(getFormattedQuizStats());
+
+  useEffect(() => {
+    // Set start time when component mounts
+    setStartTime(Date.now());
+  }, []);
 
   const handleOptionSelect = (optionIndex: number) => {
     if (hasAnswered) return;
@@ -82,6 +95,20 @@ export function QuizComponent({ onFinish, category }: QuizComponentProps) {
       setSelectedOption(null);
       setHasAnswered(false);
     } else {
+      // Calculate time spent in seconds
+      const timeSpent = Math.round((Date.now() - startTime) / 1000);
+      
+      // Update quiz stats
+      updateQuizStats(
+        category || questions[0].category,
+        questions,
+        score,
+        timeSpent
+      );
+      
+      // Update the formatted stats for display
+      setQuizStats(getFormattedQuizStats());
+      
       setQuizComplete(true);
     }
   };
@@ -104,6 +131,18 @@ export function QuizComponent({ onFinish, category }: QuizComponentProps) {
   const handleRestartQuiz = () => {
     window.location.reload();
   };
+  
+  const handleResetStats = () => {
+    if (confirm("Are you sure you want to reset all quiz statistics? This action cannot be undone.")) {
+      resetQuizStats();
+      setQuizStats(getFormattedQuizStats());
+      toast({
+        title: "Statistics Reset",
+        description: "All quiz statistics have been reset successfully.",
+        variant: "default",
+      });
+    }
+  };
 
   if (quizComplete) {
     const percentage = Math.round((score / questions.length) * 100);
@@ -120,40 +159,69 @@ export function QuizComponent({ onFinish, category }: QuizComponentProps) {
     }
 
     return (
-      <Card className="w-full max-w-3xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-center">Quiz Results</CardTitle>
-          <CardDescription className="text-center">
-            You scored {score} out of {questions.length}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-4">
-          <div className="w-full max-w-md">
-            <Progress value={percentage} className="h-3" />
+      <Tabs defaultValue="results" className="w-full">
+        <TabsList className="w-full mb-4">
+          <TabsTrigger value="results" className="flex-1">Quiz Results</TabsTrigger>
+          <TabsTrigger value="stats" className="flex-1">Statistics</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="results">
+          <Card className="w-full max-w-3xl mx-auto">
+            <CardHeader>
+              <CardTitle className="text-center">Quiz Results</CardTitle>
+              <CardDescription className="text-center">
+                You scored {score} out of {questions.length}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center gap-4">
+              <div className="w-full max-w-md">
+                <Progress value={percentage} className="h-3" />
+              </div>
+              <div className="text-4xl font-bold">{percentage}%</div>
+              <p className="text-center text-muted-foreground">{feedback}</p>
+              
+              {percentage >= 70 ? (
+                <div className="flex items-center gap-2 text-green-500">
+                  <CheckCircle2 />
+                  <span>Congratulations on passing the quiz!</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-amber-500">
+                  <AlertTriangle />
+                  <span>Keep learning and try again to improve your score!</span>
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className="flex gap-4 justify-center">
+              <Button onClick={handleRestartQuiz} variant="outline" className="flex gap-2">
+                <RotateCcw className="w-4 h-4" />
+                <span>Try Again</span>
+              </Button>
+              <Button onClick={onFinish}>Return to Chat</Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="stats">
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetStats}
+                className="flex items-center gap-2 text-muted-foreground"
+              >
+                <RefreshCcw className="h-4 w-4" />
+                <span>Reset Stats</span>
+              </Button>
+            </div>
+            <QuizStats stats={quizStats} />
+            <div className="flex justify-center mt-4">
+              <Button onClick={onFinish}>Return to Chat</Button>
+            </div>
           </div>
-          <div className="text-4xl font-bold">{percentage}%</div>
-          <p className="text-center text-muted-foreground">{feedback}</p>
-          
-          {percentage >= 70 ? (
-            <div className="flex items-center gap-2 text-green-500">
-              <CheckCircle2 />
-              <span>Congratulations on passing the quiz!</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 text-amber-500">
-              <AlertTriangle />
-              <span>Keep learning and try again to improve your score!</span>
-            </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex gap-4 justify-center">
-          <Button onClick={handleRestartQuiz} variant="outline" className="flex gap-2">
-            <RotateCcw className="w-4 h-4" />
-            <span>Try Again</span>
-          </Button>
-          <Button onClick={onFinish}>Return to Chat</Button>
-        </CardFooter>
-      </Card>
+        </TabsContent>
+      </Tabs>
     );
   }
 
