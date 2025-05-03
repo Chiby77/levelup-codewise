@@ -1,4 +1,3 @@
-
 import { programmingConcepts } from './responses/programmingConcepts';
 import { basicPrograms } from './responses/programming/basicPrograms';
 import { algorithms } from './responses/programming/algorithms';
@@ -793,7 +792,7 @@ export const generateResponse = (input: string): string => {
       
       if (university && detailedDegreeInfo["bsc computer science"][university]) {
         const info = detailedDegreeInfo["bsc computer science"][university];
-        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact}\n\n**Campus Location:**\n${info.location || 'Information not available'}\n\n**Campus Facilities:**\n${info.campus_facilities ? info.campus_facilities.join('\n') : 'Information not available'}\n\n**International Options:**\n${info.international_options || 'Information not available'}\n\n**Scholarships:**\n${info.scholarships || 'Information not available'}`;
+        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact}\n\n**Campus Location:**\n${info.location ?? 'Information not available'}\n\n**Campus Facilities:**\n${info.campus_facilities ? info.campus_facilities.join('\n') : 'Information not available'}\n\n**International Options:**\n${info.international_options ?? 'Information not available'}\n\n**Scholarships:**\n${info.scholarships ?? 'Information not available'}`;
       }
       
       // General info about Computer Science degree
@@ -948,4 +947,3 @@ export const generateResponse = (input: string): string => {
          "14. Data Representation: Binary, hexadecimal, and encoding systems\n\n" +
          "What topic would you like to explore today?";
 };
-
