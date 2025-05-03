@@ -20,12 +20,20 @@ import {
   ArrowRight,
   Loader2,
   User,
-  ChevronDown
+  ChevronDown,
+  GraduationCap,
+  NetworkIcon,
+  BookOpenCheck,
+  ShieldCheck,
+  Clock,
+  TreePine
 } from "lucide-react";
 
 interface Message {
   role: "assistant" | "user";
   content: string;
+  id: string;
+  animate?: boolean;
 }
 
 export default function MbuyaZivai() {
@@ -34,30 +42,42 @@ export default function MbuyaZivai() {
   const [isLoading, setIsLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showDropdownHint, setShowDropdownHint] = useState(false);
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const messageEndRef = useRef<HTMLDivElement>(null);
 
   // Animation states
-  const [messageAnimationComplete, setMessageAnimationComplete] = useState<Record<number, boolean>>({});
+  const [messageAnimationComplete, setMessageAnimationComplete] = useState<Record<string, boolean>>({});
   const [showQuickActions, setShowQuickActions] = useState(true);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, messageAnimationComplete]);
-
-  useEffect(() => {
     const timer = setTimeout(() => {
+      const initialGreeting = generateGreeting();
       setMessages([{
         role: "assistant",
-        content: generateGreeting()
+        content: initialGreeting,
+        id: "greeting-" + Date.now(),
+        animate: true
       }]);
     }, 800);
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Scroll to bottom with smooth animation
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    // Show dropdown hint after a few messages
+    if (messages.length === 3) {
+      setShowDropdownHint(true);
+      setTimeout(() => setShowDropdownHint(false), 4000);
+    }
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent, predefinedQuery?: string) => {
     e.preventDefault();
@@ -66,26 +86,37 @@ export default function MbuyaZivai() {
 
     setShowWelcome(false);
     setShowQuickActions(false);
-    const userMessage = { role: "user" as const, content: query };
+    const userMessage = { 
+      role: "user" as const, 
+      content: query,
+      id: "user-" + Date.now()
+    };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
     try {
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Simulate processing delay for better UX
+      const processingTime = Math.floor(Math.random() * 400) + 800;
+      await new Promise(resolve => setTimeout(resolve, processingTime));
+      
       const response = generateResponse(query);
+      const assistantMessageId = "assistant-" + Date.now();
+      
       const assistantMessage = {
         role: "assistant" as const,
         content: response,
+        id: assistantMessageId,
+        animate: true
       };
+      
       setMessages((prev) => [...prev, assistantMessage]);
       
-      // Mark newest message for animation when it arrives
+      // Mark message as animated after it appears
       setTimeout(() => {
         setMessageAnimationComplete(prev => ({
           ...prev,
-          [messages.length + 1]: true
+          [assistantMessageId]: true
         }));
       }, 100);
 
@@ -112,6 +143,30 @@ export default function MbuyaZivai() {
   // Determine if we're in the initial empty state
   const isEmptyState = messages.length === 0;
 
+  // Suggested topics based on added knowledge
+  const suggestedTopics = [
+    { 
+      icon: <Database className="mr-2 h-4 w-4 text-indigo-500" />,
+      text: "Explain dynamic vs static data structures",
+      query: "What's the difference between dynamic and static data structures?"
+    },
+    { 
+      icon: <TreePine className="mr-2 h-4 w-4 text-emerald-500" />,
+      text: "Binary Tree operations",
+      query: "How do binary tree traversal methods work?"
+    },
+    { 
+      icon: <ShieldCheck className="mr-2 h-4 w-4 text-red-500" />,
+      text: "Ethical hacking concepts",
+      query: "Tell me about ethical hacking and cybersecurity"
+    },
+    { 
+      icon: <BookOpenCheck className="mr-2 h-4 w-4 text-amber-500" />,
+      text: "Intellectual property types",
+      query: "Explain different types of intellectual property"
+    }
+  ];
+
   return (
     <Card className={`w-full h-full max-w-3xl mx-auto bg-gradient-to-br from-background to-secondary/5 shadow-xl transition-all duration-500 ${isExpanded ? 'scale-[1.02]' : 'scale-100'}`}
          onMouseEnter={() => setIsExpanded(true)}
@@ -128,8 +183,9 @@ export default function MbuyaZivai() {
           <span>Chat with Mbuya Zivai</span>
           <Heart className="w-5 h-5 text-red-500 ml-2 animate-heartbeat" />
         </CardTitle>
-        <CardDescription className="text-muted-foreground">
-          Your AI guide to Computer Science and programming knowledge
+        <CardDescription className="text-muted-foreground flex items-center gap-2">
+          <span>Your wise AI guide to Computer Science and programming knowledge</span>
+          <GraduationCap className="w-4 h-4 text-accent animate-bounce" style={{ animationDuration: "2s" }} />
         </CardDescription>
       </CardHeader>
       
@@ -169,7 +225,7 @@ export default function MbuyaZivai() {
                 className="justify-start group hover:bg-accent/10 border-dashed" 
                 onClick={handleQuickActionClick("Explain the OSI model")}
               >
-                <Database className="mr-2 h-4 w-4 text-accent" />
+                <NetworkIcon className="mr-2 h-4 w-4 text-accent" />
                 <span>OSI network model</span>
                 <ArrowRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </Button>
@@ -193,18 +249,36 @@ export default function MbuyaZivai() {
                 <span>Data structures</span>
                 <ArrowRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </Button>
+              
+              {/* New suggested topics based on added knowledge */}
+              <h4 className="text-sm font-semibold text-muted-foreground col-span-full mt-4 mb-1">
+                Advanced topics:
+              </h4>
+              
+              {suggestedTopics.map((topic, index) => (
+                <Button 
+                  key={index}
+                  variant="outline" 
+                  className="justify-start group hover:bg-accent/10 border-dashed" 
+                  onClick={handleQuickActionClick(topic.query)}
+                >
+                  {topic.icon}
+                  <span>{topic.text}</span>
+                  <ArrowRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Button>
+              ))}
             </div>
           )}
 
           {/* Messages */}
           {messages.map((message, index) => (
             <div
-              key={index}
-              className={`mb-6 animate-fadeIn ${
+              key={message.id}
+              className={`mb-6 ${
                 message.role === "assistant"
                   ? "ml-4 mr-12"
                   : "ml-12 mr-4"
-              } ${messageAnimationComplete[index] ? 'opacity-100' : 'animate-fadeIn'}`}
+              } ${message.animate ? 'animate-fadeIn' : ''}`}
               style={{ animationDelay: `${index * 200}ms` }}
             >
               <div
@@ -233,6 +307,13 @@ export default function MbuyaZivai() {
                       <span>You</span>
                     </div>
                   )}
+                  
+                  {message.role === "assistant" && (
+                    <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      <span>just now</span>
+                    </span>
+                  )}
                 </p>
                 <div className="prose-sm max-w-none text-foreground whitespace-pre-wrap">
                   {message.content}
@@ -255,8 +336,18 @@ export default function MbuyaZivai() {
             </div>
           )}
           
+          {/* Dropdown hint animation */}
+          {showDropdownHint && (
+            <div className="flex justify-center my-4 animate-pulse">
+              <div className="flex flex-col items-center text-muted-foreground text-sm">
+                <ChevronDown className="h-5 w-5 animate-bounce" />
+                <p>Try asking about advanced topics like binary trees or hacking</p>
+              </div>
+            </div>
+          )}
+          
           {/* Bottom space for better scrolling */}
-          <div className="h-2"></div>
+          <div className="h-2" ref={messageEndRef}></div>
         </ScrollArea>
 
         {/* Input area with enhanced animations */}
@@ -296,6 +387,15 @@ export default function MbuyaZivai() {
         
         .animate-heartbeat {
           animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
         }
       `}</style>
     </Card>

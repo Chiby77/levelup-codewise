@@ -1,4 +1,3 @@
-
 import { programmingConcepts } from './responses/programmingConcepts';
 import { basicPrograms } from './responses/programming/basicPrograms';
 import { algorithms } from './responses/programming/algorithms';
@@ -31,6 +30,18 @@ const correctInput = (input: string): string => {
     'programmar': 'programmer',
     'algoritm': 'algorithm',
     'algorthm': 'algorithm',
+    'struture': 'structure',
+    'binarry': 'binary',
+    'enterpris': 'enterprise',
+    'enterpise': 'enterprise',
+    'buget': 'budget',
+    'hackin': 'hacking',
+    'copyrght': 'copyright',
+    'tredmark': 'trademark',
+    'budgetin': 'budgeting',
+    'cumputa': 'computer',
+    'komputer': 'computer',
+    'suftware': 'software',
   };
 
   // Replace misspelled words
@@ -73,7 +84,18 @@ const detailedDegreeInfo = {
       ],
       fees: "Approximately USD 1,500 - 2,500 per semester (varies by residence status)",
       contact: "admissions@nust.ac.zw, +263-9-282842",
-      notable_alumni: "Many graduates work at leading tech companies like Econet, TelOne, and international firms."
+      notable_alumni: "Many graduates work at leading tech companies like Econet, TelOne, and international firms.",
+      location: "Bulawayo, Zimbabwe - Main Campus",
+      campus_facilities: [
+        "High-performance computing lab",
+        "IoT and embedded systems lab",
+        "Software development studio",
+        "Robotics research center",
+        "Digital library",
+        "Student innovation hub"
+      ],
+      international_options: "Exchange programs with universities in South Africa, China, and the UK",
+      scholarships: "Merit-based scholarships available for top performing students"
     },
     "UZ": {
       description: "The University of Zimbabwe offers a comprehensive BSc Honors degree in Computer Science focused on developing skilled professionals in computing theory and practice. The program emphasizes programming skills, algorithms, database systems, and software development methodologies.",
@@ -102,7 +124,22 @@ const detailedDegreeInfo = {
       ],
       fees: "Approximately USD 1,200 - 2,000 per semester (varies by residence status)",
       contact: "admissions@uz.ac.zw, +263-4-303211",
-      notable_alumni: "Graduates hold key positions in financial institutions, telecoms, and government offices across Zimbabwe."
+      notable_alumni: "Graduates hold key positions in financial institutions, telecoms, and government offices across Zimbabwe.",
+      location: "Harare, Zimbabwe - Mount Pleasant Campus",
+      campus_facilities: [
+        "Computer labs with 24/7 access",
+        "Research commons",
+        "Innovation center",
+        "Central computing facility",
+        "Digital makerspace"
+      ],
+      research_areas: [
+        "Machine Learning and AI",
+        "Cybersecurity",
+        "HCI and User Experience",
+        "Big Data Analytics",
+        "Mobile Computing"
+      ]
     },
     "HIT": {
       description: "Harare Institute of Technology's BSc in Computer Science program focuses on delivering hands-on, industry-relevant skills in software development, cyber security, and emerging technologies. The program has a strong entrepreneurial component.",
@@ -424,7 +461,226 @@ Security breaches can lead to data theft, financial loss, identity theft, and da
   - Function procedures (returns a value)
 
 VB is particularly useful for building Windows applications with GUIs and database connectivity.`
-  }
+  },
+  
+  // New topics on data structures
+  dataStructuresDynamic: {
+    topic: "Dynamic vs Static Data Structures",
+    explanation: `Data structures can be classified as either dynamic or static based on their memory allocation and size flexibility:
+
+**Dynamic Data Structures**
+• Size can increase or decrease during program execution
+• Examples: Linked Lists, Binary Trees, Graphs, Stacks and Queues (when implemented with linked lists)
+• Memory is allocated at runtime (heap memory)
+• Advantages:
+  - Efficient memory utilization
+  - No size limitations (except total available memory)
+  - No overflow until memory is exhausted
+• Disadvantages:
+  - More complex implementation
+  - Slower access times (compared to static)
+  - Require pointers or references
+
+**Static Data Structures**
+• Fixed size determined at compile time
+• Examples: Arrays, Structures
+• Memory is allocated at compile time (stack memory)
+• Advantages:
+  - Simpler to implement
+  - Faster access with direct indexing
+  - Better cache performance
+• Disadvantages:
+  - May waste memory if not fully utilized
+  - Size must be predetermined
+  - Possibility of overflow errors
+
+The choice between dynamic and static structures depends on your application's needs regarding memory efficiency, access speed, and flexibility.`
+  },
+  
+  binaryTrees: {
+    topic: "Binary Trees",
+    explanation: `A binary tree is a hierarchical data structure where each node has at most two children (left child and right child):
+
+**Key Properties**:
+• Each node contains a value and pointers to left and right children
+• The left subtree contains nodes with values less than the parent node
+• The right subtree contains nodes with values greater than the parent node
+
+**Tree Traversal Methods**:
+1. **In-order**: Left → Root → Right (gives sorted output for BST)
+2. **Pre-order**: Root → Left → Right (useful for copying trees)
+3. **Post-order**: Left → Right → Root (useful for deletion)
+4. **Level-order**: Level by level from top to bottom
+
+**Operations**:
+• **Insertion**: Compare with root, traverse left/right based on comparison, insert at first null position
+• **Deletion**: 
+  - Leaf node: Remove directly
+  - One child: Replace with child
+  - Two children: Replace with in-order successor (smallest in right subtree) or predecessor
+• **Search**: Start at root, traverse left/right based on comparison
+
+**Applications**:
+• Expression evaluation and syntax parsing
+• File system directories
+• Database indexing
+• Decision trees in machine learning
+• Priority queues`
+  },
+  
+  enterprisingIP: {
+    topic: "Intellectual Property",
+    explanation: `Intellectual Property (IP) refers to creations of the mind that are protected by law, giving creators exclusive rights:
+
+**Types of Intellectual Property**:
+
+1. **Copyright**
+   • Protects original works of authorship (literature, music, art, software)
+   • Automatic upon creation, lasts author's lifetime plus 70 years
+   • Gives exclusive rights to reproduce, distribute, display, and create derivative works
+   • Registration recommended but not required in many countries
+
+2. **Trademark**
+   • Protects brand identifiers like logos, names, slogans
+   • Rights established through use, but registration provides stronger protection
+   • Can potentially last indefinitely with proper maintenance
+   • Requires renewal every 5-10 years depending on jurisdiction
+
+3. **Patent**
+   • Protects inventions, processes, methods
+   • Must be novel, non-obvious, and useful
+   • Limited term (usually 20 years)
+   • Requires formal application and examination
+   • Provides exclusive rights to make, use, and sell the invention
+
+4. **Trade Secret**
+   • Protects confidential business information
+   • No registration process; protection comes from keeping information secret
+   • Can potentially last indefinitely (as long as it remains secret)
+   • Examples: formulas, processes, customer lists
+
+For technology entrepreneurs and software developers, understanding these protections is crucial for business strategy and avoiding infringement issues.`
+  },
+  
+  enterprisingBudget: {
+    topic: "Budgeting for Enterprises",
+    explanation: `Budgeting is a critical process for enterprises to plan and control financial resources:
+
+**Key Components of Enterprise Budgeting**:
+
+1. **Capital Budget**
+   • Covers long-term investments (equipment, facilities, R&D)
+   • Evaluated using ROI, NPV, IRR, and payback period
+   • Typically planned for 3-5 year horizons
+
+2. **Operating Budget**
+   • Revenue forecasts
+   • Fixed costs (rent, salaries, insurance)
+   • Variable costs (materials, utilities, commissions)
+   • Marketing and sales expenses
+   • R&D expenditure
+
+3. **Cash Flow Budget**
+   • Timing of cash inflows and outflows
+   • Working capital requirements
+   • Seasonal variations
+   • Debt service schedules
+
+4. **Budgeting Approaches**:
+   • Zero-based: Justifying all expenses from zero each period
+   • Incremental: Adjusting previous period's budget
+   • Activity-based: Allocating costs based on activities
+   • Rolling: Continuous updating of budgets
+
+5. **Technology Budget Considerations**:
+   • Hardware costs (initial and replacement)
+   • Software licenses and subscriptions
+   • Development costs (internal and external)
+   • Maintenance and support
+   • Training and onboarding
+   • Security and compliance
+
+Effective budgeting helps enterprises allocate resources efficiently, measure performance against plans, and make informed financial decisions.`
+  },
+  
+  hackingEthical: {
+    topic: "Ethical Hacking",
+    explanation: `Ethical hacking (also known as penetration testing or white-hat hacking) is the practice of testing computer systems, networks, and applications to identify security vulnerabilities that could be exploited by malicious hackers:
+
+**Key Phases of Ethical Hacking**:
+
+1. **Reconnaissance**
+   • Passive: Gathering information without touching systems (OSINT)
+   • Active: Direct interaction with target systems
+   • Tools: WHOIS, DNS, social engineering, Shodan
+
+2. **Scanning**
+   • Port scanning to identify open services
+   • Vulnerability scanning to detect weaknesses
+   • Tools: Nmap, Nessus, OpenVAS
+
+3. **Gaining Access**
+   • Exploiting identified vulnerabilities
+   • Password cracking, buffer overflows, SQL injection
+   • Tools: Metasploit, SQLmap, Hydra
+
+4. **Maintaining Access**
+   • Backdoors and persistence mechanisms
+   • Privilege escalation
+   • Studying lateral movement possibilities
+
+5. **Covering Tracks**
+   • Understanding how attackers hide their presence
+   • Log analysis and clearing
+
+**Ethical Considerations**:
+• Always obtain proper authorization before testing
+• Respect scope limitations and rules of engagement
+• Avoid disruption to business operations
+• Handle sensitive data appropriately
+• Provide detailed reports with remediation suggestions
+
+Ethical hackers help organizations improve their security posture by identifying and addressing vulnerabilities before malicious hackers can exploit them.`
+  },
+  
+  dataRepresentation: {
+    topic: "Data Representation",
+    explanation: `Data representation refers to how data is encoded and stored in computer systems:
+
+**Number Systems**:
+• **Binary (Base-2)**: Uses only 0 and 1 (e.g., 1101 = 13₁₀)
+• **Decimal (Base-10)**: Standard system using digits 0-9
+• **Hexadecimal (Base-16)**: Uses digits 0-9 and letters A-F (e.g., 0xD = 13₁₀)
+• **Octal (Base-8)**: Uses digits 0-7 (e.g., 15₈ = 13₁₀)
+
+**Integer Representation**:
+• **Unsigned**: Represents only positive values (e.g., 8-bit: 0 to 255)
+• **Signed**: Represents positive and negative values
+  - Sign-Magnitude: First bit represents sign
+  - One's Complement: Invert all bits for negative
+  - Two's Complement: Invert all bits and add 1 (commonly used)
+
+**Floating-Point Representation**:
+• IEEE 754 standard for floating-point arithmetic
+• Components: Sign bit, exponent, mantissa
+• Single precision (32-bit) and double precision (64-bit)
+
+**Character Encoding**:
+• **ASCII**: 7-bit encoding for basic English characters (128 values)
+• **Extended ASCII**: 8-bit encoding (256 values)
+• **Unicode**: Universal character set (UTF-8, UTF-16, UTF-32)
+  - UTF-8: Variable-length encoding (1-4 bytes)
+  - UTF-16: Fixed-length encoding (2 or 4 bytes)
+
+**Data Types in Programming**:
+• Integers (byte, short, int, long)
+• Floating-point (float, double)
+• Characters and strings
+• Boolean (true/false)
+• Composite types (arrays, structures, objects)
+
+Understanding data representation is fundamental for efficient programming, memory management, and data processing.`
+  },
 };
 
 export const generateGreeting = (): string => {
@@ -435,7 +691,8 @@ export const generateGreeting = (): string => {
     `${timeBasedGreeting}! I'm Mbuya Zivai, your wise tech companion. 🌟 I can help with computer science topics from basic programming to advanced concepts. Ask me about the Fetch-Decode-Execute cycle, OSI model, data structures, algorithms, database theory, or programming in Visual Basic!`,
     `${timeBasedGreeting}! I'm Mbuya Zivai, and I'm delighted to chat with you. 💫 As a grandmother figure in the tech world, I love sharing knowledge about computer architecture, networking protocols, algorithms, database systems, or numerical errors. What would you like to learn today?`,
     `${timeBasedGreeting}! *adjusts reading glasses* I'm your Mbuya Zivai, bringing years of tech wisdom to our chat. ✨ Whether you need help understanding logic gates, interrupts, ethical considerations in computing, or Visual Basic programming, I'm here to assist!`,
-    `${timeBasedGreeting}! I'm Mbuya Zivai, your AI guide for all things Computer Science. 🎓 I specialize in explaining A-Level concepts, university programs, and career paths. What can I help you discover today?`
+    `${timeBasedGreeting}! I'm Mbuya Zivai, your AI guide for all things Computer Science. 🎓 I specialize in explaining A-Level concepts, university programs, and career paths. What can I help you discover today?`,
+    `${timeBasedGreeting}! I'm Mbuya Zivai, your knowledge keeper. 📚 I can help with everything from binary trees and data structures to ethical hacking and intellectual property concepts. What area of tech would you like to explore?`
   ];
   
   return greetings[Math.floor(Math.random() * greetings.length)];
@@ -487,6 +744,38 @@ export const generateResponse = (input: string): string => {
       processedInput.includes('vba')) {
     return csTopics.visualBasic.explanation;
   }
+  
+  // New topics from additional knowledge
+  if (processedInput.includes('dynamic') && processedInput.includes('static') &&
+     (processedInput.includes('data structure') || processedInput.includes('structure'))) {
+    return csTopics.dataStructuresDynamic.explanation;
+  }
+  
+  if (processedInput.includes('binary tree') || processedInput.includes('tree traversal') || 
+     (processedInput.includes('tree') && processedInput.includes('data structure'))) {
+    return csTopics.binaryTrees.explanation;
+  }
+  
+  if ((processedInput.includes('intellectual') && processedInput.includes('property')) || 
+      processedInput.includes('copyright') || processedInput.includes('trademark') || 
+      processedInput.includes('patent')) {
+    return csTopics.enterprisingIP.explanation;
+  }
+  
+  if (processedInput.includes('budget') || processedInput.includes('finance') || 
+      (processedInput.includes('enterprise') && processedInput.includes('money'))) {
+    return csTopics.enterprisingBudget.explanation;
+  }
+  
+  if (processedInput.includes('hack') || processedInput.includes('penetration test') || 
+      processedInput.includes('cyber') || processedInput.includes('security test')) {
+    return csTopics.hackingEthical.explanation;
+  }
+  
+  if (processedInput.includes('data representation') || processedInput.includes('binary') || 
+      processedInput.includes('hex') || (processedInput.includes('number') && processedInput.includes('system'))) {
+    return csTopics.dataRepresentation.explanation;
+  }
 
   // Enhanced degree information handling
   if (processedInput.includes('degree') || 
@@ -503,11 +792,11 @@ export const generateResponse = (input: string): string => {
       
       if (university && detailedDegreeInfo["bsc computer science"][university]) {
         const info = detailedDegreeInfo["bsc computer science"][university];
-        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact}`;
+        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact}\n\n**Campus Location:**\n${info.location || 'Information not available'}\n\n**Campus Facilities:**\n${info.campus_facilities ? info.campus_facilities.join('\n') : 'Information not available'}\n\n**International Options:**\n${info.international_options || 'Information not available'}\n\n**Scholarships:**\n${info.scholarships || 'Information not available'}`;
       }
       
       // General info about Computer Science degree
-      return `**BSc Computer Science in Zimbabwe**\n\nA Bachelor of Science in Computer Science is offered at several universities in Zimbabwe, including NUST, UZ, and HIT. The program typically spans 4 years and covers programming, algorithms, databases, software engineering, and specialized areas like AI and networking.\n\n**Where to Study:**\n- National University of Science and Technology (NUST)\n- University of Zimbabwe (UZ)\n- Harare Institute of Technology (HIT)\n\n**Typical Entry Requirements:**\n- Mathematics A Level (C or better)\n- Computing or Physics A Level\n- English Language O Level\n\nFor more specific information about a particular university's program, please ask about "computer science at [university name]".\n\n**Career Prospects:**\nGraduates work as software developers, systems analysts, database administrators, network engineers, and more, with organizations like Econet, TelOne, banks, and government institutions.`;
+      return `**BSc Computer Science in Zimbabwe**\n\nA Bachelor of Science in Computer Science is offered at several universities in Zimbabwe, including NUST, UZ, and HIT. The program typically spans 4 years and covers programming, algorithms, databases, software engineering, and specialized areas like AI and networking.\n\n**Where to Study:**\n- National University of Science and Technology (NUST) - Bulawayo\n- University of Zimbabwe (UZ) - Harare\n- Harare Institute of Technology (HIT) - Harare\n\n**Typical Entry Requirements:**\n- Mathematics A Level (C or better)\n- Computing or Physics A Level\n- English Language O Level\n\nFor more specific information about a particular university's program, please ask about "computer science at [university name]".\n\n**Career Prospects:**\nGraduates work as software developers, systems analysts, database administrators, network engineers, and more, with organizations like Econet, TelOne, banks, and government institutions.\n\n**Research Opportunities:**\nMany programs include research components in areas such as AI, machine learning, cybersecurity, and software engineering methodologies.`;
     }
     
     if (processedInput.includes('information technology') || processedInput.includes('it degree')) {
@@ -649,6 +938,12 @@ export const generateResponse = (input: string): string => {
          "5. Visual Basic Programming: Syntax, event-driven programming\n" +
          "6. Computer Security and Ethics: Principles and considerations\n" +
          "7. Algorithms and Data Structures: Common implementations and complexity\n" +
-         "8. University Degrees: Information about Computer Science and IT programs in Zimbabwe\n\n" +
+         "8. University Degrees: Information about Computer Science and IT programs in Zimbabwe\n" +
+         "9. Dynamic vs Static Data Structures: Comparisons and applications\n" +
+         "10. Binary Trees: Implementation, traversal, and operations\n" +
+         "11. Ethical Hacking: Principles, methodologies, and tools\n" +
+         "12. Intellectual Property: Copyright, patents, trademarks\n" +
+         "13. Enterprise Budgeting: Financial planning for tech ventures\n" +
+         "14. Data Representation: Binary, hexadecimal, and encoding systems\n\n" +
          "What topic would you like to explore today?";
 };

@@ -1,12 +1,15 @@
 
 import { useState, useEffect } from "react";
-import { UserRound } from "lucide-react";
+import { UserRound, Sparkles, MessageSquare, Bot } from "lucide-react";
 import { Dialog, DialogContent } from "./ui/dialog";
 import MbuyaZivai from "./MbuyaZivai";
+import { cn } from "@/lib/utils";
 
 const FloatingChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [haloColor, setHaloColor] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
 
   // Enhanced color palette with 10 different colors
   const haloGradients = [
@@ -31,10 +34,30 @@ const FloatingChatButton = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Add unread message effect after a delay (simulating a welcome message)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isOpen) {
+        setHasUnreadMessages(true);
+      }
+    }, 10000);
+    
+    return () => clearTimeout(timer);
+  }, [isOpen]);
+
+  // Reset unread message indicator when chat is opened
+  useEffect(() => {
+    if (isOpen) {
+      setHasUnreadMessages(false);
+    }
+  }, [isOpen]);
+
   const buttonStyle = {
     background: haloGradients[haloColor],
-    boxShadow: "0 10px 25px -5px rgba(249, 115, 22, 0.4)",
-    transition: "background 1.5s ease, transform 0.3s ease-in-out"
+    boxShadow: isHovered 
+      ? "0 20px 25px -5px rgba(139, 92, 246, 0.5), 0 8px 10px -6px rgba(236, 72, 153, 0.4)"
+      : "0 10px 25px -5px rgba(249, 115, 22, 0.4)",
+    transition: "background 1.5s ease, transform 0.3s ease-in-out, box-shadow 0.3s ease"
   };
 
   const iconContainerStyle = {
@@ -46,18 +69,32 @@ const FloatingChatButton = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 p-4 text-white rounded-full shadow-lg hover:shadow-xl transition-all transform z-50 flex items-center gap-2 group border-2 border-white/40 animate-float hover:scale-110"
+        className={cn(
+          "fixed bottom-6 right-6 p-4 text-white rounded-full shadow-lg transition-all transform z-50 flex items-center gap-2 group border-2 border-white/40",
+          isHovered ? "scale-110" : "animate-float",
+          hasUnreadMessages && "animate-bounce"
+        )}
         style={buttonStyle}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <div 
           className="w-10 h-10 rounded-full flex items-center justify-center animate-spin"
           style={{...iconContainerStyle, animationDuration: "10s"}}
         >
-          <UserRound className="w-6 h-6" />
+          {isHovered ? <Bot className="w-6 h-6" /> : <UserRound className="w-6 h-6" />}
         </div>
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-linear font-bold text-lg pr-0 group-hover:pr-2">
           Chat with Mbuya Zivai
         </span>
+        {hasUnreadMessages && (
+          <span className="absolute -top-1 -right-1 flex h-5 w-5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs font-bold">
+              1
+            </span>
+          </span>
+        )}
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
