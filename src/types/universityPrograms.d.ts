@@ -1,5 +1,4 @@
 
-
 export interface UniversityProgram {
   name: string;
   universities: {
@@ -31,4 +30,3 @@ export interface QuizQuestion {
   difficulty: 'easy' | 'medium' | 'hard';
   category: string;
 }
-
