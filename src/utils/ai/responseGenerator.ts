@@ -1,3 +1,4 @@
+
 import { UniversityDetail } from "../../types/universityPrograms";
 import { csTopics } from "./topics/computerScience";
 import { detailedDegreeInfo } from "./topics/education";
@@ -108,7 +109,7 @@ export const generateResponse = (userInput: string): string => {
       
       if (university && detailedDegreeInfo["bsc computer science"][university]) {
         const info = detailedDegreeInfo["bsc computer science"][university];
-        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact ?? 'Information not available'}\n\n**Campus Location:**\n${info.location ?? 'Information not available'}${info.campus_facilities ? `\n\n**Campus Facilities:**\n${info.campus_facilities.join('\n')}` : ''}\n\n**International Options:**\n${info.international_options ?? 'Information not available'}\n\n**Scholarships:**\n${info.scholarships ?? 'Information not available'}`;
+        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact ?? 'Information not available'}\n\n**Campus Location:**\n${info.location ?? 'Information not available'}\n\n**Campus Facilities:**\n${info.campus_facilities?.join('\n') ?? 'Information not available'}\n\n**International Options:**\n${info.international_options ?? 'Information not available'}\n\n**Scholarships:**\n${info.scholarships ?? 'Information not available'}`;
       }
       
       // General info about Computer Science degree
