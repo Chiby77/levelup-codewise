@@ -1,3 +1,4 @@
+
 import { programmingConcepts } from './responses/programmingConcepts';
 import { basicPrograms } from './responses/programming/basicPrograms';
 import { algorithms } from './responses/programming/algorithms';
@@ -691,11 +692,11 @@ function formatUniversityProgramResponse(university: string, programName: string
          `**Duration:**\n${details.duration}\n\n` +
          `**Key Courses:**\n${details.key_courses.join('\n')}\n\n` +
          `**Career Paths:**\n${details.career_paths.join('\n')}\n\n` +
-         `**Contact:**\n${details.contact ?? 'Information not available'}\n\n` +
-         `**Campus Location:**\n${details.location ?? 'Information not available'}\n\n` +
+         `**Contact:**\n${details.contact || 'Information not available'}\n\n` +
+         `**Campus Location:**\n${details.location || 'Information not available'}\n\n` +
          `**Campus Facilities:**\n${details.campus_facilities && details.campus_facilities.length > 0 ? details.campus_facilities.join('\n') : 'Information not available'}\n\n` +
-         `**International Options:**\n${details.international_options ?? 'Information not available'}\n\n` +
-         `**Scholarships:**\n${details.scholarships ?? 'Information not available'}`;
+         `**International Options:**\n${details.international_options || 'Information not available'}\n\n` +
+         `**Scholarships:**\n${details.scholarships || 'Information not available'}`;
 }
 
 export const generateGreeting = (): string => {
