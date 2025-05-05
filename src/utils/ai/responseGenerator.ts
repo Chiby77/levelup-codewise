@@ -1,4 +1,3 @@
-
 import { UniversityDetail } from "../../types/universityPrograms";
 import { csTopics } from "./topics/computerScience";
 import { detailedDegreeInfo } from "./topics/education";
