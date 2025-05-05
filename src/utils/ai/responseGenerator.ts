@@ -1,4 +1,3 @@
-
 import { UniversityDetail } from "../../types/universityPrograms";
 import { csTopics } from "./topics/computerScience";
 import { detailedDegreeInfo } from "./topics/education";
@@ -257,7 +256,7 @@ export const generateResponse = (userInput: string): string => {
 
 // Function to generate detailed university response
 export const generateUniversityResponse = (program: string, university: string, details: UniversityDetail): string => {
-  return `
+  let response = `
 # ${university} - ${program}
 
 ${details.description}
@@ -282,15 +281,27 @@ ${details.contact || 'Information not available'}
 
 ## Notable Alumni
 ${details.notable_alumni || 'Information not available'}
-
-${details.location ? `## Location\n${details.location}` : ''}
-
-${details.campus_facilities ? `## Campus Facilities\n${details.campus_facilities.join(', ')}` : ''}
-
-${details.international_options ? `## International Options\n${details.international_options}` : ''}
-
-${details.scholarships ? `## Scholarships\n${details.scholarships}` : ''}
-
-${details.research_areas ? `## Research Areas\n${details.research_areas.join(', ')}` : ''}
 `;
+
+  if (details.location) {
+    response += `\n## Location\n${details.location}`;
+  }
+
+  if (details.campus_facilities && details.campus_facilities.length > 0) {
+    response += `\n## Campus Facilities\n${details.campus_facilities.join(', ')}`;
+  }
+
+  if (details.international_options) {
+    response += `\n## International Options\n${details.international_options}`;
+  }
+
+  if (details.scholarships) {
+    response += `\n## Scholarships\n${details.scholarships}`;
+  }
+
+  if (details.research_areas && details.research_areas.length > 0) {
+    response += `\n## Research Areas\n${details.research_areas.join(', ')}`;
+  }
+
+  return response;
 };
