@@ -684,6 +684,20 @@ Understanding data representation is fundamental for efficient programming, memo
   },
 };
 
+// Helper function to format university program responses consistently
+function formatUniversityProgramResponse(university: string, programName: string, details: UniversityDetail): string {
+  return `**${programName} at ${university}**\n\n${details.description}\n\n` +
+         `**Entry Requirements:**\n${details.entry_requirements}\n\n` +
+         `**Duration:**\n${details.duration}\n\n` +
+         `**Key Courses:**\n${details.key_courses.join('\n')}\n\n` +
+         `**Career Paths:**\n${details.career_paths.join('\n')}\n\n` +
+         `**Contact:**\n${details.contact ?? 'Information not available'}\n\n` +
+         `**Campus Location:**\n${details.location ?? 'Information not available'}\n\n` +
+         `**Campus Facilities:**\n${details.campus_facilities && details.campus_facilities.length > 0 ? details.campus_facilities.join('\n') : 'Information not available'}\n\n` +
+         `**International Options:**\n${details.international_options ?? 'Information not available'}\n\n` +
+         `**Scholarships:**\n${details.scholarships ?? 'Information not available'}`;
+}
+
 export const generateGreeting = (): string => {
   const hour = new Date().getHours();
   const timeBasedGreeting = hour < 12 ? "Mangwanani" : hour < 18 ? "Masikati" : "Manheru";
@@ -793,7 +807,7 @@ export const generateResponse = (input: string): string => {
       
       if (university && detailedDegreeInfo["bsc computer science"][university]) {
         const info = detailedDegreeInfo["bsc computer science"][university];
-        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact ?? 'Information not available'}\n\n**Campus Location:**\n${info.location ?? 'Information not available'}\n\n**Campus Facilities:**\n${info.campus_facilities?.join('\n') ?? 'Information not available'}\n\n**International Options:**\n${info.international_options ?? 'Information not available'}\n\n**Scholarships:**\n${info.scholarships ?? 'Information not available'}`;
+        return formatUniversityProgramResponse(university, "BSc Computer Science", info);
       }
       
       // General info about Computer Science degree
@@ -806,7 +820,7 @@ export const generateResponse = (input: string): string => {
       
       if (university && detailedDegreeInfo["btech information technology"][university]) {
         const info = detailedDegreeInfo["btech information technology"][university];
-        return `**BTech Information Technology at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}`;
+        return formatUniversityProgramResponse(university, "BTech Information Technology", info);
       }
       
       // General info about IT degree
@@ -819,7 +833,7 @@ export const generateResponse = (input: string): string => {
       
       if (university && detailedDegreeInfo["bachelor of engineering software"][university]) {
         const info = detailedDegreeInfo["bachelor of engineering software"][university];
-        return `**Bachelor of Engineering in Software Engineering at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}`;
+        return formatUniversityProgramResponse(university, "Bachelor of Engineering in Software Engineering", info);
       }
       
       // General info about Software Engineering degree

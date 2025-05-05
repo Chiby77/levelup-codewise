@@ -108,11 +108,11 @@ export const generateResponse = (userInput: string): string => {
       
       if (university && detailedDegreeInfo["bsc computer science"][university]) {
         const info = detailedDegreeInfo["bsc computer science"][university];
-        return `**BSc Computer Science at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}\n\n**Contact:**\n${info.contact || 'Information not available'}\n\n**Campus Location:**\n${info.location || 'Information not available'}\n\n**Campus Facilities:**\n${info.campus_facilities && info.campus_facilities.length > 0 ? info.campus_facilities.join('\n') : 'Information not available'}\n\n**International Options:**\n${info.international_options || 'Information not available'}\n\n**Scholarships:**\n${info.scholarships || 'Information not available'}`;
+        return formatUniversityProgramResponse(university, "BSc Computer Science", info);
       }
       
       // General info about Computer Science degree
-      return `**BSc Computer Science in Zimbabwe**\n\nA Bachelor of Science in Computer Science is offered at several universities in Zimbabwe, including NUST, UZ, and HIT. The program typically spans 4 years and covers programming, algorithms, databases, software engineering, and specialized areas like AI and networking.\n\n**Where to Study:**\n- National University of Science and Technology (NUST) - Bulawayo\n- University of Zimbabwe (UZ) - Harare\n- Harare Institute of Technology (HIT) - Harare\n\n**Typical Entry Requirements:**\n- Mathematics A Level (C or better)\n- Computing or Physics A Level\n- English Language O Level\n\nFor more specific information about a particular university's program, please ask about "computer science at [university name]".\n\n**Career Prospects:**\nGraduates work as software developers, systems analysts, database administrators, network engineers, and more, with organizations like Econet, TelOne, banks, and government institutions.\n\n**Research Opportunities:**\nMany programs include research components in areas such as AI, machine learning, cybersecurity, and software engineering methodologies.`;
+      return `**BSc Computer Science in Zimbabwe**\n\nA Bachelor of Science in Computer Science is offered at several universities in Zimbabwe, including NUST, UZ, and HIT. The program typically spans 4 years and covers programming, algorithms, software development, and specialized areas like AI and networking.\n\n**Where to Study:**\n- National University of Science and Technology (NUST) - Bulawayo\n- University of Zimbabwe (UZ) - Harare\n- Harare Institute of Technology (HIT) - Harare\n\n**Typical Entry Requirements:**\n- Mathematics A Level (C or better)\n- Computing or Physics A Level\n- English Language O Level\n\nFor more specific information about a particular university's program, please ask about "computer science at [university name]".\n\n**Career Prospects:**\nGraduates work as software developers, systems analysts, database administrators, network engineers, and more, with organizations like Econet, TelOne, banks, and government institutions.\n\n**Research Opportunities:**\nMany programs include research components in areas such as AI, machine learning, cybersecurity, and software engineering methodologies.`;
     }
     
     if (processedInput.includes('information technology') || processedInput.includes('it degree')) {
@@ -121,7 +121,7 @@ export const generateResponse = (userInput: string): string => {
       
       if (university && detailedDegreeInfo["btech information technology"][university]) {
         const info = detailedDegreeInfo["btech information technology"][university];
-        return `**BTech Information Technology at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}`;
+        return formatUniversityProgramResponse(university, "BTech Information Technology", info);
       }
       
       // General info about IT degree
@@ -134,7 +134,7 @@ export const generateResponse = (userInput: string): string => {
       
       if (university && detailedDegreeInfo["bachelor of engineering software"][university]) {
         const info = detailedDegreeInfo["bachelor of engineering software"][university];
-        return `**Bachelor of Engineering in Software Engineering at ${university}**\n\n${info.description}\n\n**Entry Requirements:**\n${info.entry_requirements}\n\n**Duration:**\n${info.duration}\n\n**Key Courses:**\n${info.key_courses.join('\n')}\n\n**Career Paths:**\n${info.career_paths.join('\n')}`;
+        return formatUniversityProgramResponse(university, "Bachelor of Engineering in Software Engineering", info);
       }
       
       // General info about Software Engineering degree
@@ -253,6 +253,20 @@ export const generateResponse = (userInput: string): string => {
 
   return "I'm not sure about that. Could you ask me something about Computer Science topics, programming concepts, or university programs?";
 };
+
+// Helper function to format university program responses consistently
+function formatUniversityProgramResponse(university: string, programName: string, details: UniversityDetail): string {
+  return `**${programName} at ${university}**\n\n${details.description}\n\n` +
+         `**Entry Requirements:**\n${details.entry_requirements}\n\n` +
+         `**Duration:**\n${details.duration}\n\n` +
+         `**Key Courses:**\n${details.key_courses.join('\n')}\n\n` +
+         `**Career Paths:**\n${details.career_paths.join('\n')}\n\n` +
+         `**Contact:**\n${details.contact || 'Information not available'}\n\n` +
+         `**Campus Location:**\n${details.location || 'Information not available'}\n\n` +
+         `**Campus Facilities:**\n${details.campus_facilities && details.campus_facilities.length > 0 ? details.campus_facilities.join('\n') : 'Information not available'}\n\n` +
+         `**International Options:**\n${details.international_options || 'Information not available'}\n\n` +
+         `**Scholarships:**\n${details.scholarships || 'Information not available'}`;
+}
 
 // Function to generate detailed university response
 export const generateUniversityResponse = (program: string, university: string, details: UniversityDetail): string => {
