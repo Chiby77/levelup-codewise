@@ -14,7 +14,163 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          session_token: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          session_token: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          session_token?: string
+        }
+        Relationships: []
+      }
+      exams: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          status: Database["public"]["Enums"]["exam_status"]
+          subject: string
+          title: string
+          total_marks: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          status?: Database["public"]["Enums"]["exam_status"]
+          subject?: string
+          title: string
+          total_marks?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          status?: Database["public"]["Enums"]["exam_status"]
+          subject?: string
+          title?: string
+          total_marks?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      questions: {
+        Row: {
+          correct_answer: string | null
+          created_at: string
+          exam_id: string
+          id: string
+          marks: number
+          options: Json | null
+          order_number: number
+          question_text: string
+          question_type: Database["public"]["Enums"]["question_type"]
+          sample_code: string | null
+        }
+        Insert: {
+          correct_answer?: string | null
+          created_at?: string
+          exam_id: string
+          id?: string
+          marks?: number
+          options?: Json | null
+          order_number?: number
+          question_text: string
+          question_type: Database["public"]["Enums"]["question_type"]
+          sample_code?: string | null
+        }
+        Update: {
+          correct_answer?: string | null
+          created_at?: string
+          exam_id?: string
+          id?: string
+          marks?: number
+          options?: Json | null
+          order_number?: number
+          question_text?: string
+          question_type?: Database["public"]["Enums"]["question_type"]
+          sample_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_submissions: {
+        Row: {
+          answers: Json
+          exam_id: string
+          grade_details: Json | null
+          graded: boolean | null
+          id: string
+          max_score: number | null
+          student_email: string | null
+          student_name: string
+          submitted_at: string
+          time_taken_minutes: number | null
+          total_score: number | null
+        }
+        Insert: {
+          answers: Json
+          exam_id: string
+          grade_details?: Json | null
+          graded?: boolean | null
+          id?: string
+          max_score?: number | null
+          student_email?: string | null
+          student_name: string
+          submitted_at?: string
+          time_taken_minutes?: number | null
+          total_score?: number | null
+        }
+        Update: {
+          answers?: Json
+          exam_id?: string
+          grade_details?: Json | null
+          graded?: boolean | null
+          id?: string
+          max_score?: number | null
+          student_email?: string | null
+          student_name?: string
+          submitted_at?: string
+          time_taken_minutes?: number | null
+          total_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_submissions_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +179,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      exam_status: "draft" | "active" | "completed" | "archived"
+      question_type: "multiple_choice" | "coding" | "flowchart" | "short_answer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +307,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      exam_status: ["draft", "active", "completed", "archived"],
+      question_type: ["multiple_choice", "coding", "flowchart", "short_answer"],
+    },
   },
 } as const
