@@ -270,7 +270,8 @@ const AnimatedHeroBackground = () => {
         className={`absolute inset-0 transition-opacity duration-1000 ${transitioning ? 'opacity-0' : 'opacity-100'}`}
         style={{ backgroundColor: "#1A1F2C" }} 
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/10 to-secondary/20 opacity-95 z-10" style={{ background: 'var(--gradient-hero)', opacity: 0.9 }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70 z-20" />
     </div>
   );
 };

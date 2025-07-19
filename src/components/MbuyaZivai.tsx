@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import { useToast } from "./ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { generateResponse, generateGreeting } from "@/utils/ai/index";
 import { 
   BookOpenCheck, 
@@ -46,11 +47,16 @@ export default function MbuyaZivai() {
   const [showQuickActions, setShowQuickActions] = useState(true);
 
   useEffect(() => {
+    // Generate or get session ID
+    if (!sessionStorage.getItem('sessionId')) {
+      sessionStorage.setItem('sessionId', Date.now().toString());
+    }
+
     const timer = setTimeout(() => {
       const initialGreeting = generateGreeting();
       setMessages([{
         role: "assistant",
-        content: initialGreeting,
+        content: `${initialGreeting} I'm Mbuya Zivai, your enhanced AI assistant! I learn from our conversations to provide better, more personalized help. Ask me anything about Computer Science!`,
         id: "greeting-" + Date.now(),
         animate: true
       }]);
@@ -105,11 +111,17 @@ export default function MbuyaZivai() {
     setIsLoading(true);
 
     try {
-      // Simulate processing delay for better UX
-      const processingTime = Math.floor(Math.random() * 400) + 800;
-      await new Promise(resolve => setTimeout(resolve, processingTime));
-      
-      const response = generateResponse(query);
+      // Use enhanced AI with learning capabilities
+      const { data, error } = await supabase.functions.invoke('enhanced-ai', {
+        body: { 
+          message: query,
+          sessionId: sessionStorage.getItem('sessionId') || 'anonymous'
+        }
+      });
+
+      if (error) throw error;
+
+      const response = data?.response || generateResponse(query);
       const assistantMessageId = "assistant-" + Date.now();
       
       const assistantMessage = {
@@ -130,11 +142,34 @@ export default function MbuyaZivai() {
       }, 100);
 
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to get response from Mbuya Zivai. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Error with enhanced AI:", error);
+      // Fallback to local AI
+      try {
+        const response = generateResponse(query);
+        const assistantMessageId = "assistant-" + Date.now();
+        
+        const assistantMessage = {
+          role: "assistant" as const,
+          content: response,
+          id: assistantMessageId,
+          animate: true
+        };
+        
+        setMessages((prev) => [...prev, assistantMessage]);
+        
+        setTimeout(() => {
+          setMessageAnimationComplete(prev => ({
+            ...prev,
+            [assistantMessageId]: true
+          }));
+        }, 100);
+      } catch (fallbackError) {
+        toast({
+          title: "Error",
+          description: "Failed to get response from Mbuya Zivai. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

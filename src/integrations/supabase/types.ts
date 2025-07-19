@@ -74,6 +74,36 @@ export type Database = {
         }
         Relationships: []
       }
+      learned_responses: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          id: string
+          response_text: string
+          trigger_phrase: string
+          updated_at: string
+          usage_count: number | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          response_text: string
+          trigger_phrase: string
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          response_text?: string
+          trigger_phrase?: string
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       questions: {
         Row: {
           correct_answer: string | null
@@ -170,6 +200,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_interactions: {
+        Row: {
+          ai_response: string | null
+          context_keywords: string[] | null
+          id: string
+          interaction_type: string | null
+          sentiment: number | null
+          session_id: string | null
+          timestamp: string
+          topics: string[] | null
+          user_input: string
+        }
+        Insert: {
+          ai_response?: string | null
+          context_keywords?: string[] | null
+          id?: string
+          interaction_type?: string | null
+          sentiment?: number | null
+          session_id?: string | null
+          timestamp?: string
+          topics?: string[] | null
+          user_input: string
+        }
+        Update: {
+          ai_response?: string | null
+          context_keywords?: string[] | null
+          id?: string
+          interaction_type?: string | null
+          sentiment?: number | null
+          session_id?: string | null
+          timestamp?: string
+          topics?: string[] | null
+          user_input?: string
+        }
+        Relationships: []
       }
     }
     Views: {

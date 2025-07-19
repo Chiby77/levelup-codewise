@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AnimatedButtonProps {
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "outline";
   children: React.ReactNode;
   onClick?: () => void;
   icon?: boolean;
@@ -62,6 +62,7 @@ const AnimatedButton = ({
   }, []);
 
   const isPrimary = variant === "primary";
+  const isOutline = variant === "outline";
   
   const buttonStyles = isPrimary
     ? { background: primaryGradients[colorIndex], transition: "background 1.5s ease" }
@@ -81,6 +82,8 @@ const AnimatedButton = ({
         className={cn(
           isPrimary
             ? "text-white"
+            : isOutline
+            ? "bg-transparent hover:bg-white/10 text-white border-2 border-white/50 hover:border-white"
             : "bg-white/10 hover:bg-white/20 text-white border-white",
           animationClass,
           hoverClass,

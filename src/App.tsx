@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import Downloads from "./pages/Downloads";
 import Contact from "./pages/Contact";
+import { ExamSystem } from "./pages/ExamSystem";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => {
               <Route path="/about" element={<About />} />
               <Route path="/downloads" element={<Downloads />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/exams" element={<ExamSystem />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <FloatingChatButton />

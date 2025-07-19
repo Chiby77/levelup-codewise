@@ -40,7 +40,7 @@ const Hero = () => {
           <EnhancedQuoteRotator />
           
           {/* Action Buttons */}
-          <div className="space-x-4 mt-8 animate-fadeIn" style={{ animationDelay: "1.2s" }}>
+          <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-fadeIn" style={{ animationDelay: "1.2s" }}>
             <AnimatedButton 
               variant="primary" 
               icon 
@@ -52,6 +52,13 @@ const Hero = () => {
             
             <AnimatedButton 
               variant="secondary"
+              onClick={() => navigate("/exams")}
+            >
+              Digital Exams
+            </AnimatedButton>
+            
+            <AnimatedButton 
+              variant="outline"
               onClick={() => setShowDialog(true)}
             >
               Learn More
