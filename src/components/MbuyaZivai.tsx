@@ -111,6 +111,8 @@ export default function MbuyaZivai() {
     setIsLoading(true);
 
     try {
+      console.log('Attempting to call enhanced-ai function...');
+      
       // Use enhanced AI with learning capabilities
       const { data, error } = await supabase.functions.invoke('enhanced-ai', {
         body: { 
@@ -118,6 +120,8 @@ export default function MbuyaZivai() {
           sessionId: sessionStorage.getItem('sessionId') || 'anonymous'
         }
       });
+
+      console.log('Enhanced-AI response:', { data, error });
 
       if (error) throw error;
 

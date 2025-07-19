@@ -1,1 +1,7 @@
 project_id = "lprllsdtgnewmsnjyxhj"
+
+[functions.enhanced-ai]
+verify_jwt = false
+
+[functions.grade-exam]
+verify_jwt = false
