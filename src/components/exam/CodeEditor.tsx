@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import AceEditor from 'react-ace';
 
-// Import ace builds
+// Import ace builds using dynamic imports for Vite compatibility
+import 'ace-builds/src-noconflict/ace';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-java';
-import 'ace-builds/src-noconflict/mode-cpp';
+import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/ext-language_tools';
