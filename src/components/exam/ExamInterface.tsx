@@ -197,17 +197,17 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
       <div className="container mx-auto p-4">
         {/* Header */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold">{exam.title}</h1>
-              <p className="text-muted-foreground">Student: {studentData.name}</p>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold truncate">{exam.title}</h1>
+              <p className="text-muted-foreground text-sm sm:text-base truncate">Student: {studentData.name}</p>
             </div>
             
-            <div className="flex items-center gap-6">
+            <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6">
               <div className="text-center">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  <span className={`text-lg font-mono ${timeLeft < 300 ? 'text-red-600 animate-pulse' : ''}`}>
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className={`text-base sm:text-lg font-mono ${timeLeft < 300 ? 'text-red-600 animate-pulse' : ''}`}>
                     {formatTime(timeLeft)}
                   </span>
                 </div>
@@ -215,7 +215,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
               </div>
               
               <div className="text-center">
-                <p className="text-lg font-semibold">{answeredCount}/{questions.length}</p>
+                <p className="text-base sm:text-lg font-semibold">{answeredCount}/{questions.length}</p>
                 <p className="text-xs text-muted-foreground">Answered</p>
               </div>
             </div>
@@ -259,24 +259,26 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
         )}
 
         {/* Navigation */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <Button
             variant="outline"
             onClick={() => navigateQuestion('prev')}
             disabled={currentQuestionIndex === 0}
+            className="w-full sm:w-auto"
           >
             <ChevronLeft className="h-4 w-4 mr-2" />
-            Previous
+            <span className="hidden sm:inline">Previous</span>
+            <span className="sm:hidden">Prev</span>
           </Button>
 
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2 flex-wrap justify-center">
             {questions.map((_, index) => (
               <Button
                 key={index}
                 variant={index === currentQuestionIndex ? 'default' : answers[questions[index].id] ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => setCurrentQuestionIndex(index)}
-                className="w-10 h-10"
+                className="w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm"
               >
                 {index + 1}
               </Button>
@@ -284,13 +286,15 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
           </div>
 
           {currentQuestionIndex === questions.length - 1 ? (
-            <Button onClick={() => setShowSubmitDialog(true)}>
+            <Button onClick={() => setShowSubmitDialog(true)} className="w-full sm:w-auto">
               <Send className="h-4 w-4 mr-2" />
-              Submit Exam
+              <span className="hidden sm:inline">Submit Exam</span>
+              <span className="sm:hidden">Submit</span>
             </Button>
           ) : (
-            <Button onClick={() => navigateQuestion('next')}>
-              Next
+            <Button onClick={() => navigateQuestion('next')} className="w-full sm:w-auto">
+              <span className="hidden sm:inline">Next</span>
+              <span className="sm:hidden">Next</span>
               <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
           )}

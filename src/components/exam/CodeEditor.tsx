@@ -53,8 +53,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         onChange={onChange}
         value={value}
         width="100%"
-        height="400px"
-        fontSize={14}
+        height="300px"
+        fontSize={12}
         showPrintMargin={true}
         showGutter={true}
         highlightActiveLine={true}
@@ -69,6 +69,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         style={{
           fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
         }}
+        className="sm:h-[400px]"
       />
       
       <div className="bg-muted/50 px-4 py-2 border-t">

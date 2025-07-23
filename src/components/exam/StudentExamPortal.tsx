@@ -151,18 +151,18 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
                     onClick={() => handleExamSelect(exam)}
                   >
                     <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-xl">{exam.title}</CardTitle>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg sm:text-xl">{exam.title}</CardTitle>
                           <p className="text-muted-foreground mt-1">{exam.description}</p>
                         </div>
-                        <Button variant="outline">
+                        <Button variant="outline" className="w-full sm:w-auto">
                           Start Exam
                         </Button>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex gap-6 text-sm text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4" />
                           <span>{exam.duration_minutes} minutes</span>
@@ -187,7 +187,7 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
                 <p className="text-muted-foreground">{selectedExam.description}</p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Clock className="h-5 w-5" />
                     <span>Duration: {selectedExam.duration_minutes} minutes</span>
@@ -208,6 +208,7 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
                         onChange={(e) => setStudentData({ ...studentData, name: e.target.value })}
                         placeholder="Enter your full name"
                         required
+                        className="w-full"
                       />
                     </div>
                     <div className="space-y-2">
@@ -218,6 +219,7 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
                         value={studentData.email}
                         onChange={(e) => setStudentData({ ...studentData, email: e.target.value })}
                         placeholder="Enter your email address"
+                        className="w-full"
                       />
                     </div>
                   </div>

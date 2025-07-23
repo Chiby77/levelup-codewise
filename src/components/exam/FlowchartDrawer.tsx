@@ -21,8 +21,8 @@ export const FlowchartDrawer: React.FC<FlowchartDrawerProps> = ({ value, onChang
     if (!canvasRef.current) return;
 
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 800,
-      height: 600,
+      width: Math.min(800, window.innerWidth - 100),
+      height: Math.min(600, window.innerHeight - 300),
       backgroundColor: '#ffffff',
     });
 
@@ -301,8 +301,8 @@ export const FlowchartDrawer: React.FC<FlowchartDrawerProps> = ({ value, onChang
         </div>
 
         {/* Canvas */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
-          <canvas ref={canvasRef} />
+        <div className="border border-gray-200 rounded-lg overflow-auto bg-white">
+          <canvas ref={canvasRef} className="max-w-full h-auto" />
         </div>
 
         {/* Instructions */}
