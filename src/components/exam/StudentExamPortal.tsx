@@ -7,6 +7,7 @@ import { ArrowLeft, Clock, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ExamInterface } from './ExamInterface';
+import { ExamResults } from './ExamResults';
 
 interface StudentExamPortalProps {
   onBack: () => void;
@@ -21,13 +22,14 @@ interface Exam {
 }
 
 export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) => {
-  const [step, setStep] = useState<'select' | 'details' | 'exam'>('select');
+  const [step, setStep] = useState<'select' | 'details' | 'exam' | 'results'>('select');
   const [exams, setExams] = useState<Exam[]>([]);
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [studentData, setStudentData] = useState({
     name: '',
     email: ''
   });
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -65,10 +67,16 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
     setStep('exam');
   };
 
-  const handleExamComplete = () => {
+  const handleExamComplete = (submissionId: string) => {
+    setSubmissionId(submissionId);
+    setStep('results');
+  };
+
+  const handleReturnToPortal = () => {
     setStep('select');
     setSelectedExam(null);
     setStudentData({ name: '', email: '' });
+    setSubmissionId(null);
   };
 
   if (loading) {
@@ -88,6 +96,16 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
         exam={selectedExam}
         studentData={studentData}
         onComplete={handleExamComplete}
+      />
+    );
+  }
+
+  if (step === 'results' && submissionId) {
+    return (
+      <ExamResults
+        submissionId={submissionId}
+        studentData={studentData}
+        onReturnToPortal={handleReturnToPortal}
       />
     );
   }

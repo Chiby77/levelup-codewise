@@ -24,7 +24,7 @@ interface ExamInterfaceProps {
     name: string;
     email: string;
   };
-  onComplete: () => void;
+  onComplete: (submissionId: string) => void;
 }
 
 interface Question {
@@ -168,7 +168,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
         clearInterval(timerRef.current);
       }
       
-      onComplete();
+      onComplete(data.id);
     } catch (error) {
       console.error('Error submitting exam:', error);
       toast.error('Failed to submit exam. Please try again.');

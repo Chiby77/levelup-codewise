@@ -40,7 +40,7 @@ const Hero = () => {
           <EnhancedQuoteRotator />
           
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-fadeIn" style={{ animationDelay: "1.2s" }}>
+          <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center items-center animate-fadeIn" style={{ animationDelay: "1.2s" }}>
             <AnimatedButton 
               variant="primary" 
               icon 

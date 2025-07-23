@@ -214,7 +214,7 @@ export const FlowchartDrawer: React.FC<FlowchartDrawerProps> = ({ value, onChang
           </Button>
           
           <Button
-            variant={activeTool === 'rectangle' ? 'default' : 'outline'}
+            variant="outline"
             size="sm"
             onClick={() => {
               setActiveTool('rectangle');
@@ -222,11 +222,11 @@ export const FlowchartDrawer: React.FC<FlowchartDrawerProps> = ({ value, onChang
             }}
           >
             <Square className="h-4 w-4 mr-2" />
-            Rectangle
+            Process
           </Button>
           
           <Button
-            variant={activeTool === 'circle' ? 'default' : 'outline'}
+            variant="outline"
             size="sm"
             onClick={() => {
               setActiveTool('circle');
@@ -234,11 +234,11 @@ export const FlowchartDrawer: React.FC<FlowchartDrawerProps> = ({ value, onChang
             }}
           >
             <CircleIcon className="h-4 w-4 mr-2" />
-            Circle
+            Start/End
           </Button>
           
           <Button
-            variant={activeTool === 'diamond' ? 'default' : 'outline'}
+            variant="outline"
             size="sm"
             onClick={() => {
               setActiveTool('diamond');
@@ -246,11 +246,11 @@ export const FlowchartDrawer: React.FC<FlowchartDrawerProps> = ({ value, onChang
             }}
           >
             <Triangle className="h-4 w-4 mr-2" />
-            Diamond
+            Decision
           </Button>
           
           <Button
-            variant={activeTool === 'text' ? 'default' : 'outline'}
+            variant="outline"
             size="sm"
             onClick={() => {
               setActiveTool('text');
@@ -266,15 +266,37 @@ export const FlowchartDrawer: React.FC<FlowchartDrawerProps> = ({ value, onChang
             size="sm"
             onClick={() => setActiveTool('draw')}
           >
-            Draw
+            Draw Arrows
           </Button>
 
           <Button
-            variant="outline"
+            variant="destructive"
             size="sm"
             onClick={deleteSelected}
           >
+            <Eraser className="h-4 w-4 mr-2" />
             Delete
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (fabricCanvas) {
+                fabricCanvas.getObjects().forEach(obj => {
+                  obj.set({
+                    fill: 'lightblue',
+                    stroke: 'navy',
+                    strokeWidth: 2
+                  });
+                });
+                fabricCanvas.renderAll();
+                saveCanvasData();
+                toast.success('Styling applied');
+              }
+            }}
+          >
+            Style
           </Button>
         </div>
 
