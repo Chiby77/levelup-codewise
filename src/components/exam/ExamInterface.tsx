@@ -7,11 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle } from 'lucide-react';
+import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CodeEditor } from './CodeEditor';
 import { FlowchartDrawer } from './FlowchartDrawer';
+import { AIInvigilator } from './AIInvigilator';
+import { ExamFeatures } from './ExamFeatures';
 
 interface ExamInterfaceProps {
   exam: {
@@ -46,17 +48,46 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const [violations, setViolations] = useState<string[]>([]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const timerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     fetchQuestions();
     startTimer();
+    enableFullscreen();
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      exitFullscreen();
     };
   }, []);
+
+  const enableFullscreen = async () => {
+    try {
+      if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+        toast.success('Exam mode activated - Full screen enabled');
+      }
+    } catch (error) {
+      console.error('Fullscreen error:', error);
+      toast.warning('Could not enable fullscreen mode');
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.exitFullscreen && document.fullscreenElement) {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  const handleViolation = (violation: string) => {
+    setViolations(prev => [...prev, violation]);
+    // You could also send this to a server for logging
+  };
 
   const fetchQuestions = async () => {
     try {
@@ -194,6 +225,19 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+      {/* AI Invigilation System */}
+      <AIInvigilator 
+        isActive={true} 
+        onViolationDetected={handleViolation}
+      />
+      
+      {/* Exam Features & Tools */}
+      <ExamFeatures 
+        isExamActive={true}
+        questionCount={questions.length}
+        timeRemaining={timeLeft}
+      />
+      
       <div className="container mx-auto p-4">
         {/* Header */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border p-4 mb-6">
@@ -217,6 +261,16 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
               <div className="text-center">
                 <p className="text-base sm:text-lg font-semibold">{answeredCount}/{questions.length}</p>
                 <p className="text-xs text-muted-foreground">Answered</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className={`text-base sm:text-lg font-semibold ${violations.length > 5 ? 'text-red-600' : violations.length > 2 ? 'text-yellow-600' : 'text-green-600'}`}>
+                    {violations.length}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">Violations</p>
               </div>
             </div>
           </div>

@@ -34,7 +34,11 @@ serve(async (req) => {
       } else {
         switch (question.question_type) {
           case 'multiple_choice':
-            if (studentAnswer === question.correct_answer) {
+            // Fix: Case-insensitive comparison with proper trimming
+            const normalizedStudentAnswer = studentAnswer?.toString().trim().toLowerCase();
+            const normalizedCorrectAnswer = question.correct_answer?.toString().trim().toLowerCase();
+            
+            if (normalizedStudentAnswer === normalizedCorrectAnswer) {
               questionScore = question.marks;
               feedback = "✅ Correct! Excellent work.";
             } else {
