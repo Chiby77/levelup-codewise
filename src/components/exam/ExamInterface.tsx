@@ -56,6 +56,10 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
     fetchQuestions();
     startTimer();
     enableFullscreen();
+    
+    // Prevent browser back button
+    window.history.pushState(null, '', window.location.href);
+    
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
