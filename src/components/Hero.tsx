@@ -19,33 +19,38 @@ const Hero = () => {
         <AnimatedHeroBackground />
         
         {/* Hero Content */}
-        <div className="container mx-auto px-4 text-center relative z-10 py-16">
-          {/* Animated Logo */}
-          <div className="absolute top-0 left-4 md:left-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-8 sm:py-16">
+          {/* Animated Logo - Responsive positioning */}
+          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 md:left-8 scale-75 sm:scale-100">
             <AnimatedLogo />
           </div>
           
-          {/* Main Heading */}
-          <AnimatedHeading 
-            text="Master A Level Computer Science" 
-            className="mb-6"
-            delay={800}
-          />
+          {/* Main Heading - Responsive text */}
+          <div className="mt-16 sm:mt-8 mb-4 sm:mb-6">
+            <AnimatedHeading 
+              text="Master A Level Computer Science" 
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight"
+              delay={800}
+            />
+          </div>
           
-          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto animate-fadeIn" style={{ animationDelay: "1s" }}>
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-xs sm:max-w-lg md:max-w-2xl mx-auto animate-fadeIn px-4" style={{ animationDelay: "1s" }}>
             Expert guidance, comprehensive resources, and a supportive community to help you excel in your studies.
           </p>
           
-          {/* Quote Rotator */}
-          <EnhancedQuoteRotator />
+          {/* Quote Rotator - Responsive */}
+          <div className="mb-6 sm:mb-8 px-4">
+            <EnhancedQuoteRotator />
+          </div>
           
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center items-center animate-fadeIn" style={{ animationDelay: "1.2s" }}>
+          {/* Action Buttons - Fully responsive stacking */}
+          <div className="flex flex-col gap-3 sm:gap-4 mt-6 sm:mt-8 justify-center items-center animate-fadeIn px-4 sm:px-0 md:flex-row" style={{ animationDelay: "1.2s" }}>
             <AnimatedButton 
               variant="primary" 
               icon 
               pulseEffect
               onClick={() => navigate("/about")}
+              className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
               Get Started
             </AnimatedButton>
@@ -53,6 +58,7 @@ const Hero = () => {
             <AnimatedButton 
               variant="secondary"
               onClick={() => navigate("/exams")}
+              className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
               Digital Exams
             </AnimatedButton>
@@ -60,6 +66,7 @@ const Hero = () => {
             <AnimatedButton 
               variant="outline"
               onClick={() => setShowDialog(true)}
+              className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
               Learn More
             </AnimatedButton>

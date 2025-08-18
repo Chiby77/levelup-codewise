@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download, FileText, File, BookOpen, Code, Database, Braces } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import downloadsBackground from "@/assets/downloads-bg.jpg";
 
 const Downloads = () => {
   const { toast } = useToast();
@@ -143,17 +144,24 @@ const Downloads = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] text-white">
-      <Navbar />
-      <div className="container mx-auto px-4 pt-24 pb-12 space-y-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-accent mb-4 animate-fadeIn">Study Resources</h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+    <div className="min-h-screen relative text-foreground overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${downloadsBackground})` }}
+      />
+      <div className="absolute inset-0 bg-background/90" />
+      <div className="relative z-10">
+        <Navbar />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-12 space-y-6 sm:space-y-8">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent mb-4 animate-fadeIn">Study Resources</h1>
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-xl sm:max-w-2xl mx-auto px-4">
             Access our comprehensive collection of learning materials to help you excel in your A Level Computer Science studies.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div onClick={() => document.getElementById('programming-notes')?.scrollIntoView({behavior: 'smooth'})}
             className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
             <div className="flex items-center mb-4">
@@ -352,6 +360,7 @@ const Downloads = () => {
             </a>
           </p>
         </div>
+      </div>
       </div>
     </div>
   );

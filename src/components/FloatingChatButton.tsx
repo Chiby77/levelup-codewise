@@ -70,7 +70,7 @@ const FloatingChatButton = () => {
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
-          "fixed bottom-6 right-6 p-4 text-white rounded-full shadow-lg transition-all transform z-50 flex items-center gap-2 group border-2 border-white/40",
+          "fixed bottom-4 right-4 sm:bottom-6 sm:right-6 p-2 sm:p-4 text-white rounded-full shadow-lg transition-all transform z-50 flex items-center gap-2 group border-2 border-white/40",
           isHovered ? "scale-110" : "animate-float",
           hasUnreadMessages && "animate-bounce"
         )}
@@ -79,18 +79,18 @@ const FloatingChatButton = () => {
         onMouseLeave={() => setIsHovered(false)}
       >
         <div 
-          className="w-10 h-10 rounded-full flex items-center justify-center animate-spin"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center animate-spin"
           style={{...iconContainerStyle, animationDuration: "10s"}}
         >
-          {isHovered ? <Bot className="w-6 h-6" /> : <UserRound className="w-6 h-6" />}
+          {isHovered ? <Bot className="w-5 h-5 sm:w-6 sm:h-6" /> : <UserRound className="w-5 h-5 sm:w-6 sm:h-6" />}
         </div>
-        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-linear font-bold text-lg pr-0 group-hover:pr-2">
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-linear font-bold text-sm sm:text-lg pr-0 group-hover:pr-2 hidden sm:inline">
           Chat with Mbuya Zivai
         </span>
         {hasUnreadMessages && (
-          <span className="absolute -top-1 -right-1 flex h-5 w-5">
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 sm:h-5 sm:w-5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs font-bold">
+            <span className="relative inline-flex rounded-full h-4 w-4 sm:h-5 sm:w-5 bg-red-500 items-center justify-center text-xs font-bold">
               1
             </span>
           </span>

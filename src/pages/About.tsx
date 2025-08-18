@@ -1,6 +1,7 @@
 
 import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
+import aboutBackground from "@/assets/about-bg.jpg";
 
 const About = () => {
   const teachingLocations = [
@@ -22,11 +23,18 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] text-white">
-      <Navbar />
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen relative text-foreground overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${aboutBackground})` }}
+      />
+      <div className="absolute inset-0 bg-background/90" />
+      <div className="relative z-10">
+        <Navbar />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-accent mb-6 animate-fadeIn">About Us</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent mb-6 animate-fadeIn text-center sm:text-left">About Us</h1>
           
           <div className="prose prose-lg mb-12 animate-fadeIn">
             <p className="text-lg text-gray-300 mb-6">
@@ -68,7 +76,7 @@ const About = () => {
                     <span className="text-3xl font-bold text-accent">JM</span>
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-1">J Mapesure</h3>
+                <h3 className="text-xl font-semibold mb-1">J Mapasure</h3>
                 <p className="text-accent/80 mb-2">Senior Educator</p>
                 <p className="text-gray-400 text-sm">Theory & Systems Architecture</p>
               </div>
@@ -144,6 +152,7 @@ const About = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
