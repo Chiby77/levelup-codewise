@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -7,6 +6,7 @@ import EnhancedQuoteRotator from "./EnhancedQuoteRotator";
 import AnimatedButton from "./AnimatedButton";
 import AnimatedHeading from "./AnimatedHeading";
 import AnimatedLogo from "./AnimatedLogo";
+import MotivationalQuotes from "./MotivationalQuotes";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -34,7 +34,22 @@ const Hero = () => {
             />
           </div>
           
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-xs sm:max-w-lg md:max-w-2xl mx-auto animate-fadeIn px-4" style={{ animationDelay: "1s" }}>
+          {/* Motivational Message */}
+          <div className="mb-6 text-center space-y-2 animate-fadeIn px-4" style={{ animationDelay: '1000ms' }}>
+            <div className="bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+              <p className="text-lg sm:text-xl font-bold text-primary mb-2 animate-pulse">
+                ✨ WISHING YOU ALL THE BEST IN YOUR FINAL EXAMS ✨
+              </p>
+              <p className="text-base sm:text-lg font-semibold text-secondary">
+                🙏 USAKANGANWE PRAYER 🙏
+              </p>
+              <p className="text-sm sm:text-base font-medium text-white/90 mt-2">
+                💝 LET'S MAKE OUR PARENTS HAPPY 💝
+              </p>
+            </div>
+          </div>
+          
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-xs sm:max-w-lg md:max-w-2xl mx-auto animate-fadeIn px-4" style={{ animationDelay: "1.2s" }}>
             Expert guidance, comprehensive resources, and a supportive community to help you excel in your studies.
           </p>
           
@@ -44,7 +59,7 @@ const Hero = () => {
           </div>
           
           {/* Action Buttons - Fully responsive stacking */}
-          <div className="flex flex-col gap-3 sm:gap-4 mt-6 sm:mt-8 justify-center items-center animate-fadeIn px-4 sm:px-0 md:flex-row" style={{ animationDelay: "1.2s" }}>
+          <div className="flex flex-col gap-3 sm:gap-4 mt-6 sm:mt-8 justify-center items-center animate-fadeIn px-4 sm:px-0 md:flex-row" style={{ animationDelay: "1.4s" }}>
             <AnimatedButton 
               variant="primary" 
               icon 
@@ -104,6 +119,9 @@ const Hero = () => {
           </DialogContent>
         </Dialog>
       </div>
+      
+      {/* Motivational Quotes Component */}
+      <MotivationalQuotes />
 
       <style>{`
         @keyframes fadeIn {

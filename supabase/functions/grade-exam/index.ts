@@ -6,6 +6,30 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to compare code similarity
+const compareCode = (studentCode: string, expectedCode: string): number => {
+  const normalize = (code: string) => code.toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/[{}();,]/g, '')
+    .trim();
+  
+  const student = normalize(studentCode);
+  const expected = normalize(expectedCode);
+  
+  if (!student || !expected) return 0;
+  
+  // Simple similarity check based on common keywords and structure
+  const studentWords = student.split(' ').filter(w => w.length > 2);
+  const expectedWords = expected.split(' ').filter(w => w.length > 2);
+  
+  let matches = 0;
+  studentWords.forEach(word => {
+    if (expectedWords.includes(word)) matches++;
+  });
+  
+  return matches / Math.max(expectedWords.length, 1);
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -34,59 +58,98 @@ serve(async (req) => {
       } else {
         switch (question.question_type) {
           case 'multiple_choice':
-            // Fix: Case-insensitive comparison with proper trimming
-            const normalizedStudentAnswer = studentAnswer?.toString().trim().toLowerCase();
-            const normalizedCorrectAnswer = question.correct_answer?.toString().trim().toLowerCase();
+            // Enhanced multiple choice grading with better normalization
+            const studentAns = studentAnswer?.toString()?.trim()?.toLowerCase()?.replace(/\s+/g, ' ') || '';
+            const correctAns = question.correct_answer?.toString()?.trim()?.toLowerCase()?.replace(/\s+/g, ' ') || '';
             
-            if (normalizedStudentAnswer === normalizedCorrectAnswer) {
+            // Also check if student answer contains the correct answer or vice versa for partial matching
+            const isExactMatch = studentAns === correctAns;
+            const isPartialMatch = studentAns.includes(correctAns) || correctAns.includes(studentAns);
+            
+            if (isExactMatch) {
               questionScore = question.marks;
-              feedback = "✅ Correct! Excellent work.";
+              feedback = "✅ Correct! Perfect match. Excellent work.";
+            } else if (isPartialMatch && studentAns.length > 2 && correctAns.length > 2) {
+              questionScore = Math.ceil(question.marks * 0.5); // Partial credit for close matches
+              feedback = `⚡ Partially correct. Your answer: "${studentAnswer}". Expected: "${question.correct_answer}". Review for complete understanding.`;
             } else {
-              feedback = `❌ Incorrect. The correct answer is: ${question.correct_answer}. Review this topic for better understanding.`;
+              feedback = `❌ Incorrect. Your answer: "${studentAnswer}". Correct answer: "${question.correct_answer}". Study this topic thoroughly.`;
             }
             break;
             
           case 'coding':
-            // Enhanced code evaluation
+            // Advanced code evaluation with better metrics
             const codeLines = studentAnswer.split('\n').filter((line: string) => line.trim());
-            const hasComments = studentAnswer.includes('//') || studentAnswer.includes('#') || studentAnswer.includes('/*');
-            const hasProperStructure = studentAnswer.includes('{') || studentAnswer.includes(':') || studentAnswer.includes('def ') || studentAnswer.includes('function');
-            const hasVariables = /\b(let|var|const|int|string|float|double)\b/.test(studentAnswer) || /\w+\s*=/.test(studentAnswer);
-            const hasControlFlow = /\b(if|else|for|while|switch|case)\b/.test(studentAnswer);
-            const hasLogic = codeLines.length > 5 && studentAnswer.length > 100;
+            const hasComments = studentAnswer.includes('//') || studentAnswer.includes('#') || studentAnswer.includes('/*') || studentAnswer.includes('"""');
+            const hasProperStructure = studentAnswer.includes('{') || studentAnswer.includes(':') || studentAnswer.includes('def ') || studentAnswer.includes('function') || studentAnswer.includes('class ');
+            const hasVariables = /\b(let|var|const|int|string|float|double|Dim|Public|Private)\b/i.test(studentAnswer) || /\w+\s*[=:]\s*/.test(studentAnswer);
+            const hasControlFlow = /\b(if|else|for|while|switch|case|do|repeat|until|foreach|Select Case)\b/i.test(studentAnswer);
+            const hasLogic = codeLines.length > 3 && studentAnswer.length > 50;
+            const hasProcedures = /\b(Sub|Function|def|function|method|procedure)\b/i.test(studentAnswer);
+            const hasErrorHandling = /\b(try|catch|except|error|On Error)\b/i.test(studentAnswer);
+            const hasDataTypes = /\b(Integer|String|Boolean|Array|List|Dictionary|Object)\b/i.test(studentAnswer);
             
-            // Intelligent scoring based on code quality
+            // Compare against expected answer if provided
+            const expectedCode = question.correct_answer || question.sample_code || '';
+            const codeComparison = expectedCode ? compareCode(studentAnswer, expectedCode) : 0;
+            
+            // Intelligent scoring based on code quality and correctness
             let codeScore = 0;
             let codeAnalysis = [];
             
-            if (codeLines.length > 0) {
-              codeScore += 0.2; // Basic attempt
-              codeAnalysis.push("Code attempt made");
+            // Base attempt score
+            if (codeLines.length > 0 && studentAnswer.length > 10) {
+              codeScore += 0.15;
+              codeAnalysis.push("code attempt made");
             }
             
+            // Structure and syntax (20%)
             if (hasProperStructure) {
-              codeScore += 0.25;
+              codeScore += 0.2;
               codeAnalysis.push("proper syntax structure");
             }
             
+            // Variable usage (15%)
             if (hasVariables) {
-              codeScore += 0.2;
-              codeAnalysis.push("variable usage");
+              codeScore += 0.15;
+              codeAnalysis.push("variable declarations");
             }
             
+            // Control flow (20%)
             if (hasControlFlow) {
               codeScore += 0.2;
-              codeAnalysis.push("control flow implementation");
+              codeAnalysis.push("control structures");
             }
             
-            if (hasComments) {
+            // Procedures/Functions (15%)
+            if (hasProcedures) {
+              codeScore += 0.15;
+              codeAnalysis.push("procedures/functions");
+            }
+            
+            // Code comparison with expected answer (15%)
+            if (codeComparison > 0.5) {
+              codeScore += 0.15;
+              codeAnalysis.push("correct algorithm approach");
+            } else if (codeComparison > 0.3) {
               codeScore += 0.1;
-              codeAnalysis.push("code documentation");
+              codeAnalysis.push("similar approach");
             }
             
-            if (hasLogic && codeLines.length > 8) {
+            // Additional features (10% total)
+            if (hasComments) {
               codeScore += 0.05;
-              codeAnalysis.push("complex logic");
+              codeAnalysis.push("documentation");
+            }
+            
+            if (hasDataTypes) {
+              codeScore += 0.03;
+              codeAnalysis.push("proper data types");
+            }
+            
+            if (hasErrorHandling) {
+              codeScore += 0.02;
+              codeAnalysis.push("error handling");
             }
             
             questionScore = Math.round(question.marks * Math.min(codeScore, 1));

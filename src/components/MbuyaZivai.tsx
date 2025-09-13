@@ -21,6 +21,7 @@ import { MessageInput } from "./chat/MessageInput";
 import { QuickActions } from "./chat/QuickActions";
 import { QuizComponent } from "./quiz/QuizComponent";
 import { QuizAccess } from "./quiz/QuizAccess";
+import MotivationalQuotes from "./MotivationalQuotes";
 
 interface Message {
   role: "assistant" | "user";

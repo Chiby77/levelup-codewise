@@ -64,7 +64,7 @@ export const ExamFeatures: React.FC<ExamFeaturesProps> = ({
   if (!isExamActive) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 w-80 z-40">
+    <div className="fixed bottom-4 left-4 w-72 lg:w-80 z-40 hidden md:block">
       <Card className="bg-white/95 backdrop-blur-sm shadow-lg border">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">

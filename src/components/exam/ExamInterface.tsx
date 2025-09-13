@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle, Shield } from 'lucide-react';
+import MotivationalQuotes from '../MotivationalQuotes';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CodeEditor } from './CodeEditor';
@@ -50,12 +51,14 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [violations, setViolations] = useState<string[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const timerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     fetchQuestions();
     startTimer();
     enableFullscreen();
+    setupExamSecurity();
     
     // Prevent browser back button
     window.history.pushState(null, '', window.location.href);
@@ -65,6 +68,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
         clearInterval(timerRef.current);
       }
       exitFullscreen();
+      removeExamSecurity();
     };
   }, []);
 
@@ -88,9 +92,67 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
     }
   };
 
+  const setupExamSecurity = () => {
+    // Prevent tab switching and window focus loss
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setTabSwitchCount(prev => {
+          const newCount = prev + 1;
+          if (newCount >= 3) {
+            toast.error('Too many tab switches! Exam will be submitted automatically.');
+            setTimeout(submitExam, 2000);
+          } else {
+            toast.warning(`Warning: Tab switching detected (${newCount}/3). Exam will auto-submit after 3 violations.`);
+          }
+          return newCount;
+        });
+        setViolations(prev => [...prev, 'Tab switching detected']);
+      }
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = 'Are you sure you want to leave the exam? Your progress will be lost.';
+      return 'Are you sure you want to leave the exam? Your progress will be lost.';
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Prevent common shortcuts that might be used to cheat
+      if (
+        (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 't' || e.key === 'n' || e.key === 'w')) ||
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'J')
+      ) {
+        e.preventDefault();
+        toast.warning('This action is not allowed during the exam');
+        setViolations(prev => [...prev, `Blocked keyboard shortcut: ${e.key}`]);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Store handlers for cleanup
+    (window as any)._examSecurityHandlers = {
+      handleVisibilityChange,
+      handleBeforeUnload,
+      handleKeyDown
+    };
+  };
+
+  const removeExamSecurity = () => {
+    const handlers = (window as any)._examSecurityHandlers;
+    if (handlers) {
+      document.removeEventListener('visibilitychange', handlers.handleVisibilityChange);
+      window.removeEventListener('beforeunload', handlers.handleBeforeUnload);
+      document.removeEventListener('keydown', handlers.handleKeyDown);
+    }
+  };
+
   const handleViolation = (violation: string) => {
     setViolations(prev => [...prev, violation]);
-    // You could also send this to a server for logging
   };
 
   const fetchQuestions = async () => {
@@ -235,7 +297,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
         onViolationDetected={handleViolation}
       />
       
-      {/* Exam Features & Tools */}
+      {/* Exam Features & Tools - Hidden on mobile to prevent UI interference */}
       <ExamFeatures 
         isExamActive={true}
         questionCount={questions.length}
@@ -274,7 +336,17 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
                     {violations.length}
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground">Violations</p>
+                <p className="text-xs text-muted-foreground">Security</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className={`text-base sm:text-lg font-semibold ${tabSwitchCount >= 2 ? 'text-red-600' : tabSwitchCount >= 1 ? 'text-yellow-600' : 'text-green-600'}`}>
+                    {tabSwitchCount}/3
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">Tab Switches</p>
               </div>
             </div>
           </div>
@@ -392,6 +464,9 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
           </DialogContent>
         </Dialog>
       </div>
+      
+      {/* Motivational Quotes for Exam */}
+      <MotivationalQuotes showExamQuotes={true} />
     </div>
   );
 };
