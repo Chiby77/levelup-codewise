@@ -19,14 +19,14 @@ const Hero = () => {
         <AnimatedHeroBackground />
         
         {/* Hero Content */}
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-8 sm:py-16">
-          {/* Animated Logo - Responsive positioning */}
-          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 md:left-8 scale-75 sm:scale-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-8 sm:py-16 pt-20">
+          {/* Animated Logo - Moved to not conflict with navbar */}
+          <div className="mb-8">
             <AnimatedLogo />
           </div>
           
           {/* Main Heading - Responsive text */}
-          <div className="mt-16 sm:mt-8 mb-4 sm:mb-6">
+          <div className="mb-4 sm:mb-6">
             <AnimatedHeading 
               text="Master A Level Computer Science" 
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight"

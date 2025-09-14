@@ -14,11 +14,11 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-primary py-4 fixed w-full top-0 z-50">
+    <nav className="bg-primary/95 backdrop-blur-sm py-4 fixed w-full top-0 z-50 border-b border-white/10">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
-          <Link to="/" className="text-white text-xl font-bold">
-            CS Experts
+          <Link to="/" className="text-white text-xl font-bold z-50 relative">
+            CS Experts Zimbabwe
           </Link>
 
           <button

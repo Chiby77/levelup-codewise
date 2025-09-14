@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, Phone, MapPin, MessageSquare, Send, Sparkles } from "lucide-react";
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -23,14 +24,31 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    
+    try {
+      await emailjs.sendForm(
+        'service_gktilg', // service id
+        'template_default', // you'll need to create a template in EmailJS
+        form,
+        'i424rWzXQSjDheYyb' // public key
+      );
+      
+      toast({
+        title: "Message Sent Successfully!",
+        description: "Thank you for your message. We'll get back to you soon!",
+      });
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again or contact us directly.",
+        variant: "destructive"
+      });
+    }
     
     setIsSubmitting(false);
-    toast({
-      title: "Message Sent",
-      description: "Thank you for your message. We'll get back to you soon!",
-    });
   };
 
   return (
@@ -69,31 +87,37 @@ const Contact = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className={`space-y-2 ${animate ? "animate-fadeIn [animation-delay:600ms]" : "opacity-0"}`}>
-                  <label htmlFor="name" className="text-foreground">Name</label>
-                  <Input 
-                    id="name" 
-                    placeholder="Your name" 
-                    className="bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25" 
-                  />
-                </div>
-                <div className={`space-y-2 ${animate ? "animate-fadeIn [animation-delay:700ms]" : "opacity-0"}`}>
-                  <label htmlFor="email" className="text-foreground">Email</label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="Your email" 
-                    className="bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25" 
-                  />
-                </div>
-                <div className={`space-y-2 ${animate ? "animate-fadeIn [animation-delay:800ms]" : "opacity-0"}`}>
-                  <label htmlFor="message" className="text-foreground">Message</label>
-                  <Textarea 
-                    id="message" 
-                    placeholder="Your message" 
-                    className="min-h-[150px] bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25"
-                  />
-                </div>
+                 <div className={`space-y-2 ${animate ? "animate-fadeIn [animation-delay:600ms]" : "opacity-0"}`}>
+                   <label htmlFor="name" className="text-foreground">Name</label>
+                   <Input 
+                     id="name" 
+                     name="from_name"
+                     placeholder="Your name" 
+                     className="bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25" 
+                     required
+                   />
+                 </div>
+                 <div className={`space-y-2 ${animate ? "animate-fadeIn [animation-delay:700ms]" : "opacity-0"}`}>
+                   <label htmlFor="email" className="text-foreground">Email</label>
+                   <Input 
+                     id="email" 
+                     name="from_email"
+                     type="email" 
+                     placeholder="Your email" 
+                     className="bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25" 
+                     required
+                   />
+                 </div>
+                 <div className={`space-y-2 ${animate ? "animate-fadeIn [animation-delay:800ms]" : "opacity-0"}`}>
+                   <label htmlFor="message" className="text-foreground">Message</label>
+                   <Textarea 
+                     id="message" 
+                     name="message"
+                     placeholder="Your message" 
+                     className="min-h-[150px] bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25"
+                     required
+                   />
+                 </div>
                 <Button 
                   type="submit" 
                   className={`w-full relative overflow-hidden group ${animate ? "animate-fadeIn [animation-delay:900ms]" : "opacity-0"}`}

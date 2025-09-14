@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AdminLogin } from '@/components/exam/AdminLogin';
 import { AdminDashboard } from '@/components/exam/AdminDashboard';
 import { StudentExamPortal } from '@/components/exam/StudentExamPortal';
-import { GraduationCap, User } from 'lucide-react';
+import { GraduationCap, User, ArrowLeft } from 'lucide-react';
 
 export const ExamSystem = () => {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'select' | 'admin' | 'student'>('select');
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
 
@@ -27,6 +29,18 @@ export const ExamSystem = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl space-y-8">
+          {/* Back to Home Button */}
+          <div className="flex justify-start">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </div>
+          
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center mb-6">
               <div className="bg-primary/10 p-4 rounded-full">
@@ -89,17 +103,57 @@ export const ExamSystem = () => {
   if (mode === 'admin') {
     if (!adminAuthenticated) {
       return (
-        <AdminLogin 
-          onLogin={handleAdminLogin} 
-          onBack={() => setMode('select')} 
-        />
+        <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+          <div className="p-4">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 mb-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </div>
+          <AdminLogin 
+            onLogin={handleAdminLogin} 
+            onBack={() => setMode('select')} 
+          />
+        </div>
       );
     }
-    return <AdminDashboard onLogout={handleLogout} />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+        <div className="p-4">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 mb-4"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        </div>
+        <AdminDashboard onLogout={handleLogout} />
+      </div>
+    );
   }
 
   if (mode === 'student') {
-    return <StudentExamPortal onBack={() => setMode('select')} />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+        <div className="p-4">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 mb-4"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        </div>
+        <StudentExamPortal onBack={() => setMode('select')} />
+      </div>
+    );
   }
 
   return null;
