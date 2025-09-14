@@ -15,6 +15,7 @@ import { CodeEditor } from './CodeEditor';
 import { FlowchartDrawer } from './FlowchartDrawer';
 import { AIInvigilator } from './AIInvigilator';
 import { TabPreventionSystem } from './TabPreventionSystem';
+import { ExamFeatures } from './ExamFeatures';
 
 interface ExamInterfaceProps {
   exam: {
