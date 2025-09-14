@@ -34,10 +34,10 @@ const AnimatedHeroBackground = () => {
         currentIndex = (currentIndex + 1) % backgrounds.length;
         setActiveBackground(backgrounds[currentIndex]);
         setTransitioning(false);
-      }, 1000); // Transition duration
+      }, 800); // Faster transition
     };
     
-    const intervalId = setInterval(cycleBackground, 5000); // Change every 5 seconds
+    const intervalId = setInterval(cycleBackground, 3000); // Faster cycling every 3 seconds
     return () => clearInterval(intervalId);
   }, [prefersReducedMotion]);
 

@@ -64,7 +64,7 @@ const Hero = () => {
               variant="primary" 
               icon 
               pulseEffect
-              onClick={() => navigate("/about")}
+              onClick={() => navigate("/downloads")}
               className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
               Get Started
@@ -80,7 +80,7 @@ const Hero = () => {
             
             <AnimatedButton 
               variant="outline"
-              onClick={() => setShowDialog(true)}
+              onClick={() => navigate("/about")}
               className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
               Learn More

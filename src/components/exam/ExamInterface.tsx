@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { CodeEditor } from './CodeEditor';
 import { FlowchartDrawer } from './FlowchartDrawer';
 import { AIInvigilator } from './AIInvigilator';
-import { ExamFeatures } from './ExamFeatures';
+import { TabPreventionSystem } from './TabPreventionSystem';
 
 interface ExamInterfaceProps {
   exam: {
