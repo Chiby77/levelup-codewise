@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ExamCreator } from './ExamCreator';
+import { EnhancedExamCreator } from './EnhancedExamCreator';
 import { SubmissionViewer } from './SubmissionViewer';
 import { LogOut, Plus, FileText, Users, BarChart3 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,6 +26,7 @@ interface Exam {
 
 interface Submission {
   id: string;
+  exam_id?: string;
   student_name: string;
   student_email?: string;
   submitted_at: string;
@@ -66,6 +68,70 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     }
   };
 
+  const gradeAllPending = async () => {
+    setLoading(true);
+    const pendingSubmissions = submissions.filter(s => !s.graded);
+    
+    try {
+      for (const submission of pendingSubmissions) {
+        await supabase.functions.invoke('grade-exam', {
+          body: {
+            submissionId: submission.id,
+            examId: submission.exam_id || '',
+            studentAnswers: submission.answers,
+            questions: []
+          }
+        });
+      }
+      
+      toast.success(`Initiated grading for ${pendingSubmissions.length} submissions`);
+      await fetchData();
+    } catch (error) {
+      console.error('Error grading submissions:', error);
+      toast.error('Failed to grade submissions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const exportGrades = () => {
+    const csv = 'Student Name,Email,Score,Max Score,Percentage,Graded,Submitted At\n' +
+      submissions.map(s => 
+        `"${s.student_name}","${s.student_email || ''}",${s.total_score},${s.max_score},${Math.round((s.total_score / s.max_score) * 100)}%,${s.graded ? 'Yes' : 'No'},"${new Date(s.submitted_at).toLocaleString()}"`
+      ).join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'exam-grades.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Grades exported successfully');
+  };
+
+  const requestGrading = async (submissionId: string) => {
+    try {
+      const submission = submissions.find(s => s.id === submissionId);
+      if (!submission) return;
+
+      await supabase.functions.invoke('grade-exam', {
+        body: {
+          submissionId,
+          examId: submission.exam_id || '',
+          studentAnswers: submission.answers,
+          questions: []
+        }
+      });
+      
+      toast.success('Grading requested successfully');
+      await fetchData();
+    } catch (error) {
+      console.error('Error requesting grading:', error);
+      toast.error('Failed to request grading');
+    }
+  };
+
   const stats = {
     totalExams: exams.length,
     activeExams: exams.filter(e => e.status === 'active').length,
@@ -86,24 +152,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-      <div className="container mx-auto p-6">
-        <div className="flex justify-between items-center mb-8">
+      <div className="container mx-auto p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground">CS Experts Zimbabwe - Digital Examination System</p>
+            <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">CS Experts Zimbabwe - Digital Examination System</p>
           </div>
-          <Button variant="outline" onClick={onLogout}>
+          <Button variant="outline" onClick={onLogout} className="w-full sm:w-auto">
             <LogOut className="h-4 w-4 mr-2" />
             Logout
           </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="exams">Manage Exams</TabsTrigger>
-            <TabsTrigger value="submissions">View Submissions</TabsTrigger>
-            <TabsTrigger value="create">Create Exam</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="exams" className="text-xs sm:text-sm">Exams</TabsTrigger>
+            <TabsTrigger value="submissions" className="text-xs sm:text-sm">Submissions</TabsTrigger>
+            <TabsTrigger value="create" className="text-xs sm:text-sm">Create</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -249,12 +315,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </div>
           </TabsContent>
 
-          <TabsContent value="submissions">
-            <SubmissionViewer submissions={submissions} />
+          <TabsContent value="submissions" className="space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl sm:text-2xl font-bold">Submissions & Grading</h2>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <Button onClick={gradeAllPending} disabled={loading} className="w-full sm:w-auto">
+                  Grade All Pending
+                </Button>
+                <Button variant="outline" onClick={exportGrades} disabled={submissions.length === 0} className="w-full sm:w-auto">
+                  Export Grades
+                </Button>
+              </div>
+            </div>
+            <SubmissionViewer submissions={submissions} onGradeRequest={requestGrading} />
           </TabsContent>
 
           <TabsContent value="create">
-            <ExamCreator onExamCreated={fetchData} />
+            <EnhancedExamCreator onExamCreated={fetchData} />
           </TabsContent>
         </Tabs>
 

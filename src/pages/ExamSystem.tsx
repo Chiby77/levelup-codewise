@@ -5,12 +5,15 @@ import { Button } from '@/components/ui/button';
 import { AdminLogin } from '@/components/exam/AdminLogin';
 import { AdminDashboard } from '@/components/exam/AdminDashboard';
 import { StudentExamPortal } from '@/components/exam/StudentExamPortal';
+import { EnhancedStudentPortal } from '@/components/exam/EnhancedStudentPortal';
 import { GraduationCap, User, ArrowLeft } from 'lucide-react';
 
 export const ExamSystem = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<'select' | 'admin' | 'student'>('select');
+  const [mode, setMode] = useState<'select' | 'admin' | 'student' | 'exam'>('select');
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
+  const [currentExamId, setCurrentExamId] = useState<string>('');
+  const [studentInfo, setStudentInfo] = useState<{ name: string; email?: string }>({ name: '' });
 
   const handleModeSelect = (selectedMode: 'admin' | 'student') => {
     setMode(selectedMode);
@@ -23,6 +26,12 @@ export const ExamSystem = () => {
   const handleLogout = () => {
     setAdminAuthenticated(false);
     setMode('select');
+  };
+
+  const handleStartExam = (examId: string, student: { name: string; email?: string }) => {
+    setCurrentExamId(examId);
+    setStudentInfo(student);
+    setMode('exam');
   };
 
   if (mode === 'select') {
@@ -151,7 +160,25 @@ export const ExamSystem = () => {
             Back to Home
           </Button>
         </div>
-        <StudentExamPortal onBack={() => setMode('select')} />
+        <EnhancedStudentPortal onStartExam={handleStartExam} />
+      </div>
+    );
+  }
+
+  if (mode === 'exam') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+        <div className="p-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setMode('student')}
+            className="flex items-center gap-2 mb-4"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Portal
+          </Button>
+        </div>
+        <StudentExamPortal onBack={() => setMode('student')} />
       </div>
     );
   }

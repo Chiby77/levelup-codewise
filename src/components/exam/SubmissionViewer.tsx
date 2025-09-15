@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 
 interface Submission {
   id: string;
+  exam_id?: string;
   student_name: string;
   student_email?: string;
   submitted_at: string;
@@ -23,9 +24,10 @@ interface Submission {
 
 interface SubmissionViewerProps {
   submissions: Submission[];
+  onGradeRequest?: (submissionId: string) => void;
 }
 
-export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({ submissions }) => {
+export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({ submissions, onGradeRequest }) => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
 
   const handleDownloadReport = async (submission: Submission) => {
@@ -124,6 +126,16 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({ submissions 
                         <SubmissionDetails submission={submission} />
                       </DialogContent>
                     </Dialog>
+                    
+                    {!submission.graded && onGradeRequest && (
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => onGradeRequest(submission.id)}
+                      >
+                        Grade This
+                      </Button>
+                    )}
                     
                     {submission.graded && (
                       <Button 

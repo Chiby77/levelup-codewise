@@ -30,7 +30,7 @@ const Contact = () => {
     try {
       await emailjs.sendForm(
         'service_gktilg', // service id
-        'template_default', // you'll need to create a template in EmailJS
+        'template_aidcphr', // updated template id
         form,
         'i424rWzXQSjDheYyb' // public key
       );
