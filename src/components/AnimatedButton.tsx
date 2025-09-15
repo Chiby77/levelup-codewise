@@ -87,11 +87,18 @@ const AnimatedButton = ({
             : "bg-white/10 hover:bg-white/20 text-white border-white",
           animationClass,
           hoverClass,
-          "transition-all duration-300",
+          "transition-all duration-300 cursor-pointer",
           className
         )}
         style={{...buttonStyles, ...secondaryGlowStyle}}
-        onClick={onClick}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log("AnimatedButton clicked:", { onClick: !!onClick });
+          if (onClick) {
+            onClick();
+          }
+        }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

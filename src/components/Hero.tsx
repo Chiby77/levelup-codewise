@@ -64,7 +64,10 @@ const Hero = () => {
               variant="primary" 
               icon 
               pulseEffect
-              onClick={() => navigate("/downloads")}
+              onClick={() => {
+                console.log("Get Started clicked - navigating to /downloads");
+                navigate("/downloads");
+              }}
               className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
               Get Started
@@ -72,7 +75,10 @@ const Hero = () => {
             
             <AnimatedButton 
               variant="secondary"
-              onClick={() => navigate("/exams")}
+              onClick={() => {
+                console.log("Digital Exams clicked - navigating to /exams");
+                navigate("/exams");
+              }}
               className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
               Digital Exams
@@ -80,7 +86,10 @@ const Hero = () => {
             
             <AnimatedButton 
               variant="outline"
-              onClick={() => navigate("/about")}
+              onClick={() => {
+                console.log("Learn More clicked - navigating to /about");
+                navigate("/about");
+              }}
               className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
               Learn More
