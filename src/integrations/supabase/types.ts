@@ -157,6 +157,8 @@ export type Database = {
           exam_id: string
           grade_details: Json | null
           graded: boolean | null
+          grading_requested_at: string | null
+          grading_status: string | null
           id: string
           max_score: number | null
           student_email: string | null
@@ -170,6 +172,8 @@ export type Database = {
           exam_id: string
           grade_details?: Json | null
           graded?: boolean | null
+          grading_requested_at?: string | null
+          grading_status?: string | null
           id?: string
           max_score?: number | null
           student_email?: string | null
@@ -183,6 +187,8 @@ export type Database = {
           exam_id?: string
           grade_details?: Json | null
           graded?: boolean | null
+          grading_requested_at?: string | null
+          grading_status?: string | null
           id?: string
           max_score?: number | null
           student_email?: string | null
@@ -242,7 +248,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      request_grading: {
+        Args: { submission_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       exam_status: "draft" | "active" | "completed" | "archived"
