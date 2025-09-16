@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ExamCreator } from './ExamCreator';
 import { EnhancedExamCreator } from './EnhancedExamCreator';
 import { SubmissionViewer } from './SubmissionViewer';
+import { ExamAnalytics } from './ExamAnalytics';
 import { LogOut, Plus, FileText, Users, BarChart3 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

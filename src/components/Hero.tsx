@@ -66,7 +66,12 @@ const Hero = () => {
               pulseEffect
               onClick={() => {
                 console.log("Get Started clicked - navigating to /downloads");
-                navigate("/downloads");
+                try {
+                  navigate("/downloads");
+                } catch (error) {
+                  console.error("Navigation error:", error);
+                  window.location.href = "/downloads";
+                }
               }}
               className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
@@ -77,7 +82,12 @@ const Hero = () => {
               variant="secondary"
               onClick={() => {
                 console.log("Digital Exams clicked - navigating to /exams");
-                navigate("/exams");
+                try {
+                  navigate("/exams");
+                } catch (error) {
+                  console.error("Navigation error:", error);
+                  window.location.href = "/exams";
+                }
               }}
               className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
@@ -88,7 +98,12 @@ const Hero = () => {
               variant="outline"
               onClick={() => {
                 console.log("Learn More clicked - navigating to /about");
-                navigate("/about");
+                try {
+                  navigate("/about");
+                } catch (error) {
+                  console.error("Navigation error:", error);
+                  window.location.href = "/about";
+                }
               }}
               className="w-full sm:w-auto min-w-[200px] text-sm sm:text-base"
             >
