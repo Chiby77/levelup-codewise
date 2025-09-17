@@ -1,12 +1,16 @@
 
 import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
+import NextGenHero from "@/components/NextGenHero";
+import ModernStatsSection from "@/components/ModernStatsSection";
+import EnhancedFeatureSection from "@/components/EnhancedFeatureSection";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <Hero />
+      <NextGenHero />
+      <ModernStatsSection />
+      <EnhancedFeatureSection />
     </div>
   );
 };

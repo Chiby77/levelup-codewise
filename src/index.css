@@ -34,12 +34,21 @@
 
     --radius: 0.5rem;
 
-    /* Enhanced gradients for better visuals */
-    --gradient-primary: linear-gradient(135deg, hsl(221.2 83.2% 53.3%) 0%, hsl(142.1 76.2% 36.3%) 50%, hsl(262.1 83.3% 57.8%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(142.1 76.2% 36.3%), hsl(138.5 76.2% 96.7%));
+    /* Next-gen enhanced gradients and effects */
+    --gradient-primary: linear-gradient(135deg, hsl(221.2 83.2% 53.3%) 0%, hsl(142.1 76.2% 36.3%) 30%, hsl(262.1 83.3% 57.8%) 60%, hsl(25 95% 53%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(142.1 76.2% 36.3%), hsl(262.1 83.3% 57.8%), hsl(25 95% 53%));
     --gradient-muted: linear-gradient(135deg, hsl(210 40% 96%), hsl(215.4 16.3% 46.9%));
-    --gradient-hero: linear-gradient(135deg, hsl(221.2 83.2% 53.3%) 0%, hsl(142.1 76.2% 36.3%) 50%, hsl(262.1 83.3% 57.8%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.05), hsl(0 0% 100% / 0.1));
+    --gradient-hero: linear-gradient(135deg, hsl(221.2 83.2% 53.3%) 0%, hsl(142.1 76.2% 36.3%) 25%, hsl(262.1 83.3% 57.8%) 50%, hsl(25 95% 53%) 75%, hsl(340 82% 52%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.1), hsl(0 0% 100% / 0.05));
+    --gradient-neon: linear-gradient(45deg, hsl(262.1 83.3% 57.8%), hsl(25 95% 53%), hsl(340 82% 52%), hsl(142.1 76.2% 36.3%));
+    --gradient-cyber: linear-gradient(90deg, hsl(180 100% 50%), hsl(262.1 83.3% 57.8%), hsl(25 95% 53%));
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.25), hsl(0 0% 100% / 0.05));
+    
+    /* Advanced shadow effects */
+    --shadow-neon: 0 0 20px hsl(262.1 83.3% 57.8% / 0.5), 0 0 40px hsl(262.1 83.3% 57.8% / 0.3), 0 0 80px hsl(262.1 83.3% 57.8% / 0.1);
+    --shadow-cyber: 0 4px 30px hsl(180 100% 50% / 0.3), 0 0 60px hsl(262.1 83.3% 57.8% / 0.2);
+    --shadow-glow: 0 0 50px hsl(25 95% 53% / 0.4), 0 0 100px hsl(25 95% 53% / 0.2);
+    --shadow-glass: 0 8px 32px hsl(0 0% 0% / 0.1), 0 4px 16px hsl(0 0% 0% / 0.05);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
