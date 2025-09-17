@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, Phone, MapPin, MessageSquare, Send, Sparkles } from "lucide-react";
-import emailjs from '@emailjs/browser';
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -27,20 +27,30 @@ const Contact = () => {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     
+    const name = formData.get('from_name') as string;
+    const email = formData.get('from_email') as string;
+    const message = formData.get('message') as string;
+    
     try {
-      await emailjs.sendForm(
-        'service_gktilg', // service id
-        'template_aidcphr', // updated template id
-        form,
-        'i424rWzXQSjDheYyb' // public key
-      );
-      
-      toast({
-        title: "Message Sent Successfully!",
-        description: "Thank you for your message. We'll get back to you soon!",
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: { name, email, message }
       });
-      form.reset();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.success) {
+        toast({
+          title: "Message Sent Successfully!",
+          description: "Thank you for your message. We'll get back to you soon!",
+        });
+        form.reset();
+      } else {
+        throw new Error('Failed to send email');
+      }
     } catch (error) {
+      console.error('Contact form error:', error);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again or contact us directly.",
