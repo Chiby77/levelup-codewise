@@ -250,17 +250,36 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Enhanced Exam Creator</h2>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="flex justify-between items-center bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 p-6 rounded-xl border border-primary/20 backdrop-blur-sm">
+        <div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Enhanced Exam Creator
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">Create comprehensive exams with advanced features</p>
+        </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={exportQuestions} disabled={questions.length === 0}>
+          <Button 
+            variant="outline" 
+            onClick={exportQuestions} 
+            disabled={questions.length === 0}
+            className="hover:scale-105 transition-transform"
+          >
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button onClick={saveExam} disabled={loading} className="min-w-[120px]">
+          <Button 
+            onClick={saveExam} 
+            disabled={loading} 
+            className="min-w-[140px] bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all hover:scale-105"
+          >
             <Save className="h-4 w-4 mr-2" />
-            {loading ? 'Saving...' : 'Save Exam'}
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⏳</span>
+                Saving...
+              </span>
+            ) : 'Save Exam'}
           </Button>
         </div>
       </div>

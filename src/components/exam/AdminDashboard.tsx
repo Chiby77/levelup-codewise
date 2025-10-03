@@ -7,9 +7,12 @@ import { ExamCreator } from './ExamCreator';
 import { EnhancedExamCreator } from './EnhancedExamCreator';
 import { SubmissionViewer } from './SubmissionViewer';
 import { ExamAnalytics } from './ExamAnalytics';
-import { LogOut, Plus, FileText, Users, BarChart3 } from 'lucide-react';
+import { EnhancedExamStats } from './EnhancedExamStats';
+import { AnimatedExamCard } from './AnimatedExamCard';
+import { LogOut, Plus, FileText, Users, BarChart3, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -152,18 +155,36 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-      <div className="container mx-auto p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse delay-1000" />
+      </div>
+
+      <div className="container mx-auto p-4 sm:p-6 relative z-10">
+        <motion.div 
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 p-6 rounded-xl border border-primary/20 backdrop-blur-sm"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">CS Experts Zimbabwe - Digital Examination System</p>
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent flex items-center gap-2">
+              <Sparkles className="h-8 w-8 text-primary animate-pulse" />
+              Admin Dashboard
+            </h1>
+            <p className="text-muted-foreground text-sm sm:text-base mt-1">CS Experts Zimbabwe - Next-Gen Digital Examination System</p>
           </div>
-          <Button variant="outline" onClick={onLogout} className="w-full sm:w-auto">
+          <Button 
+            variant="outline" 
+            onClick={onLogout} 
+            className="w-full sm:w-auto hover:bg-destructive/10 hover:text-destructive hover:scale-105 transition-all"
+          >
             <LogOut className="h-4 w-4 mr-2" />
             Logout
           </Button>
-        </div>
+        </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
@@ -174,110 +195,93 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Exams</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalExams}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {stats.activeExams} active
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalSubmissions}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {stats.gradedSubmissions} graded
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Grading Progress</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {stats.totalSubmissions > 0 
-                      ? Math.round((stats.gradedSubmissions / stats.totalSubmissions) * 100)
-                      : 0}%
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Auto-graded by AI
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">System Status</CardTitle>
-                  <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">Online</div>
-                  <p className="text-xs text-muted-foreground">
-                    All systems operational
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            <EnhancedExamStats 
+              totalExams={stats.totalExams}
+              activeExams={stats.activeExams}
+              totalSubmissions={stats.totalSubmissions}
+              totalQuestions={0}
+              averageScore={submissions.length > 0 ? (submissions.reduce((acc, s) => acc + (s.total_score / s.max_score * 100), 0) / submissions.length) : 0}
+              completionRate={stats.totalSubmissions > 0 ? (stats.gradedSubmissions / stats.totalSubmissions * 100) : 0}
+            />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Exams</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {exams.slice(0, 5).map((exam) => (
-                      <div key={exam.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                        <div>
-                          <p className="font-medium">{exam.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {exam.duration_minutes} mins | {exam.total_marks} marks
-                          </p>
-                        </div>
-                        <Badge variant={exam.status === 'active' ? 'default' : 'secondary'}>
-                          {exam.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="border-primary/20 hover:border-primary/40 transition-all">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-primary" />
+                      Recent Exams
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {exams.slice(0, 5).map((exam, index) => (
+                        <motion.div 
+                          key={exam.id} 
+                          className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/5 to-transparent rounded-lg border border-primary/10 hover:border-primary/30 transition-all"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          whileHover={{ x: 5 }}
+                        >
+                          <div>
+                            <p className="font-medium">{exam.title}</p>
+                            <p className="text-sm text-muted-foreground">
+                              ⏱️ {exam.duration_minutes} mins | 📝 {exam.total_marks} marks
+                            </p>
+                          </div>
+                          <Badge variant={exam.status === 'active' ? 'default' : 'secondary'} className="animate-pulse">
+                            {exam.status}
+                          </Badge>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Submissions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {submissions.slice(0, 5).map((submission) => (
-                      <div key={submission.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                        <div>
-                          <p className="font-medium">{submission.student_name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Score: {submission.total_score}/{submission.max_score}
-                          </p>
-                        </div>
-                        <Badge variant={submission.graded ? 'default' : 'secondary'}>
-                          {submission.graded ? 'Graded' : 'Pending'}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="border-accent/20 hover:border-accent/40 transition-all">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-accent" />
+                      Recent Submissions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {submissions.slice(0, 5).map((submission, index) => (
+                        <motion.div 
+                          key={submission.id} 
+                          className="flex items-center justify-between p-4 bg-gradient-to-r from-accent/5 to-transparent rounded-lg border border-accent/10 hover:border-accent/30 transition-all"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          whileHover={{ x: -5 }}
+                        >
+                          <div>
+                            <p className="font-medium">{submission.student_name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Score: <span className="font-semibold text-primary">{submission.total_score}/{submission.max_score}</span> ({Math.round((submission.total_score / submission.max_score) * 100)}%)
+                            </p>
+                          </div>
+                          <Badge variant={submission.graded ? 'default' : 'secondary'}>
+                            {submission.graded ? '✅ Graded' : '⏳ Pending'}
+                          </Badge>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </div>
           </TabsContent>
 

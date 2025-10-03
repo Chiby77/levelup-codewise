@@ -36,73 +36,87 @@ export const ExamSystem = () => {
 
   if (mode === 'select') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl space-y-8">
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse delay-1000" />
+        </div>
+        
+        <div className="w-full max-w-4xl space-y-8 relative z-10">
           {/* Back to Home Button */}
-          <div className="flex justify-start">
+          <div className="flex justify-start animate-in slide-in-from-left duration-500">
             <Button 
               variant="outline" 
               onClick={() => navigate('/')}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 hover:scale-105 transition-transform"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Home
             </Button>
           </div>
           
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-4 animate-in fade-in zoom-in duration-700">
             <div className="flex items-center justify-center mb-6">
-              <div className="bg-primary/10 p-4 rounded-full">
-                <GraduationCap className="h-12 w-12 text-primary" />
+              <div className="bg-gradient-to-br from-primary to-accent p-6 rounded-full animate-pulse shadow-xl">
+                <GraduationCap className="h-16 w-16 text-white" />
               </div>
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               CS Experts Zimbabwe
             </h1>
-            <p className="text-xl text-muted-foreground">
-              Digital Examination System
+            <p className="text-2xl text-muted-foreground">
+              Next-Gen Digital Examination System
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+              <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse" />
               Powered by Intellix Inc | Founded by Tinodaishe M Chibi
+              <span className="inline-block w-2 h-2 bg-accent rounded-full animate-pulse" />
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/50"
-                  onClick={() => handleModeSelect('admin')}>
-              <CardHeader className="text-center pb-4">
-                <div className="bg-secondary/10 p-4 rounded-full w-fit mx-auto mb-4">
-                  <User className="h-8 w-8 text-secondary" />
-                </div>
-                <CardTitle className="text-2xl">Admin Portal</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground mb-6">
-                  Create and manage exams, view student submissions and results
-                </p>
-                <Button className="w-full" size="lg">
-                  Access Admin Panel
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="animate-in slide-in-from-left duration-500 delay-200">
+              <Card className="hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 group relative overflow-hidden h-full"
+                    onClick={() => handleModeSelect('admin')}>
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader className="text-center pb-4 relative">
+                  <div className="bg-gradient-to-br from-secondary to-secondary/50 p-6 rounded-full w-fit mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                    <User className="h-10 w-10 text-white" />
+                  </div>
+                  <CardTitle className="text-3xl font-bold">Admin Portal</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center relative">
+                  <p className="text-muted-foreground mb-6 text-lg">
+                    Create and manage exams, view student submissions and results
+                  </p>
+                  <Button className="w-full group-hover:scale-105 transition-transform bg-gradient-to-r from-secondary to-secondary/80" size="lg">
+                    Access Admin Panel
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/50"
-                  onClick={() => handleModeSelect('student')}>
-              <CardHeader className="text-center pb-4">
-                <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto mb-4">
-                  <GraduationCap className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-2xl">Student Portal</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground mb-6">
-                  Take exams, submit answers, and view your results
-                </p>
-                <Button className="w-full" size="lg" variant="outline">
-                  Start Examination
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="animate-in slide-in-from-right duration-500 delay-300">
+              <Card className="hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 group relative overflow-hidden h-full"
+                    onClick={() => handleModeSelect('student')}>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader className="text-center pb-4 relative">
+                  <div className="bg-gradient-to-br from-primary to-accent p-6 rounded-full w-fit mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                    <GraduationCap className="h-10 w-10 text-white" />
+                  </div>
+                  <CardTitle className="text-3xl font-bold">Student Portal</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center relative">
+                  <p className="text-muted-foreground mb-6 text-lg">
+                    Take exams, submit answers, and view your results
+                  </p>
+                  <Button className="w-full group-hover:scale-105 transition-transform bg-gradient-to-r from-primary to-accent" size="lg">
+                    Start Examination
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
