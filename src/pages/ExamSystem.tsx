@@ -1,31 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AdminLogin } from '@/components/exam/AdminLogin';
 import { AdminDashboard } from '@/components/exam/AdminDashboard';
 import { StudentExamPortal } from '@/components/exam/StudentExamPortal';
-import { EnhancedStudentPortal } from '@/components/exam/EnhancedStudentPortal';
 import { GraduationCap, User, ArrowLeft } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 export const ExamSystem = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<'select' | 'admin' | 'student' | 'exam'>('select');
-  const [adminAuthenticated, setAdminAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [currentExamId, setCurrentExamId] = useState<string>('');
   const [studentInfo, setStudentInfo] = useState<{ name: string; email?: string }>({ name: '' });
 
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setUser(session.user);
+      // Check if user is admin
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .eq('role', 'admin')
+        .single();
+      
+      if (roleData) {
+        setIsAdmin(true);
+      }
+    }
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+      if (session) {
+        checkAdminRole(session.user.id);
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  };
+
+  const checkAdminRole = async (userId: string) => {
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .single();
+    
+    setIsAdmin(!!data);
+  };
+
   const handleModeSelect = (selectedMode: 'admin' | 'student') => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (selectedMode === 'admin' && !isAdmin) {
+      toast({
+        variant: "destructive",
+        title: "Access Denied",
+        description: "You don't have admin privileges.",
+      });
+      return;
+    }
+
+    if (selectedMode === 'student') {
+      navigate('/student-dashboard');
+      return;
+    }
+
     setMode(selectedMode);
   };
 
-  const handleAdminLogin = () => {
-    setAdminAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    setAdminAuthenticated(false);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setMode('select');
+    navigate('/');
   };
 
   const handleStartExam = (examId: string, student: { name: string; email?: string }) => {
@@ -124,25 +185,9 @@ export const ExamSystem = () => {
   }
 
   if (mode === 'admin') {
-    if (!adminAuthenticated) {
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-          <div className="p-4">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 mb-4"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </div>
-          <AdminLogin 
-            onLogin={handleAdminLogin} 
-            onBack={() => setMode('select')} 
-          />
-        </div>
-      );
+    if (!user || !isAdmin) {
+      navigate('/auth');
+      return null;
     }
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
@@ -162,6 +207,10 @@ export const ExamSystem = () => {
   }
 
   if (mode === 'student') {
+    if (!user) {
+      navigate('/auth');
+      return null;
+    }
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
         <div className="p-4">
@@ -174,7 +223,7 @@ export const ExamSystem = () => {
             Back to Home
           </Button>
         </div>
-        <EnhancedStudentPortal onStartExam={handleStartExam} />
+        <StudentExamPortal onBack={() => navigate('/student-dashboard')} />
       </div>
     );
   }
