@@ -1,5 +1,4 @@
-
-import { Bot, Clock, Sparkles, User } from "lucide-react";
+import { Bot, Sparkles, User } from "lucide-react";
 
 interface ChatMessageProps {
   role: "assistant" | "user";
@@ -12,50 +11,56 @@ export function ChatMessage({ role, content, animate, id }: ChatMessageProps) {
   return (
     <div
       key={id}
-      className={`mb-6 ${
-        role === "assistant"
-          ? "ml-4 mr-12"
-          : "ml-12 mr-4"
+      className={`mb-6 flex gap-3 ${
+        role === "assistant" ? "justify-start" : "justify-end"
       } ${animate ? 'animate-fadeIn' : ''}`}
     >
+      {role === "assistant" && (
+        <div className="flex-shrink-0 mt-1">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full blur-sm opacity-60"></div>
+            <div className="relative bg-gradient-to-br from-primary to-accent p-2 rounded-full">
+              <Bot className="w-4 h-4 text-white" />
+            </div>
+            <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-yellow-400 animate-pulse" />
+          </div>
+        </div>
+      )}
+      
       <div
-        className={`p-4 rounded-lg shadow-sm ${
+        className={`max-w-[75%] ${
           role === "assistant"
-            ? "bg-primary/5 rounded-tl-none border-l-2 border-accent/50"
-            : "bg-secondary/10 rounded-tr-none border-r-2 border-primary/30"
-        }`}
+            ? "bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl rounded-tl-sm"
+            : "bg-gradient-to-br from-secondary/20 to-primary/10 rounded-2xl rounded-tr-sm"
+        } p-4 shadow-lg backdrop-blur-sm border border-border/50`}
       >
-        <p className="font-semibold mb-2 flex items-center gap-2">
-          {role === "assistant" ? (
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Bot className="w-5 h-5 text-accent" />
-                <span className="absolute -bottom-1 -right-1">
-                  <Sparkles className="w-3 h-3 text-yellow-400" />
-                </span>
-              </div>
-              <span>Mbuya Zivai</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <div className="p-1 rounded-full bg-primary/10">
-                <User className="w-3 h-3" />
-              </div>
-              <span>You</span>
-            </div>
-          )}
-          
+        <div className="flex items-center gap-2 mb-2">
+          <span className={`text-xs font-semibold ${
+            role === "assistant" 
+              ? "text-primary" 
+              : "text-foreground"
+          }`}>
+            {role === "assistant" ? "Mbuya Zivai" : "You"}
+          </span>
           {role === "assistant" && (
-            <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              <span>just now</span>
+            <span className="text-xs text-muted-foreground bg-accent/10 px-2 py-0.5 rounded-full">
+              AI
             </span>
           )}
-        </p>
-        <div className="prose-sm max-w-none text-foreground whitespace-pre-wrap">
+        </div>
+        
+        <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
           {content}
         </div>
       </div>
+      
+      {role === "user" && (
+        <div className="flex-shrink-0 mt-1">
+          <div className="bg-gradient-to-br from-primary to-secondary p-2 rounded-full">
+            <User className="w-4 h-4 text-white" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

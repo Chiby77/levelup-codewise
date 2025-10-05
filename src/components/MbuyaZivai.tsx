@@ -12,7 +12,8 @@ import {
   Loader2,
   ShieldCheck,
   TreePine,
-  BookCheck
+  BookCheck,
+  Sparkles
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { ChatHeader } from "./chat/ChatHeader";
@@ -213,31 +214,35 @@ export default function MbuyaZivai() {
   ];
 
   return (
-    <Card className={`w-full h-full max-w-3xl mx-auto bg-gradient-to-br from-background to-secondary/5 shadow-xl transition-all duration-500 ${isExpanded ? 'scale-[1.02]' : 'scale-100'}`}
-         onMouseEnter={() => setIsExpanded(true)}
-         onMouseLeave={() => setIsExpanded(false)}>
-      <CardHeader className="border-b relative">
-        <ChatHeader />
-      </CardHeader>
+    <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-border/50 overflow-hidden">
+      <ChatHeader />
       
-      <CardContent className="p-0 flex flex-col h-[calc(80vh-4rem)]">
+      <CardContent className="p-0 flex flex-col h-[calc(80vh-7rem)]">
         {showQuiz ? (
           <QuizComponent onFinish={() => setShowQuiz(false)} category={quizCategory} />
         ) : showQuizAccess ? (
           <QuizAccess onClose={() => setShowQuizAccess(false)} />
         ) : (
           <>
-            <ScrollArea className="flex-1 px-4 py-6" ref={scrollRef}>
+            <ScrollArea className="flex-1 px-6 py-4 bg-gradient-to-b from-background via-primary/5 to-background" ref={scrollRef}>
               {/* Empty state with enhanced animations */}
               {isEmptyState && showWelcome && (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-fadeIn">
-                  <div className="w-24 h-24 relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent to-primary/60 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                    <Bot className="w-full h-full p-4 text-primary relative z-10" />
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fadeIn">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary rounded-full blur-2xl opacity-30 animate-pulse"></div>
+                    <div className="relative w-32 h-32 bg-gradient-to-br from-primary to-accent rounded-full p-8 shadow-2xl">
+                      <Bot className="w-full h-full text-white" />
+                    </div>
+                    <Sparkles className="absolute -top-2 -right-2 w-8 h-8 text-yellow-400 animate-pulse" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">Welcome to Mbuya Zivai</h3>
-                    <p className="text-muted-foreground mb-4">Your wise AI companion for Computer Science knowledge</p>
+                  
+                  <div className="space-y-3">
+                    <h3 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                      Welcome to Mbuya Zivai
+                    </h3>
+                    <p className="text-muted-foreground text-lg max-w-md">
+                      Your intelligent AI companion for Computer Science, powered by advanced reasoning
+                    </p>
                   </div>
                 </div>
               )}
@@ -263,14 +268,27 @@ export default function MbuyaZivai() {
 
               {/* Loading indicator */}
               {isLoading && (
-                <div className="flex items-center gap-3 p-4 animate-fadeIn">
-                  <div className="relative">
-                    <Bot className="w-5 h-5 text-accent" />
-                    <div className="absolute inset-0 bg-accent/20 rounded-full blur-sm animate-pulse"></div>
+                <div className="flex items-start gap-3 mb-6 animate-fadeIn">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full blur-sm opacity-60 animate-pulse"></div>
+                      <div className="relative bg-gradient-to-br from-primary to-accent p-2 rounded-full">
+                        <Bot className="w-4 h-4 text-white animate-pulse" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <p>Mbuya Zivai is thinking...</p>
+                  
+                  <div className="max-w-[75%] bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl rounded-tl-sm p-4 shadow-lg backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Loader2 className="h-4 w-4 animate-spin text-accent" />
+                      <span className="text-sm text-muted-foreground">Mbuya Zivai is thinking...</span>
+                    </div>
+                    
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce"></span>
+                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></span>
+                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></span>
+                    </div>
                   </div>
                 </div>
               )}
