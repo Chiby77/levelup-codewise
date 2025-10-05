@@ -195,16 +195,43 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
     setLoading(true);
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error('You must be logged in to create an exam');
+        setLoading(false);
+        return;
+      }
+
+      // Check if user is admin
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .single();
+
+      if (!roleData) {
+        toast.error('You must be an admin to create exams');
+        setLoading(false);
+        return;
+      }
+
       const { data: examResponse, error: examError } = await supabase
         .from('exams')
         .insert({
           ...examData,
+          created_by: user.id,
           instructions: examData.instructions || 'Please read all questions carefully before answering.'
         })
         .select()
         .single();
 
-      if (examError) throw examError;
+      if (examError) {
+        console.error('Exam creation error:', examError);
+        throw examError;
+      }
 
       const questionsToInsert = questions.map((q, index) => ({
         exam_id: examResponse.id,
@@ -221,7 +248,10 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         .from('questions')
         .insert(questionsToInsert);
 
-      if (questionsError) throw questionsError;
+      if (questionsError) {
+        console.error('Questions creation error:', questionsError);
+        throw questionsError;
+      }
 
       toast.success('Exam created successfully!');
       
@@ -241,9 +271,9 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
       setQuestions([]);
       
       onExamCreated();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating exam:', error);
-      toast.error('Failed to create exam');
+      toast.error(error.message || 'Failed to create exam');
     } finally {
       setLoading(false);
     }

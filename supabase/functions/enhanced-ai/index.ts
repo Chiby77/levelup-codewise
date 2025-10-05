@@ -1,3 +1,4 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.51.0';
 
@@ -8,6 +9,7 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const groqApiKey = Deno.env.get('GROQ_API_KEY')!;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -59,35 +61,9 @@ function identifyTopics(text: string): string[] {
   return topics;
 }
 
-async function generateResponse(userInput: string, sessionId: string): Promise<string> {
+async function generateResponseWithGroq(userInput: string, sessionId: string): Promise<string> {
   const keywords = extractKeywords(userInput);
   const topics = identifyTopics(userInput);
-  
-  // Check for learned responses
-  const { data: learnedResponses } = await supabase
-    .from('learned_responses')
-    .select('*')
-    .gt('confidence_score', 0.3)
-    .order('usage_count', { ascending: false })
-    .limit(10);
-  
-  // Look for matching learned responses
-  if (learnedResponses) {
-    for (const learned of learnedResponses) {
-      const triggerWords = learned.trigger_phrase.toLowerCase().split(/\s+/);
-      const matchCount = triggerWords.filter(word => userInput.toLowerCase().includes(word)).length;
-      
-      if (matchCount >= triggerWords.length * 0.6) {
-        // Update usage count
-        await supabase
-          .from('learned_responses')
-          .update({ usage_count: learned.usage_count + 1 })
-          .eq('id', learned.id);
-        
-        return learned.response_text;
-      }
-    }
-  }
   
   // Get recent interactions for context
   const { data: recentInteractions } = await supabase
@@ -97,60 +73,87 @@ async function generateResponse(userInput: string, sessionId: string): Promise<s
     .order('timestamp', { ascending: false })
     .limit(5);
   
-  // Generate contextual response based on topics and keywords
-  let response = '';
-  
-  if (topics.includes('programming')) {
-    response = `I see you're asking about programming! ${keywords.join(', ')} are important concepts. Let me help you understand these better. Programming is the art of creating instructions for computers to follow. `;
-  } else if (topics.includes('flowchart')) {
-    response = `Flowcharts are visual representations of processes and algorithms! They help us understand the logical flow of programs. You can create flowcharts using our integrated drawing tool. `;
-  } else if (topics.includes('algorithms')) {
-    response = `Algorithms are step-by-step procedures for solving problems! ${keywords.join(', ')} are fundamental concepts in computer science. `;
-  } else if (topics.includes('networking')) {
-    response = `Networking connects computers and enables communication! Topics like ${keywords.join(', ')} are essential for understanding how the internet works. `;
-  } else if (userInput.toLowerCase().includes('hello') || userInput.toLowerCase().includes('hi')) {
-    response = `Hello! I'm Mbuya Zivai, your AI-powered Computer Science assistant. I'm here to help you with programming, algorithms, flowcharts, and all things computer science! `;
-  } else if (userInput.toLowerCase().includes('exam') || userInput.toLowerCase().includes('test')) {
-    response = `I can help you prepare for your computer science exams! We have a digital examination system where you can practice and get AI-powered grading. `;
-  } else {
-    response = `That's an interesting question about ${keywords.slice(0, 3).join(', ')}! Let me help you explore this topic further. `;
-  }
-  
-  // Add contextual information based on recent interactions
+  // Build context from recent interactions
+  let conversationContext = '';
   if (recentInteractions && recentInteractions.length > 0) {
-    const commonTopics = recentInteractions
-      .flatMap(interaction => interaction.topics || [])
-      .filter((topic, index, array) => array.indexOf(topic) === index);
-    
-    if (commonTopics.length > 0) {
-      response += `\n\nI notice we've been discussing ${commonTopics.join(' and ')}. `;
-    }
+    conversationContext = recentInteractions
+      .reverse()
+      .map(interaction => `User: ${interaction.user_input}\nAssistant: ${interaction.ai_response}`)
+      .join('\n');
   }
   
-  // Learn from this interaction
-  if (keywords.length > 2) {
-    const triggerPhrase = keywords.slice(0, 3).join(' ');
+  // Build system prompt
+  const systemPrompt = `You are Mbuya Zivai, a wise and knowledgeable AI assistant specializing in Computer Science education. 
+You help students understand programming, algorithms, data structures, networking, and all aspects of computer science.
+You are patient, encouraging, and provide clear explanations with examples when helpful.
+Current topics being discussed: ${topics.join(', ')}
+Key concepts: ${keywords.slice(0, 5).join(', ')}`;
+
+  try {
+    // Call Groq API with llama model
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${groqApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...(conversationContext ? [{ role: 'system', content: `Previous conversation:\n${conversationContext}` }] : []),
+          { role: 'user', content: userInput }
+        ],
+        temperature: 0.7,
+        max_tokens: 1024,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Groq API error:', response.status, errorText);
+      throw new Error(`Groq API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const aiResponse = data.choices[0].message.content;
     
-    // Check if we should create a new learned response
-    const { data: existing } = await supabase
-      .from('learned_responses')
-      .select('id')
-      .eq('trigger_phrase', triggerPhrase)
-      .single();
-    
-    if (!existing) {
-      await supabase
+    // Learn from this interaction by storing patterns
+    if (keywords.length > 2) {
+      const triggerPhrase = keywords.slice(0, 3).join(' ');
+      
+      const { data: existing } = await supabase
         .from('learned_responses')
-        .insert({
-          trigger_phrase: triggerPhrase,
-          response_text: response,
-          confidence_score: 0.4,
-          usage_count: 1
-        });
+        .select('id, usage_count')
+        .eq('trigger_phrase', triggerPhrase)
+        .single();
+      
+      if (existing) {
+        await supabase
+          .from('learned_responses')
+          .update({ 
+            usage_count: existing.usage_count + 1,
+            confidence_score: Math.min(0.9, 0.4 + (existing.usage_count * 0.05))
+          })
+          .eq('id', existing.id);
+      } else {
+        await supabase
+          .from('learned_responses')
+          .insert({
+            trigger_phrase: triggerPhrase,
+            response_text: aiResponse.substring(0, 500),
+            confidence_score: 0.4,
+            usage_count: 1
+          });
+      }
     }
+    
+    return aiResponse;
+  } catch (error) {
+    console.error('Error calling Groq API:', error);
+    // Fallback to basic response
+    return `I understand you're asking about ${keywords.slice(0, 3).join(', ')}. This is an important topic in computer science! Could you please rephrase your question? I'm having a bit of trouble processing it right now.`;
   }
-  
-  return response;
 }
 
 serve(async (req) => {
@@ -167,8 +170,8 @@ serve(async (req) => {
     const keywords = extractKeywords(message);
     const topics = identifyTopics(message);
     
-    // Generate intelligent response
-    const aiResponse = await generateResponse(message, sessionId || 'anonymous');
+    // Generate intelligent response using Groq AI
+    const aiResponse = await generateResponseWithGroq(message, sessionId || 'anonymous');
     
     // Store the interaction
     await supabase
