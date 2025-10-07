@@ -12,6 +12,7 @@ const Downloads = () => {
   const [downloadInProgress, setDownloadInProgress] = useState<string | null>(null);
 
   const theory_papers = [
+    { year: "2025 P1 MS", link: "https://drive.google.com/file/d/1VDD_ohIIsnHs6bIWkYt9DnqYykhAgi2B/view?usp=sharing" },
     { year: "2023", link: "https://www.mediafire.com/file/7t4ok30r5fcm5rq/Computer_Science_MS2023_1-Edited.pdf/file" },
     { year: "2022", link: "https://www.mediafire.com/file/ynzwanlu9y0atry/A_LEVEL_COMP_SCIE_2022_P1_MS.pdf/file" },
     { year: "2021", link: "https://www.mediafire.com/file/bt0ziv07o2ubgk4/2021_bluebook_Computer_Science.pdf/file" },
@@ -49,6 +50,18 @@ const Downloads = () => {
   ];
 
   const special_resources = [
+    { 
+      title: "Upper 6 Computer Science", 
+      link: "https://drive.google.com/file/d/1qE5fM9z6Y8lHvzRtXu7D77CN3wFmbmhM/view?usp=sharing",
+      category: "Textbook",
+      icon: BookOpen
+    },
+    { 
+      title: "CODES BIBLE (Updated April 2021)", 
+      link: "https://drive.google.com/file/d/1ox2_Ut6ysQZHC9L87HT78suuVY3OkClZ/view?usp=sharing",
+      category: "Reference",
+      icon: Code
+    },
     { 
       title: "String Manipulation Q&S", 
       link: "https://drive.google.com/file/d/1ZhHeAPIGxg_c8RV33sI90mvInNY94whx/view?usp=sharing",

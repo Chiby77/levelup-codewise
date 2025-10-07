@@ -13,7 +13,8 @@ import {
   ShieldCheck,
   TreePine,
   BookCheck,
-  Sparkles
+  Sparkles,
+  Lock
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { ChatHeader } from "./chat/ChatHeader";
@@ -23,6 +24,8 @@ import { QuickActions } from "./chat/QuickActions";
 import { QuizComponent } from "./quiz/QuizComponent";
 import { QuizAccess } from "./quiz/QuizAccess";
 import MotivationalQuotes from "./MotivationalQuotes";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   role: "assistant" | "user";
@@ -40,7 +43,11 @@ export default function MbuyaZivai() {
   const [showQuiz, setShowQuiz] = useState(false);
   const [showQuizAccess, setShowQuizAccess] = useState(false);
   const [quizCategory, setQuizCategory] = useState<string | undefined>(undefined);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [tokensRemaining, setTokensRemaining] = useState(10);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageEndRef = useRef<HTMLDivElement>(null);
 
@@ -49,22 +56,61 @@ export default function MbuyaZivai() {
   const [showQuickActions, setShowQuickActions] = useState(true);
 
   useEffect(() => {
-    // Generate or get session ID
-    if (!sessionStorage.getItem('sessionId')) {
-      sessionStorage.setItem('sessionId', Date.now().toString());
-    }
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        setIsAuthenticated(false);
+        return;
+      }
 
-    const timer = setTimeout(() => {
-      const initialGreeting = generateGreeting();
-      setMessages([{
-        role: "assistant",
-        content: `${initialGreeting} I'm Mbuya Zivai, your enhanced AI assistant! I learn from our conversations to provide better, more personalized help. Ask me anything about Computer Science!`,
-        id: "greeting-" + Date.now(),
-        animate: true
-      }]);
-    }, 800);
+      setIsAuthenticated(true);
 
-    return () => clearTimeout(timer);
+      // Check if user is admin
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      const userIsAdmin = !!roleData;
+      setIsAdmin(userIsAdmin);
+
+      // Load token count for non-admins
+      if (!userIsAdmin) {
+        const { data: tokenData } = await supabase
+          .from('chat_tokens')
+          .select('tokens_used, tokens_limit')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (tokenData) {
+          setTokensRemaining(tokenData.tokens_limit - tokenData.tokens_used);
+        } else {
+          setTokensRemaining(10);
+        }
+      }
+
+      // Generate or get session ID
+      if (!sessionStorage.getItem('sessionId')) {
+        sessionStorage.setItem('sessionId', Date.now().toString());
+      }
+
+      const timer = setTimeout(() => {
+        const initialGreeting = generateGreeting();
+        setMessages([{
+          role: "assistant",
+          content: `${initialGreeting} I'm Mbuya Zivai, your enhanced AI assistant! I learn from our conversations to provide better, more personalized help. Ask me anything about Computer Science!`,
+          id: "greeting-" + Date.now(),
+          animate: true
+        }]);
+      }, 800);
+
+      return () => clearTimeout(timer);
+    };
+
+    checkAuth();
   }, []);
 
   useEffect(() => {
@@ -81,6 +127,26 @@ export default function MbuyaZivai() {
   }, [messages]);
 
   const handleSubmit = async (query: string) => {
+    // Check authentication
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to use Mbuya Zivai",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check token limit for non-admins
+    if (!isAdmin && tokensRemaining <= 0) {
+      toast({
+        title: "Message Limit Reached",
+        description: "You have used all 10 messages. Contact admin for more.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setShowWelcome(false);
     setShowQuickActions(false);
     
@@ -115,11 +181,28 @@ export default function MbuyaZivai() {
     try {
       console.log('Attempting to call enhanced-ai function...');
       
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      // Increment token usage for non-admins
+      if (!isAdmin) {
+        const { error: incrementError } = await supabase.rpc('increment_chat_tokens', {
+          _user_id: user.id
+        });
+
+        if (incrementError) {
+          console.error("Error incrementing tokens:", incrementError);
+        } else {
+          setTokensRemaining(prev => Math.max(0, prev - 1));
+        }
+      }
+      
       // Use enhanced AI with learning capabilities
       const { data, error } = await supabase.functions.invoke('enhanced-ai', {
         body: { 
           message: query,
-          sessionId: sessionStorage.getItem('sessionId') || 'anonymous'
+          sessionId: user.id
         }
       });
 
@@ -213,9 +296,49 @@ export default function MbuyaZivai() {
     }
   ];
 
+  // Show auth prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-border/50 overflow-hidden">
+        <ChatHeader />
+        <CardContent className="flex items-center justify-center h-[calc(80vh-7rem)]">
+          <div className="text-center space-y-6 max-w-md p-6">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <Lock className="w-10 h-10 text-primary" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold">Authentication Required</h3>
+              <p className="text-muted-foreground">
+                Please log in to access Mbuya Zivai and get help with your studies
+              </p>
+            </div>
+            <Button 
+              onClick={() => navigate('/auth')}
+              className="bg-primary hover:bg-primary/90"
+            >
+              Log In
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-border/50 overflow-hidden">
       <ChatHeader />
+      
+      {/* Token Counter for non-admins */}
+      {!isAdmin && (
+        <div className="px-6 py-2 border-b border-border/50 bg-primary/5">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Messages Remaining:</span>
+            <span className={`font-semibold ${tokensRemaining <= 3 ? 'text-destructive' : 'text-primary'}`}>
+              {tokensRemaining} / 10
+            </span>
+          </div>
+        </div>
+      )}
       
       <CardContent className="p-0 flex flex-col h-[calc(80vh-7rem)]">
         {showQuiz ? (

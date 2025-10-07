@@ -65,6 +65,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          tokens_limit: number
+          tokens_used: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tokens_limit?: number
+          tokens_used?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tokens_limit?: number
+          tokens_used?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       exams: {
         Row: {
           created_at: string
@@ -356,12 +383,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_chat_tokens: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_chat_tokens: {
+        Args: { _user_id: string }
+        Returns: undefined
       }
       request_grading: {
         Args: { submission_uuid: string }
