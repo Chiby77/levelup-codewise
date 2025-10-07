@@ -80,11 +80,22 @@ export default function Auth() {
     setLoading(true);
 
     try {
+      // Prevent admin email from signing up
+      if (email.toLowerCase() === 'tinodaishemchibi@gmail.com') {
+        toast({
+          variant: "destructive",
+          title: "Signup not allowed",
+          description: "This email is reserved for admin. Please use the login form.",
+        });
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/exams`,
+          emailRedirectTo: `${window.location.origin}/student-dashboard`,
           data: {
             full_name: fullName,
             student_id: studentId,
@@ -96,7 +107,7 @@ export default function Auth() {
 
       toast({
         title: "Account created!",
-        description: "Please check your email to verify your account.",
+        description: "You can now sign in with your credentials.",
       });
     } catch (error: any) {
       toast({
@@ -175,6 +186,11 @@ export default function Auth() {
 
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="bg-muted/50 border border-border rounded-lg p-4 mb-4">
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Student Registration:</strong> Create your account to access exams and view your results.
+                    </p>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-name">Full Name</Label>
                     <Input
@@ -223,7 +239,7 @@ export default function Auth() {
                     </p>
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Creating account...' : 'Sign Up'}
+                    {loading ? 'Creating account...' : 'Sign Up as Student'}
                   </Button>
                 </form>
               </TabsContent>

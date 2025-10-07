@@ -36,11 +36,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
     duration_minutes: 60,
     total_marks: 100,
     status: 'draft' as 'draft' | 'active',
-    exam_type: 'standard' as 'standard' | 'coding' | 'mixed',
-    instructions: '',
-    passing_marks: 50,
-    randomize_questions: false,
-    allow_review: true
+    subject: 'Computer Science'
   });
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -221,9 +217,13 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
       const { data: examResponse, error: examError } = await supabase
         .from('exams')
         .insert({
-          ...examData,
-          created_by: user.id,
-          instructions: examData.instructions || 'Please read all questions carefully before answering.'
+          title: examData.title,
+          description: examData.description,
+          duration_minutes: examData.duration_minutes,
+          total_marks: examData.total_marks,
+          status: examData.status,
+          subject: examData.subject,
+          created_by: user.id
         })
         .select()
         .single();
@@ -262,11 +262,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         duration_minutes: 60,
         total_marks: 100,
         status: 'draft',
-        exam_type: 'standard',
-        instructions: '',
-        passing_marks: 50,
-        randomize_questions: false,
-        allow_review: true
+        subject: 'Computer Science'
       });
       setQuestions([]);
       
@@ -348,16 +344,6 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
                     placeholder="Enter exam description"
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="instructions">Instructions</Label>
-                  <Textarea
-                    id="instructions"
-                    value={examData.instructions}
-                    onChange={(e) => setExamData({ ...examData, instructions: e.target.value })}
-                    placeholder="Special instructions for students"
-                  />
-                </div>
               </CardContent>
             </Card>
 
@@ -387,29 +373,15 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="passing">Passing Marks</Label>
-                    <Input
-                      id="passing"
-                      type="number"
-                      value={examData.passing_marks}
-                      onChange={(e) => setExamData({ ...examData, passing_marks: parseInt(e.target.value) })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="type">Exam Type</Label>
-                    <Select value={examData.exam_type} onValueChange={(value: any) => setExamData({ ...examData, exam_type: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="standard">Standard</SelectItem>
-                        <SelectItem value="coding">Coding Focus</SelectItem>
-                        <SelectItem value="mixed">Mixed Types</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject</Label>
+                  <Input
+                    id="subject"
+                    type="text"
+                    value={examData.subject}
+                    onChange={(e) => setExamData({ ...examData, subject: e.target.value })}
+                    placeholder="e.g., Computer Science, Mathematics"
+                  />
                 </div>
 
                 <div className="space-y-2">
