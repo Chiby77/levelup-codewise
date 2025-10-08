@@ -223,6 +223,13 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   const submitExam = async () => {
     setSubmitting(true);
     try {
+      // Get authenticated user's email
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Authentication required to submit exam');
+        return;
+      }
+
       const timeTaken = Math.round((exam.duration_minutes * 60 - timeLeft) / 60);
       
       // Calculate total possible marks
@@ -231,7 +238,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
       const submissionData = {
         exam_id: exam.id,
         student_name: studentData.name,
-        student_email: studentData.email || null,
+        student_email: user.email || null,
         answers: answers,
         time_taken_minutes: timeTaken,
         max_score: maxScore

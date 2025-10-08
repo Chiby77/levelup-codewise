@@ -176,14 +176,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </h1>
             <p className="text-muted-foreground text-sm sm:text-base mt-1">CS Experts Zimbabwe - Next-Gen Digital Examination System</p>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={onLogout} 
-            className="w-full sm:w-auto hover:bg-destructive/10 hover:text-destructive hover:scale-105 transition-all"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.href = '/admin-content'}
+              className="flex items-center gap-2"
+            >
+              <FileText className="h-4 w-4" />
+              Manage Content
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={onLogout} 
+              className="w-full sm:w-auto hover:bg-destructive/10 hover:text-destructive hover:scale-105 transition-all"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

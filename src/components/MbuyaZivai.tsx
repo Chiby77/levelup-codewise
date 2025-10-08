@@ -86,8 +86,11 @@ export default function MbuyaZivai() {
           .maybeSingle();
 
         if (tokenData) {
-          setTokensRemaining(tokenData.tokens_limit - tokenData.tokens_used);
+          const remaining = Math.max(0, tokenData.tokens_limit - tokenData.tokens_used);
+          setTokensRemaining(remaining);
+          console.log('Tokens loaded:', { used: tokenData.tokens_used, limit: tokenData.tokens_limit, remaining });
         } else {
+          // No record exists yet, user has full limit
           setTokensRemaining(10);
         }
       }
