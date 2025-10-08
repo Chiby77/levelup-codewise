@@ -12,6 +12,7 @@ import Downloads from "./pages/Downloads";
 import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import StudentDashboard from "./pages/StudentDashboard";
+import StudentExam from "./pages/StudentExam";
 import { ExamSystem } from "./pages/ExamSystem";
 
 // Create a client
@@ -31,8 +32,9 @@ const App = () => {
                 <Route path="/downloads" element={<Downloads />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/exams" element={<ExamSystem />} />
                 <Route path="/student-dashboard" element={<StudentDashboard />} />
+                <Route path="/student-exam" element={<StudentExam />} />
+                <Route path="/exams" element={<ExamSystem />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <FloatingChatButton />

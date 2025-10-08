@@ -223,7 +223,7 @@ export default function StudentDashboard() {
                   <div className="space-y-4">
                     {exams.map((exam) => (
                       <Card key={exam.id} className="cursor-pointer hover:shadow-lg transition-shadow"
-                            onClick={() => navigate('/exams', { state: { examId: exam.id } })}>
+                            onClick={() => navigate('/student-exam', { state: { examId: exam.id } })}>
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div className="space-y-1">

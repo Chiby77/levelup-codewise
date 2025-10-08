@@ -63,6 +63,12 @@ const Downloads = () => {
       icon: Code
     },
     { 
+      title: "Computer Science Book 5", 
+      link: "https://drive.google.com/file/d/1pxEhT25GQv9qo2TX2fpY6subGhcKKy8J/view?usp=sharing",
+      category: "Textbook",
+      icon: BookOpen
+    },
+    { 
       title: "String Manipulation Q&S", 
       link: "https://drive.google.com/file/d/1ZhHeAPIGxg_c8RV33sI90mvInNY94whx/view?usp=sharing",
       category: "Examples",

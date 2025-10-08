@@ -34,6 +34,10 @@ export const ExamSystem = () => {
       
       if (roleData) {
         setIsAdmin(true);
+        setMode('admin'); // Auto-set admin mode
+      } else {
+        // Regular user, redirect to student dashboard
+        navigate('/student-dashboard');
       }
     }
 
