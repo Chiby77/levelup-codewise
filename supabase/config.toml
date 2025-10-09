@@ -6,5 +6,8 @@ verify_jwt = false
 [functions.grade-exam]
 verify_jwt = false
 
+[functions.groq-code-grader]
+verify_jwt = false
+
 [functions.send-contact-email]
 verify_jwt = false

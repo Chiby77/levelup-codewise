@@ -14,6 +14,7 @@ import Auth from "./pages/Auth";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentExam from "./pages/StudentExam";
 import AdminContent from "./pages/AdminContent";
+import StudentSubmissionHistory from "./pages/StudentSubmissionHistory";
 import { ExamSystem } from "./pages/ExamSystem";
 
 // Create a client
@@ -37,6 +38,7 @@ const App = () => {
                 <Route path="/student-exam" element={<StudentExam />} />
                 <Route path="/exams" element={<ExamSystem />} />
                 <Route path="/admin-content" element={<AdminContent />} />
+                <Route path="/submission-history" element={<StudentSubmissionHistory />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <FloatingChatButton />

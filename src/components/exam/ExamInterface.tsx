@@ -221,12 +221,17 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   };
 
   const submitExam = async () => {
+    if (submitting) return; // Prevent double submission
+    
     setSubmitting(true);
+    setShowSubmitDialog(false);
+    
     try {
       // Get authenticated user's email
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('Authentication required to submit exam');
+        setSubmitting(false);
         return;
       }
 
@@ -235,13 +240,16 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
       // Calculate total possible marks
       const maxScore = questions.reduce((total, q) => total + q.marks, 0);
 
+      console.log('Submitting exam with answers:', answers);
+
       const submissionData = {
         exam_id: exam.id,
         student_name: studentData.name,
-        student_email: user.email || null,
+        student_email: user.email,
         answers: answers,
         time_taken_minutes: timeTaken,
-        max_score: maxScore
+        max_score: maxScore,
+        grading_status: 'processing'
       };
 
       const { data, error } = await supabase
@@ -250,34 +258,49 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
         .select()
         .single();
 
-      if (error) throw error;
-
-      // Trigger AI grading
-      const { error: gradeError } = await supabase.functions.invoke('grade-exam', {
-        body: { 
-          submissionId: data.id,
-          examId: exam.id,
-          answers: answers,
-          questions: questions
-        }
-      });
-
-      if (gradeError) {
-        console.error('Grading error:', gradeError);
-        toast.warning('Exam submitted successfully, but grading failed. Please contact administrator.');
-      } else {
-        toast.success('Exam submitted and graded successfully!');
+      if (error) {
+        console.error('Submission error:', error);
+        throw error;
       }
 
+      console.log('Submission created:', data.id);
+
+      // Trigger AI grading in background
+      try {
+        const { data: gradeData, error: gradeError } = await supabase.functions.invoke('grade-exam', {
+          body: { 
+            submissionId: data.id,
+            examId: exam.id,
+            answers: answers,
+            questions: questions
+          }
+        });
+
+        if (gradeError) {
+          console.error('Grading error:', gradeError);
+          toast.warning('Exam submitted! Grading will be completed shortly.');
+        } else {
+          console.log('Grading completed:', gradeData);
+          toast.success('Exam submitted and graded successfully!');
+        }
+      } catch (gradeErr) {
+        console.error('Grading invocation error:', gradeErr);
+        toast.warning('Exam submitted! Grading will be completed shortly.');
+      }
+
+      // Stop timer
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
       
-      onComplete(data.id);
-    } catch (error) {
+      // Navigate to results
+      setTimeout(() => {
+        onComplete(data.id);
+      }, 1000);
+      
+    } catch (error: any) {
       console.error('Error submitting exam:', error);
-      toast.error('Failed to submit exam. Please try again.');
-    } finally {
+      toast.error(error.message || 'Failed to submit exam. Please try again.');
       setSubmitting(false);
     }
   };
@@ -288,6 +311,17 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading exam...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground mb-4">No questions available for this exam.</p>
+          <Button onClick={() => window.location.reload()}>Reload</Button>
         </div>
       </div>
     );

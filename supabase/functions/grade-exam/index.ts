@@ -78,7 +78,33 @@ serve(async (req) => {
             break;
             
           case 'coding':
-            // Advanced code evaluation with better metrics
+            // Try AI-powered grading with Groq first
+            try {
+              const groqResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/groq-code-grader`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`
+                },
+                body: JSON.stringify({
+                  studentCode: studentAnswer,
+                  questionText: question.question_text,
+                  sampleCode: question.correct_answer || question.sample_code || '',
+                  marks: question.marks
+                })
+              });
+
+              if (groqResponse.ok) {
+                const groqData = await groqResponse.json();
+                questionScore = groqData.score || 0;
+                feedback = `🤖 AI Grading:\n${groqData.feedback}\n\n✅ Strengths: ${groqData.strengths?.join(', ') || 'None identified'}\n📈 Improvements: ${groqData.improvements?.join(', ') || 'None identified'}`;
+                break;
+              }
+            } catch (groqError) {
+              console.log('Groq grading failed, using fallback:', groqError);
+            }
+
+            // Fallback to rule-based grading if AI fails
             const codeLines = studentAnswer.split('\n').filter((line: string) => line.trim());
             const hasComments = studentAnswer.includes('//') || studentAnswer.includes('#') || studentAnswer.includes('/*') || studentAnswer.includes('"""');
             const hasProperStructure = studentAnswer.includes('{') || studentAnswer.includes(':') || studentAnswer.includes('def ') || studentAnswer.includes('function') || studentAnswer.includes('class ');
@@ -89,45 +115,37 @@ serve(async (req) => {
             const hasErrorHandling = /\b(try|catch|except|error|On Error)\b/i.test(studentAnswer);
             const hasDataTypes = /\b(Integer|String|Boolean|Array|List|Dictionary|Object)\b/i.test(studentAnswer);
             
-            // Compare against expected answer if provided
             const expectedCode = question.correct_answer || question.sample_code || '';
             const codeComparison = expectedCode ? compareCode(studentAnswer, expectedCode) : 0;
             
-            // Intelligent scoring based on code quality and correctness
             let codeScore = 0;
             let codeAnalysis = [];
             
-            // Base attempt score
             if (codeLines.length > 0 && studentAnswer.length > 10) {
               codeScore += 0.15;
               codeAnalysis.push("code attempt made");
             }
             
-            // Structure and syntax (20%)
             if (hasProperStructure) {
               codeScore += 0.2;
               codeAnalysis.push("proper syntax structure");
             }
             
-            // Variable usage (15%)
             if (hasVariables) {
               codeScore += 0.15;
               codeAnalysis.push("variable declarations");
             }
             
-            // Control flow (20%)
             if (hasControlFlow) {
               codeScore += 0.2;
               codeAnalysis.push("control structures");
             }
             
-            // Procedures/Functions (15%)
             if (hasProcedures) {
               codeScore += 0.15;
               codeAnalysis.push("procedures/functions");
             }
             
-            // Code comparison with expected answer (15%)
             if (codeComparison > 0.5) {
               codeScore += 0.15;
               codeAnalysis.push("correct algorithm approach");
@@ -136,7 +154,6 @@ serve(async (req) => {
               codeAnalysis.push("similar approach");
             }
             
-            // Additional features (10% total)
             if (hasComments) {
               codeScore += 0.05;
               codeAnalysis.push("documentation");

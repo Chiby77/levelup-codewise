@@ -15,7 +15,8 @@ import {
   LogOut,
   Clock,
   Award,
-  Calendar
+  Calendar,
+  History
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -203,11 +204,23 @@ export default function StudentDashboard() {
           </Card>
         </div>
 
+        {/* Quick Actions */}
+        <div className="mb-6">
+          <Button 
+            onClick={() => navigate('/submission-history')}
+            variant="outline"
+            className="gap-2"
+          >
+            <History className="h-4 w-4" />
+            View Full Submission History
+          </Button>
+        </div>
+
         {/* Main Content */}
         <Tabs defaultValue="exams" className="space-y-4">
           <TabsList>
             <TabsTrigger value="exams">Available Exams</TabsTrigger>
-            <TabsTrigger value="history">My History</TabsTrigger>
+            <TabsTrigger value="history">Recent Submissions</TabsTrigger>
             <TabsTrigger value="announcements">Announcements</TabsTrigger>
             <TabsTrigger value="resources">Resources</TabsTrigger>
           </TabsList>
