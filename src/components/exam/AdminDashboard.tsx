@@ -9,6 +9,7 @@ import { SubmissionViewer } from './SubmissionViewer';
 import { ExamAnalytics } from './ExamAnalytics';
 import { EnhancedExamStats } from './EnhancedExamStats';
 import { AnimatedExamCard } from './AnimatedExamCard';
+import { UserManagement } from '@/components/admin/UserManagement';
 import { LogOut, Plus, FileText, Users, BarChart3, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -197,10 +198,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
             <TabsTrigger value="exams" className="text-xs sm:text-sm">Exams</TabsTrigger>
             <TabsTrigger value="submissions" className="text-xs sm:text-sm">Submissions</TabsTrigger>
+            <TabsTrigger value="users" className="text-xs sm:text-sm">Users</TabsTrigger>
             <TabsTrigger value="create" className="text-xs sm:text-sm">Create</TabsTrigger>
           </TabsList>
 
@@ -343,6 +345,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               </div>
             </div>
             <SubmissionViewer submissions={submissions} onGradeRequest={requestGrading} />
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
+            <UserManagement />
           </TabsContent>
 
           <TabsContent value="create">

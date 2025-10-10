@@ -163,26 +163,32 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: string | null
           avatar_url: string | null
           created_at: string
           full_name: string | null
           id: string
+          last_login_at: string | null
           student_id: string | null
           updated_at: string
         }
         Insert: {
+          account_status?: string | null
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           id: string
+          last_login_at?: string | null
           student_id?: string | null
           updated_at?: string
         }
         Update: {
+          account_status?: string | null
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
+          last_login_at?: string | null
           student_id?: string | null
           updated_at?: string
         }
@@ -318,6 +324,33 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           title?: string
+        }
+        Relationships: []
+      }
+      user_activity_logs: {
+        Row: {
+          activity_type: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          ip_address: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string
         }
         Relationships: []
       }
