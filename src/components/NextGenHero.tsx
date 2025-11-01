@@ -68,11 +68,11 @@ const NextGenHero = () => {
           <div className="mb-6 animate-slideDown">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight mb-4">
               <span className="bg-gradient-to-r from-white via-orange-300 to-white bg-clip-text text-transparent animate-gradientShift bg-[length:200%_200%]">
-                Master A Level
+                A Level Students
               </span>
               <br />
               <span className="bg-gradient-to-r from-orange-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradientShift bg-[length:200%_200%]">
-                Computer Science
+                Results Pending
               </span>
             </h1>
           </div>
@@ -85,14 +85,14 @@ const NextGenHero = () => {
                 <div className="space-y-3">
                   <p className="text-xl sm:text-2xl font-bold text-orange-300 animate-pulse flex items-center justify-center gap-2">
                     <Star className="w-6 h-6 animate-spin" />
-                    ✨ WISHING YOU ALL THE BEST IN YOUR FINAL EXAMS ✨
+                    📚 EXAMS COMPLETE - AWAITING RESULTS 📚
                     <Star className="w-6 h-6 animate-spin" />
                   </p>
                   <p className="text-lg sm:text-xl font-semibold text-purple-300 animate-bounce">
-                    🙏 USAKANGANWE PRAYER 🙏
+                    🎓 YOU'VE WORKED HARD - NOW REST & PRAY 🙏
                   </p>
                   <p className="text-base sm:text-lg font-medium text-pink-300 animate-pulse">
-                    💝 LET'S MAKE OUR PARENTS HAPPY 💝
+                    💝 BEST OF LUCK TO ALL A LEVEL STUDENTS 💝
                   </p>
                 </div>
               </div>

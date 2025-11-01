@@ -10,7 +10,8 @@ import { ExamAnalytics } from './ExamAnalytics';
 import { EnhancedExamStats } from './EnhancedExamStats';
 import { AnimatedExamCard } from './AnimatedExamCard';
 import { UserManagement } from '@/components/admin/UserManagement';
-import { LogOut, Plus, FileText, Users, BarChart3, Sparkles } from 'lucide-react';
+import { AdminDownloads } from '@/components/admin/AdminDownloads';
+import { LogOut, Plus, FileText, Users, BarChart3, Sparkles, Trash2, Power } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -115,6 +116,42 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     toast.success('Grades exported successfully');
   };
 
+  const deleteExam = async (examId: string) => {
+    if (!confirm('Are you sure you want to delete this exam? This will also delete all related questions.')) return;
+
+    try {
+      const { error } = await supabase
+        .from('exams')
+        .delete()
+        .eq('id', examId);
+
+      if (error) throw error;
+      toast.success('Exam deleted successfully');
+      await fetchData();
+    } catch (error) {
+      console.error('Error deleting exam:', error);
+      toast.error('Failed to delete exam');
+    }
+  };
+
+  const toggleExamStatus = async (examId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'draft' : 'active';
+    
+    try {
+      const { error } = await supabase
+        .from('exams')
+        .update({ status: newStatus })
+        .eq('id', examId);
+
+      if (error) throw error;
+      toast.success(`Exam ${newStatus === 'active' ? 'activated' : 'deactivated'}`);
+      await fetchData();
+    } catch (error) {
+      console.error('Error toggling exam status:', error);
+      toast.error('Failed to update exam status');
+    }
+  };
+
   const requestGrading = async (submissionId: string) => {
     try {
       const submission = submissions.find(s => s.id === submissionId);
@@ -198,11 +235,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 h-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
             <TabsTrigger value="exams" className="text-xs sm:text-sm">Exams</TabsTrigger>
             <TabsTrigger value="submissions" className="text-xs sm:text-sm">Submissions</TabsTrigger>
             <TabsTrigger value="users" className="text-xs sm:text-sm">Users</TabsTrigger>
+            <TabsTrigger value="downloads" className="text-xs sm:text-sm">Downloads</TabsTrigger>
             <TabsTrigger value="create" className="text-xs sm:text-sm">Create</TabsTrigger>
           </TabsList>
 
@@ -315,9 +353,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                         <CardTitle>{exam.title}</CardTitle>
                         <p className="text-muted-foreground mt-1">{exam.description}</p>
                       </div>
-                      <Badge variant={exam.status === 'active' ? 'default' : 'secondary'}>
-                        {exam.status}
-                      </Badge>
+                      <div className="flex gap-2">
+                        <Badge variant={exam.status === 'active' ? 'default' : 'secondary'}>
+                          {exam.status}
+                        </Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleExamStatus(exam.id, exam.status)}
+                        >
+                          <Power className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deleteExam(exam.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -349,6 +403,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
           <TabsContent value="users" className="space-y-6">
             <UserManagement />
+          </TabsContent>
+
+          <TabsContent value="downloads" className="space-y-6">
+            <AdminDownloads />
           </TabsContent>
 
           <TabsContent value="create">

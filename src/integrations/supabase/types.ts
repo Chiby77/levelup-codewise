@@ -92,6 +92,48 @@ export type Database = {
         }
         Relationships: []
       }
+      downloads_materials: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string
+          id: string
+          is_active: boolean | null
+          link: string
+          material_type: string
+          order_number: number | null
+          title: string
+          updated_at: string | null
+          year: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by: string
+          id?: string
+          is_active?: boolean | null
+          link: string
+          material_type: string
+          order_number?: number | null
+          title: string
+          updated_at?: string | null
+          year?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          is_active?: boolean | null
+          link?: string
+          material_type?: string
+          order_number?: number | null
+          title?: string
+          updated_at?: string | null
+          year?: string | null
+        }
+        Relationships: []
+      }
       exams: {
         Row: {
           created_at: string
@@ -203,6 +245,9 @@ export type Database = {
           marks: number
           options: Json | null
           order_number: number
+          programming_language:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
           question_text: string
           question_type: Database["public"]["Enums"]["question_type"]
           sample_code: string | null
@@ -215,6 +260,9 @@ export type Database = {
           marks?: number
           options?: Json | null
           order_number?: number
+          programming_language?:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
           question_text: string
           question_type: Database["public"]["Enums"]["question_type"]
           sample_code?: string | null
@@ -227,6 +275,9 @@ export type Database = {
           marks?: number
           options?: Json | null
           order_number?: number
+          programming_language?:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
           question_text?: string
           question_type?: Database["public"]["Enums"]["question_type"]
           sample_code?: string | null
@@ -416,10 +467,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_chat_tokens: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
+      check_chat_tokens: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -427,18 +475,19 @@ export type Database = {
         }
         Returns: boolean
       }
-      increment_chat_tokens: {
-        Args: { _user_id: string }
-        Returns: undefined
-      }
-      request_grading: {
-        Args: { submission_uuid: string }
-        Returns: boolean
-      }
+      increment_chat_tokens: { Args: { _user_id: string }; Returns: undefined }
+      request_grading: { Args: { submission_uuid: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "student" | "user"
       exam_status: "draft" | "active" | "completed" | "archived"
+      programming_language:
+        | "python"
+        | "java"
+        | "vb"
+        | "c"
+        | "cpp"
+        | "javascript"
       question_type: "multiple_choice" | "coding" | "flowchart" | "short_answer"
     }
     CompositeTypes: {
@@ -569,6 +618,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "student", "user"],
       exam_status: ["draft", "active", "completed", "archived"],
+      programming_language: ["python", "java", "vb", "c", "cpp", "javascript"],
       question_type: ["multiple_choice", "coding", "flowchart", "short_answer"],
     },
   },

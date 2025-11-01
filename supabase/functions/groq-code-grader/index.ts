@@ -12,14 +12,26 @@ serve(async (req) => {
   }
 
   try {
-    const { studentCode, questionText, sampleCode, marks } = await req.json();
+    const { studentCode, questionText, sampleCode, marks, programmingLanguage = 'python' } = await req.json();
     
     const GROQ_API_KEY = Deno.env.get('GROQ_API_KEY');
     if (!GROQ_API_KEY) {
       throw new Error('GROQ_API_KEY not configured');
     }
 
-    const prompt = `You are an expert programming instructor grading student code.
+    // Language-specific grading instructions
+    const languageInstructions: Record<string, string> = {
+      python: 'Check proper indentation, pythonic patterns, use of built-in functions, and PEP 8 conventions.',
+      vb: 'Check Dim statements, Sub/Function declarations, proper Visual Basic syntax, and VB naming conventions.',
+      java: 'Check class structure, type declarations, proper Java conventions, camelCase naming, and object-oriented design.',
+      c: 'Check pointer usage, memory management, proper C syntax, and efficiency.',
+      cpp: 'Check class design, STL usage, memory management, and C++ best practices.',
+      javascript: 'Check ES6+ features, async/await patterns, proper scoping, and modern JavaScript practices.'
+    };
+
+    const languageInstruction = languageInstructions[programmingLanguage] || languageInstructions.python;
+
+    const prompt = `You are an expert ${programmingLanguage.toUpperCase()} programming instructor grading student code.
 
 Question: ${questionText}
 
@@ -29,18 +41,21 @@ ${sampleCode || 'No sample code provided'}
 Student's Code:
 ${studentCode}
 
+Language-Specific Requirements for ${programmingLanguage.toUpperCase()}:
+${languageInstruction}
+
 Analyze the student's code based on:
-1. Correctness - Does it solve the problem?
-2. Code Quality - Is it well-structured and readable?
-3. Best Practices - Does it follow programming conventions?
-4. Efficiency - Is the algorithm appropriate?
+1. Correctness - Does it solve the problem correctly?
+2. Code Quality - Is it well-structured, readable, and follows ${programmingLanguage} conventions?
+3. Best Practices - Does it follow ${programmingLanguage} best practices and idioms?
+4. Efficiency - Is the algorithm appropriate and efficient?
 
 Provide a detailed analysis and assign a score out of ${marks} marks.
 
 Respond in JSON format:
 {
   "score": <number between 0 and ${marks}>,
-  "feedback": "<detailed feedback explaining the score>",
+  "feedback": "<detailed feedback explaining the score and language-specific issues>",
   "strengths": ["<strength 1>", "<strength 2>"],
   "improvements": ["<improvement 1>", "<improvement 2>"]
 }`;

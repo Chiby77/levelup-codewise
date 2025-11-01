@@ -21,6 +21,7 @@ interface Question {
   options: string[];
   correct_answer: string;
   sample_code: string;
+  programming_language?: 'python' | 'java' | 'vb' | 'c' | 'cpp' | 'javascript';
   marks: number;
   order_number: number;
 }
@@ -41,6 +42,7 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
     options: ['', '', '', ''],
     correct_answer: '',
     sample_code: '',
+    programming_language: 'python',
     marks: 10
   });
   const [loading, setLoading] = useState(false);
@@ -116,6 +118,7 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
         options: q.question_type === 'multiple_choice' ? q.options : null,
         correct_answer: q.correct_answer,
         sample_code: q.sample_code,
+        programming_language: q.programming_language || 'python',
         marks: q.marks,
         order_number: index + 1
       }));
@@ -295,6 +298,23 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
 
             {currentQuestion.question_type === 'coding' && (
               <div className="space-y-2">
+                <Label htmlFor="programmingLanguage">Programming Language</Label>
+                <Select 
+                  value={currentQuestion.programming_language || 'python'} 
+                  onValueChange={(value: any) => setCurrentQuestion({ ...currentQuestion, programming_language: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="python">Python</SelectItem>
+                    <SelectItem value="vb">Visual Basic</SelectItem>
+                    <SelectItem value="java">Java</SelectItem>
+                    <SelectItem value="c">C</SelectItem>
+                    <SelectItem value="cpp">C++</SelectItem>
+                    <SelectItem value="javascript">JavaScript</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Label htmlFor="sampleCode">Sample Code</Label>
                 <Textarea
                   id="sampleCode"

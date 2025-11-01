@@ -22,6 +22,7 @@ interface Question {
   options: string[];
   correct_answer: string;
   sample_code: string;
+  programming_language?: 'python' | 'java' | 'vb' | 'c' | 'cpp' | 'javascript';
   marks: number;
   order_number: number;
   difficulty: 'easy' | 'medium' | 'hard';
@@ -46,6 +47,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
     options: ['', '', '', ''],
     correct_answer: '',
     sample_code: '',
+    programming_language: 'python',
     marks: 10,
     difficulty: 'medium',
     category: '',
@@ -240,6 +242,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         options: ['multiple_choice', 'true_false', 'matching'].includes(q.question_type) ? q.options : null,
         correct_answer: q.correct_answer,
         sample_code: q.sample_code,
+        programming_language: q.programming_language || 'python',
         marks: q.marks,
         order_number: index + 1
       }));
