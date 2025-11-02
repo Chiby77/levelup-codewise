@@ -14,7 +14,9 @@ import {
   TreePine,
   BookCheck,
   Sparkles,
-  Lock
+  Lock,
+  Brain,
+  Zap
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { ChatHeader } from "./chat/ChatHeader";
@@ -153,6 +155,49 @@ export default function MbuyaZivai() {
     setShowWelcome(false);
     setShowQuickActions(false);
     
+    // Handle navigation to digital exam section
+    if (query.toLowerCase().includes('exam') || query.toLowerCase().includes('digital exam') || query.toLowerCase().includes('take exam')) {
+      const assistantMessage = {
+        role: "assistant" as const,
+        content: "I can help you access our digital exam system! Click the button below to go to the exam portal where you can take practice exams or official assessments.",
+        id: "assistant-exam-" + Date.now(),
+        animate: true
+      };
+      setMessages((prev) => [
+        ...prev, 
+        { role: "user" as const, content: query, id: "user-" + Date.now() },
+        assistantMessage
+      ]);
+      
+      setTimeout(() => {
+        navigate('/student-exam');
+      }, 2000);
+      return;
+    }
+
+    // Handle resource location
+    const resourceKeywords = ['download', 'resource', 'paper', 'notes', 'book', 'material', 'past paper'];
+    const hasResourceQuery = resourceKeywords.some(keyword => query.toLowerCase().includes(keyword));
+    
+    if (hasResourceQuery) {
+      const assistantMessage = {
+        role: "assistant" as const,
+        content: "I can help you find study resources! We have programming notes, past papers, textbooks, and more. Click the button below to browse our downloads page, or tell me specifically what you're looking for.",
+        id: "assistant-resource-" + Date.now(),
+        animate: true
+      };
+      setMessages((prev) => [
+        ...prev,
+        { role: "user" as const, content: query, id: "user-" + Date.now() },
+        assistantMessage
+      ]);
+      
+      setTimeout(() => {
+        navigate('/downloads');
+      }, 2000);
+      return;
+    }
+    
     // Handle quiz commands
     if (query.toLowerCase().includes('quiz') || query.toLowerCase().includes('test my knowledge')) {
       setShowQuizAccess(true);
@@ -284,13 +329,13 @@ export default function MbuyaZivai() {
     },
     { 
       icon: <TreePine className="mr-2 h-4 w-4 text-emerald-500" />,
-      text: "Binary Tree operations",
-      query: "How do binary tree traversal methods work?"
+      text: "Find study resources",
+      query: "Where can I find programming notes and past papers?"
     },
     { 
       icon: <ShieldCheck className="mr-2 h-4 w-4 text-red-500" />,
-      text: "Ethical hacking concepts",
-      query: "Tell me about ethical hacking and cybersecurity"
+      text: "Take digital exam",
+      query: "I want to take a digital exam"
     },
     { 
       icon: <BookCheck className="mr-2 h-4 w-4 text-amber-500" />,
@@ -328,20 +373,40 @@ export default function MbuyaZivai() {
   }
 
   return (
-    <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-border/50 overflow-hidden">
-      <ChatHeader />
-      
-      {/* Token Counter for non-admins */}
-      {!isAdmin && (
-        <div className="px-6 py-2 border-b border-border/50 bg-primary/5">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Messages Remaining:</span>
-            <span className={`font-semibold ${tokensRemaining <= 3 ? 'text-destructive' : 'text-primary'}`}>
-              {tokensRemaining} / 10
-            </span>
+    <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-accent/20 overflow-hidden bg-gradient-to-br from-background via-background to-accent/5">
+      {/* Enhanced Header */}
+      <div className="relative border-b border-accent/20 bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 backdrop-blur-sm">
+        <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5 animate-pulse"></div>
+        <div className="relative px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-accent to-primary rounded-full blur-md opacity-60 animate-pulse"></div>
+                <div className="relative bg-gradient-to-br from-accent to-primary p-2 rounded-full">
+                  <Brain className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
+                  Mbuya Zivai
+                </h2>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Zap className="w-3 h-3 text-accent animate-pulse" />
+                  <span>AI-Powered Learning Assistant</span>
+                </div>
+              </div>
+            </div>
+            {!isAdmin && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/50 border border-accent/20">
+                <span className="text-xs text-muted-foreground">Messages:</span>
+                <span className={`text-sm font-bold ${tokensRemaining <= 3 ? 'text-destructive' : 'text-accent'}`}>
+                  {tokensRemaining}/10
+                </span>
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
       
       <CardContent className="p-0 flex flex-col h-[calc(80vh-7rem)]">
         {showQuiz ? (
@@ -353,22 +418,40 @@ export default function MbuyaZivai() {
             <ScrollArea className="flex-1 px-6 py-4 bg-gradient-to-b from-background via-primary/5 to-background" ref={scrollRef}>
               {/* Empty state with enhanced animations */}
               {isEmptyState && showWelcome && (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fadeIn">
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fadeIn p-6">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary rounded-full blur-2xl opacity-30 animate-pulse"></div>
-                    <div className="relative w-32 h-32 bg-gradient-to-br from-primary to-accent rounded-full p-8 shadow-2xl">
-                      <Bot className="w-full h-full text-white" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent via-primary to-accent rounded-full blur-3xl opacity-40 animate-pulse"></div>
+                    <div className="relative w-40 h-40 bg-gradient-to-br from-accent via-primary to-accent rounded-full p-10 shadow-2xl">
+                      <Brain className="w-full h-full text-white animate-pulse" />
                     </div>
-                    <Sparkles className="absolute -top-2 -right-2 w-8 h-8 text-yellow-400 animate-pulse" />
+                    <Sparkles className="absolute -top-2 -right-2 w-10 h-10 text-yellow-400 animate-pulse" />
+                    <Zap className="absolute -bottom-2 -left-2 w-8 h-8 text-accent animate-bounce" />
                   </div>
                   
-                  <div className="space-y-3">
-                    <h3 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                      Welcome to Mbuya Zivai
+                  <div className="space-y-4 max-w-2xl">
+                    <h3 className="text-4xl font-bold bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent animate-pulse">
+                      Mbuya Zivai 🔮
                     </h3>
-                    <p className="text-muted-foreground text-lg max-w-md">
-                      Your intelligent AI companion for Computer Science, powered by advanced reasoning
+                    <p className="text-muted-foreground text-lg leading-relaxed">
+                      Your intelligent AI learning companion for Computer Science
                     </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6 text-sm">
+                      <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
+                        <Brain className="w-5 h-5 text-accent mx-auto mb-2" />
+                        <p className="font-semibold text-accent">Smart Learning</p>
+                        <p className="text-xs text-muted-foreground">Get instant answers</p>
+                      </div>
+                      <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
+                        <Database className="w-5 h-5 text-primary mx-auto mb-2" />
+                        <p className="font-semibold text-primary">Find Resources</p>
+                        <p className="text-xs text-muted-foreground">Locate study materials</p>
+                      </div>
+                      <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
+                        <ShieldCheck className="w-5 h-5 text-accent mx-auto mb-2" />
+                        <p className="font-semibold text-accent">Take Exams</p>
+                        <p className="text-xs text-muted-foreground">Access digital tests</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

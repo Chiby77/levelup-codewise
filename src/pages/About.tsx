@@ -2,6 +2,8 @@
 import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import aboutBackground from "@/assets/about-bg.jpg";
+import tinodaisheChibi from "@/assets/tinodaishe-chibi.jpg";
+import { Briefcase, GraduationCap, Heart, MapPin, Users } from "lucide-react";
 
 const About = () => {
   const teachingLocations = [
@@ -34,51 +36,120 @@ const About = () => {
         <Navbar />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent mb-6 animate-fadeIn text-center sm:text-left">About Us</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent mb-8 animate-fadeIn text-center">About Us</h1>
           
-          <div className="prose prose-lg mb-12 animate-fadeIn">
-            <p className="text-lg text-gray-300 mb-6">
-              We are dedicated to bringing quality Computer Science education to students across Zimbabwe. 
-              Our team of experienced educators specializes in A Level Computer Science, making complex 
-              programming concepts accessible and engaging for all students.
-            </p>
+          {/* Founder Section */}
+          <div className="bg-gradient-to-br from-[#111] to-[#1a1a1a] rounded-2xl p-8 shadow-2xl border border-accent/30 mb-12 animate-fadeIn">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="order-2 md:order-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-1 w-12 bg-gradient-to-r from-accent to-primary rounded-full"></div>
+                  <h2 className="text-3xl font-bold text-white">Meet Our Founder</h2>
+                </div>
+                <h3 className="text-2xl font-semibold text-accent mb-2">Tinodaishe M. Chibi</h3>
+                
+                <div className="space-y-3 text-gray-300 mb-6">
+                  <div className="flex items-start gap-3">
+                    <Briefcase className="h-5 w-5 text-accent mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold">CEO of Intellix Inc</p>
+                      <p className="text-sm text-gray-400">Leading innovation in educational technology</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <Heart className="h-5 w-5 text-accent mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold">Founder of Bluewave Academy</p>
+                      <p className="text-sm text-gray-400">Powering CS Experts - Making quality computer science education accessible</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <GraduationCap className="h-5 w-5 text-accent mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold">BTech Software Engineering Student</p>
+                      <p className="text-sm text-gray-400">Harare Institute of Technology (HIT)</p>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-gray-300 leading-relaxed">
+                  Tinodaishe's vision is to democratize computer science education across Zimbabwe, 
+                  empowering the next generation of tech innovators through accessible, high-quality 
+                  learning resources and mentorship.
+                </p>
+              </div>
+              
+              <div className="order-1 md:order-2 flex justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-accent via-primary to-secondary rounded-2xl blur-2xl opacity-30 animate-pulse"></div>
+                  <img 
+                    src={tinodaisheChibi} 
+                    alt="Tinodaishe M. Chibi" 
+                    className="relative rounded-2xl shadow-2xl w-full max-w-sm object-cover border-4 border-accent/20"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="bg-[#111] rounded-lg p-8 shadow-lg border border-accent/20 mb-12 animate-fadeIn">
             <h2 className="text-2xl font-semibold text-accent mb-4">Our Story</h2>
-            <p className="text-gray-300">
-              A Level Computer Science Experts started as a humble WhatsApp group in Masvingo, 
-              initiated by Brave Machangu as what began as a casual endeavor. What started as a 
-              simple idea soon blossomed into something much bigger, expanding to serve students 
-              across the whole of Zimbabwe. Through the dedicated efforts of L Chenyika, J Mapasure, 
-              and T Chibi, it has evolved into Zimbabwe's premier destination for computer science 
-              education and career guidance.
+            <p className="text-gray-300 leading-relaxed">
+              What started as a vision has blossomed into Zimbabwe's premier destination for computer science 
+              education. Through the dedicated efforts of Tinodaishe M. Chibi, J Mapasure, and the entire team, 
+              CS Experts has evolved into a comprehensive platform serving students across the whole of Zimbabwe, 
+              providing cutting-edge education, career guidance, and digital examination systems.
             </p>
           </div>
 
           <div className="bg-[#111] rounded-lg p-8 shadow-lg border border-accent/20 mb-12 animate-fadeIn">
-            <h2 className="text-2xl font-semibold text-accent mb-4">Our Team</h2>
+            <h2 className="text-2xl font-semibold text-accent mb-6 flex items-center gap-2">
+              <Users className="h-6 w-6" />
+              Our Expert Team
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-accent via-[#8B5CF6] to-[#D946EF] p-1 mb-4">
-                  <div className="w-full h-full bg-[#111] rounded-full flex items-center justify-center">
-                    <span className="text-3xl font-bold text-accent">TC</span>
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border border-accent/10 hover:border-accent/30 transition-all">
+                <div className="flex items-start gap-4">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent via-[#8B5CF6] to-[#D946EF] p-1 flex-shrink-0">
+                    <div className="w-full h-full bg-[#111] rounded-full flex items-center justify-center">
+                      <span className="text-2xl font-bold text-accent">TC</span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-1">Tinodaishe M. Chibi</h3>
+                    <p className="text-accent/80 mb-2 font-medium">Founder & Lead Educator</p>
+                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                      <GraduationCap className="h-4 w-4" />
+                      <span>BTech Software Engineering - HIT</span>
+                    </div>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      Programming & Algorithm Specialist. CEO of Intellix Inc and Founder of Bluewave Academy.
+                    </p>
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-1">T Chibi</h3>
-                <p className="text-accent/80 mb-2">Lead Educator</p>
-                <p className="text-gray-400 text-sm">Programming & Algorithm Specialist</p>
               </div>
               
-              <div className="flex flex-col items-center text-center">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-accent via-[#8B5CF6] to-[#D946EF] p-1 mb-4">
-                  <div className="w-full h-full bg-[#111] rounded-full flex items-center justify-center">
-                    <span className="text-3xl font-bold text-accent">JM</span>
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border border-accent/10 hover:border-accent/30 transition-all">
+                <div className="flex items-start gap-4">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent via-[#8B5CF6] to-[#D946EF] p-1 flex-shrink-0">
+                    <div className="w-full h-full bg-[#111] rounded-full flex items-center justify-center">
+                      <span className="text-2xl font-bold text-accent">JM</span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-1">J Mapasure (Jadyen)</h3>
+                    <p className="text-accent/80 mb-2 font-medium">Senior Educator</p>
+                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                      <GraduationCap className="h-4 w-4" />
+                      <span>BSc Machine Learning & AI - UZ</span>
+                    </div>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      Theory & Systems Architecture Expert. Specializing in AI and advanced computing concepts.
+                    </p>
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-1">J Mapasure</h3>
-                <p className="text-accent/80 mb-2">Senior Educator</p>
-                <p className="text-gray-400 text-sm">Theory & Systems Architecture</p>
               </div>
             </div>
           </div>

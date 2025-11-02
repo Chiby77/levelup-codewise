@@ -49,6 +49,20 @@ const Downloads = () => {
     { part: "10", link: "https://drive.google.com/file/d/15O6h21gjQjEpDlJ1ZnoEY6N39RgS0PVF/view?usp=sharing" },
   ];
 
+  const pure_maths_papers = [
+    { year: "June 2020", link: "https://drive.google.com/file/d/1j9hSgg2mtkjtTSX7IyC0_alm_5fJVgOj/view?usp=drivesdk" },
+    { year: "June 2019", link: "https://drive.google.com/file/d/1nQP5-PEop5d_s0gJyCU9sUamHZW5g6xP/view?usp=drivesdk" },
+    { year: "November 2019", link: "https://drive.google.com/file/d/1oLi9TGVUhzcJFtriTkojd2F5bF8AmIr/view?usp=drivesdk" },
+    { year: "June 2018", link: "#" },
+    { year: "November 2018", link: "#" },
+    { year: "June 2017", link: "#" },
+    { year: "November 2017", link: "#" },
+    { year: "June 2016", link: "#" },
+    { year: "November 2016", link: "#" },
+    { year: "November 2015", link: "#" },
+    { year: "June 2015", link: "#" },
+  ];
+
   const special_resources = [
     { 
       title: "Upper 6 Computer Science", 
@@ -180,7 +194,7 @@ const Downloads = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <div onClick={() => document.getElementById('programming-notes')?.scrollIntoView({behavior: 'smooth'})}
             className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
             <div className="flex items-center mb-4">
@@ -220,12 +234,28 @@ const Downloads = () => {
                 <FileText className="h-6 w-6 text-accent" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-white">Past Papers</h2>
+                <h2 className="text-xl font-semibold text-white">CS Past Papers</h2>
                 <p className="text-sm text-gray-400">{theory_papers.length + practical_papers.length} papers</p>
               </div>
             </div>
             <p className="text-gray-300 mb-4">
-              Previous exam papers with marking schemes for effective revision.
+              Computer Science exam papers with marking schemes.
+            </p>
+          </div>
+
+          <div onClick={() => document.getElementById('pure-maths-papers')?.scrollIntoView({behavior: 'smooth'})}
+            className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mr-4">
+                <FileText className="h-6 w-6 text-accent" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white">Pure Maths Papers</h2>
+                <p className="text-sm text-gray-400">{pure_maths_papers.length} papers</p>
+              </div>
+            </div>
+            <p className="text-gray-300 mb-4">
+              Pure Mathematics Paper 2 past papers for revision.
             </p>
           </div>
         </div>
@@ -366,6 +396,40 @@ const Downloads = () => {
                     </Button>
                   ))}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Pure Mathematics Papers Section */}
+        <div id="pure-maths-papers" className="scroll-mt-24">
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+            <CardHeader className="bg-gradient-to-r from-accent/20 to-transparent">
+              <CardTitle className="flex items-center gap-2 text-2xl text-white">
+                <FileText className="h-6 w-6 text-accent" />
+                Pure Mathematics Papers (Paper 2)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {pure_maths_papers.map((paper) => (
+                  <Button
+                    key={paper.year}
+                    variant="outline"
+                    className={`w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors ${
+                      downloadInProgress === `Pure Maths Paper-${paper.year}` ? 'opacity-70 cursor-wait' : ''
+                    }`}
+                    onClick={() => handleDownload("Pure Maths Paper", paper.year, paper.link)}
+                    disabled={downloadInProgress === `Pure Maths Paper-${paper.year}`}
+                  >
+                    {downloadInProgress === `Pure Maths Paper-${paper.year}` ? (
+                      <div className="animate-spin h-4 w-4 mr-2 border-2 border-accent border-t-transparent rounded-full" />
+                    ) : (
+                      <Download className="mr-2 h-4 w-4 text-accent" />
+                    )}
+                    {paper.year}
+                  </Button>
+                ))}
               </div>
             </CardContent>
           </Card>
