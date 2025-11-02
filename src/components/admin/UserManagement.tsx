@@ -67,7 +67,8 @@ export const UserManagement = () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(100); // Limit initial fetch for performance
 
       if (error) throw error;
       setUsers(data || []);

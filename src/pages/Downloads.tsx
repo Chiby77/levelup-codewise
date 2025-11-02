@@ -6,6 +6,8 @@ import { Download, FileText, File, BookOpen, Code, Database, Braces } from "luci
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import downloadsBackground from "@/assets/downloads-bg.jpg";
+import { StudentDownloads } from "@/components/StudentDownloads";
+import { WhatsAppPromo } from "@/components/WhatsAppPromo";
 
 const Downloads = () => {
   const { toast } = useToast();
@@ -400,6 +402,12 @@ const Downloads = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Admin Managed Materials from Database */}
+        <StudentDownloads />
+
+        {/* WhatsApp Community Promotion */}
+        <WhatsAppPromo />
 
         {/* Pure Mathematics Papers Section */}
         <div id="pure-maths-papers" className="scroll-mt-24">

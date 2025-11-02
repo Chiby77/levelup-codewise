@@ -49,6 +49,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [totalQuestions, setTotalQuestions] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -56,9 +57,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
   const fetchData = async () => {
     try {
-      const [examsResponse, submissionsResponse] = await Promise.all([
+      const [examsResponse, submissionsResponse, questionsResponse] = await Promise.all([
         supabase.from('exams').select('*').order('created_at', { ascending: false }),
-        supabase.from('student_submissions').select('*').order('submitted_at', { ascending: false })
+        supabase.from('student_submissions').select('*').order('submitted_at', { ascending: false }),
+        supabase.from('questions').select('id', { count: 'exact', head: true })
       ]);
 
       if (examsResponse.error) throw examsResponse.error;
@@ -66,6 +68,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
       setExams(examsResponse.data || []);
       setSubmissions(submissionsResponse.data || []);
+      setTotalQuestions(questionsResponse.count || 0);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load dashboard data');
@@ -178,6 +181,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     totalExams: exams.length,
     activeExams: exams.filter(e => e.status === 'active').length,
     totalSubmissions: submissions.length,
+    totalQuestions: totalQuestions,
+    averageScore: submissions.filter(s => s.graded && s.max_score > 0).length > 0
+      ? submissions
+          .filter(s => s.graded && s.max_score > 0)
+          .reduce((acc, s) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / 
+        submissions.filter(s => s.graded && s.max_score > 0).length
+      : 0,
+    completionRate: submissions.length > 0
+      ? (submissions.filter(s => s.graded).length / submissions.length) * 100
+      : 0,
     gradedSubmissions: submissions.filter(s => s.graded).length
   };
 
@@ -249,9 +262,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               totalExams={stats.totalExams}
               activeExams={stats.activeExams}
               totalSubmissions={stats.totalSubmissions}
-              totalQuestions={0}
-              averageScore={submissions.length > 0 ? (submissions.reduce((acc, s) => acc + (s.total_score / s.max_score * 100), 0) / submissions.length) : 0}
-              completionRate={stats.totalSubmissions > 0 ? (stats.gradedSubmissions / stats.totalSubmissions * 100) : 0}
+              totalQuestions={stats.totalQuestions}
+              averageScore={stats.averageScore}
+              completionRate={stats.completionRate}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

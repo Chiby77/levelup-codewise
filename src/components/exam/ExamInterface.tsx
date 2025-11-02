@@ -190,7 +190,8 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    toast.warning('Time expired! Submitting your exam...');
+    toast.warning('Time expired! Submitting your exam automatically...');
+    // Ensure grading happens even on auto-submit
     await submitExam();
   };
 
@@ -265,7 +266,8 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
 
       console.log('Submission created:', data.id);
 
-      // Trigger AI grading in background
+      // Trigger AI grading immediately - don't let it fail silently
+      console.log('Triggering grading for submission:', data.id);
       try {
         const { data: gradeData, error: gradeError } = await supabase.functions.invoke('grade-exam', {
           body: { 
@@ -278,13 +280,23 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
 
         if (gradeError) {
           console.error('Grading error:', gradeError);
-          toast.warning('Exam submitted! Grading will be completed shortly.');
+          // Update submission status to indicate grading needed
+          await supabase
+            .from('student_submissions')
+            .update({ grading_status: 'failed' })
+            .eq('id', data.id);
+          toast.warning('Exam submitted! Grading will be retried shortly.');
         } else {
           console.log('Grading completed:', gradeData);
           toast.success('Exam submitted and graded successfully!');
         }
       } catch (gradeErr) {
         console.error('Grading invocation error:', gradeErr);
+        // Update submission status to indicate grading needed
+        await supabase
+          .from('student_submissions')
+          .update({ grading_status: 'failed' })
+          .eq('id', data.id);
         toast.warning('Exam submitted! Grading will be completed shortly.');
       }
 

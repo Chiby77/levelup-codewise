@@ -251,9 +251,10 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
           </div>
         )}
 
-        <div className="mt-12 text-center text-sm text-muted-foreground">
+        <div className="mt-12 text-center text-sm text-muted-foreground space-y-2">
           <p>CS Experts Zimbabwe Digital Examination System</p>
           <p>Powered by Intellix Inc | Founded by Tinodaishe M Chibi</p>
+          <p className="text-xs">BTech Software Engineering Student at HIT</p>
         </div>
       </div>
     </div>

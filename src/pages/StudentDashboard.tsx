@@ -19,6 +19,7 @@ import {
   History
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { WhatsAppPromo } from '@/components/WhatsAppPromo';
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -120,9 +121,11 @@ export default function StudentDashboard() {
 
   const calculateStats = () => {
     const totalExams = submissions.length;
-    const gradedExams = submissions.filter(s => s.graded).length;
+    const gradedExams = submissions.filter(s => s.graded && s.max_score && s.max_score > 0).length;
     const avgScore = gradedExams > 0 
-      ? submissions.filter(s => s.graded).reduce((acc, s) => acc + (s.total_score / s.max_score) * 100, 0) / gradedExams 
+      ? submissions
+          .filter(s => s.graded && s.max_score && s.max_score > 0)
+          .reduce((acc, s) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / gradedExams 
       : 0;
 
     return { totalExams, gradedExams, avgScore: avgScore.toFixed(1) };
@@ -398,6 +401,11 @@ export default function StudentDashboard() {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* WhatsApp Community Promotion */}
+        <div className="mt-8">
+          <WhatsAppPromo />
+        </div>
       </div>
     </div>
   );

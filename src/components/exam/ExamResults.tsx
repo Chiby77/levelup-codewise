@@ -7,6 +7,7 @@ import { Download, CheckCircle, XCircle, Award, FileText, RotateCcw } from 'luci
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { generatePDFReport } from '@/utils/reportGenerator';
+import { WhatsAppPromo } from '@/components/WhatsAppPromo';
 
 interface ExamResultsProps {
   submissionId: string;
@@ -210,7 +211,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
         )}
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
           <Button 
             onClick={handleDownloadReport}
             disabled={downloadingReport}
@@ -232,10 +233,14 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
           </Button>
         </div>
 
+        {/* WhatsApp Community Promotion */}
+        <WhatsAppPromo />
+
         {/* Footer */}
         <div className="mt-12 text-center text-sm text-muted-foreground">
           <p>CS Experts Zimbabwe Digital Examination System</p>
           <p>Powered by Intellix Inc | Founded by Tinodaishe M Chibi</p>
+          <p className="text-xs mt-1">BTech Software Engineering Student at HIT</p>
         </div>
       </div>
     </div>
