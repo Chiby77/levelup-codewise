@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { WhatsAppPromo } from '@/components/WhatsAppPromo';
+import { FeedbackModal } from '@/components/FeedbackModal';
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -30,11 +31,19 @@ export default function StudentDashboard() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [tips, setTips] = useState<any[]>([]);
   const [books, setBooks] = useState<any[]>([]);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkAuth();
     fetchData();
+    
+    // Show feedback modal occasionally (every 5th login)
+    const loginCount = parseInt(localStorage.getItem('loginCount') || '0') + 1;
+    localStorage.setItem('loginCount', loginCount.toString());
+    if (loginCount % 5 === 0) {
+      setTimeout(() => setShowFeedback(true), 3000);
+    }
   }, []);
 
   const checkAuth = async () => {

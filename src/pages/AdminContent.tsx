@@ -68,6 +68,11 @@ export default function AdminContent() {
       return;
     }
 
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
     setUploading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -233,12 +238,14 @@ export default function AdminContent() {
                   <Label htmlFor="announcement-content">Content</Label>
                   <Textarea
                     id="announcement-content"
-                    placeholder="Enter announcement content"
+                    placeholder="Enter announcement content (line breaks and numbering will be preserved)"
                     value={announcementContent}
                     onChange={(e) => setAnnouncementContent(e.target.value)}
                     rows={5}
                     maxLength={1000}
+                    className="whitespace-pre-wrap font-mono text-sm"
                   />
+                  <p className="text-xs text-muted-foreground">Tip: Use line breaks and numbers - they will display exactly as typed</p>
                 </div>
                 <Button 
                   onClick={handleCreateAnnouncement} 
@@ -291,11 +298,12 @@ export default function AdminContent() {
                   <Label htmlFor="tip-content">Content</Label>
                   <Textarea
                     id="tip-content"
-                    placeholder="Enter study tip content"
+                    placeholder="Enter study tip content (formatting will be preserved)"
                     value={tipContent}
                     onChange={(e) => setTipContent(e.target.value)}
                     rows={5}
                     maxLength={1000}
+                    className="whitespace-pre-wrap font-mono text-sm"
                   />
                 </div>
                 <Button 
@@ -350,7 +358,7 @@ export default function AdminContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="file-upload">Select File</Label>
+                  <Label htmlFor="file-upload">Select File (Max 10MB)</Label>
                   <Input
                     id="file-upload"
                     type="file"
@@ -360,6 +368,9 @@ export default function AdminContent() {
                   {selectedFile && (
                     <p className="text-sm text-muted-foreground">
                       Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                      {selectedFile.size > 10 * 1024 * 1024 && (
+                        <span className="text-destructive ml-2">⚠️ File too large! Max 10MB</span>
+                      )}
                     </p>
                   )}
                 </div>

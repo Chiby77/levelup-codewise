@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { generatePDFReport } from '@/utils/reportGenerator';
 import { WhatsAppPromo } from '@/components/WhatsAppPromo';
+import { FeedbackModal } from '@/components/FeedbackModal';
 
 interface ExamResultsProps {
   submissionId: string;
@@ -39,9 +40,12 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   const [submission, setSubmission] = useState<SubmissionResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingReport, setDownloadingReport] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     fetchSubmissionResults();
+    // Show feedback modal after 2 seconds
+    setTimeout(() => setShowFeedback(true), 2000);
   }, [submissionId]);
 
   const fetchSubmissionResults = async () => {

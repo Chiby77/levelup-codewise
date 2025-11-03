@@ -292,6 +292,44 @@ export type Database = {
           },
         ]
       }
+      student_feedback: {
+        Row: {
+          created_at: string | null
+          exam_id: string | null
+          feedback_text: string
+          id: string
+          rating: number | null
+          submitted_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          exam_id?: string | null
+          feedback_text: string
+          id?: string
+          rating?: number | null
+          submitted_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          exam_id?: string | null
+          feedback_text?: string
+          id?: string
+          rating?: number | null
+          submitted_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_feedback_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_submissions: {
         Row: {
           answers: Json

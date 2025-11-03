@@ -410,15 +410,16 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
               <CardTitle>Add Question</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="question">Question Text *</Label>
-                <Textarea
-                  id="question"
-                  value={currentQuestion.question_text}
-                  onChange={(e) => setCurrentQuestion({ ...currentQuestion, question_text: e.target.value })}
-                  placeholder="Enter your question"
-                  className="min-h-[100px]"
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="question">Question Text *</Label>
+                  <Textarea
+                    id="question"
+                    value={currentQuestion.question_text}
+                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, question_text: e.target.value })}
+                    placeholder="Enter your question (line breaks and formatting will be preserved)"
+                    className="min-h-[100px] whitespace-pre-wrap font-mono text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground">Tip: Lists, algorithms, and formatting will display exactly as you type them</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -523,15 +524,41 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
               )}
 
               {currentQuestion.question_type === 'coding' && (
-                <div className="space-y-2">
-                  <Label htmlFor="sampleCode">Sample Code/Template</Label>
-                  <Textarea
-                    id="sampleCode"
-                    value={currentQuestion.sample_code}
-                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, sample_code: e.target.value })}
-                    placeholder="Enter sample code template or expected solution"
-                    className="font-mono min-h-[120px]"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="programmingLanguage">Programming Language</Label>
+                    <Select 
+                      value={currentQuestion.programming_language || 'python'} 
+                      onValueChange={(value: any) => setCurrentQuestion({ 
+                        ...currentQuestion, 
+                        programming_language: value 
+                      })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="python">Python</SelectItem>
+                        <SelectItem value="vb">VB.NET Console Application</SelectItem>
+                        <SelectItem value="java">Java</SelectItem>
+                        <SelectItem value="c">C</SelectItem>
+                        <SelectItem value="cpp">C++</SelectItem>
+                        <SelectItem value="javascript">JavaScript</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sampleCode">Sample Code/Template</Label>
+                    <Textarea
+                      id="sampleCode"
+                      value={currentQuestion.sample_code}
+                      onChange={(e) => setCurrentQuestion({ ...currentQuestion, sample_code: e.target.value })}
+                      placeholder="Provide sample code or template for students"
+                      className="min-h-[200px] font-mono text-sm whitespace-pre-wrap"
+                    />
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="correct">Expected Answer/Solution</Label>
                     <Textarea
@@ -539,7 +566,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
                       value={currentQuestion.correct_answer}
                       onChange={(e) => setCurrentQuestion({ ...currentQuestion, correct_answer: e.target.value })}
                       placeholder="Enter the expected code solution or key points"
-                      className="font-mono"
+                      className="min-h-[120px] font-mono text-sm whitespace-pre-wrap"
                     />
                   </div>
                 </div>
@@ -552,8 +579,10 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
                     id="correct"
                     value={currentQuestion.correct_answer}
                     onChange={(e) => setCurrentQuestion({ ...currentQuestion, correct_answer: e.target.value })}
-                    placeholder="Enter the expected answer or key points to look for"
+                    placeholder="Enter the expected answer or key points to look for (AI will use this for grading)"
+                    className="min-h-[100px] whitespace-pre-wrap"
                   />
+                  <p className="text-xs text-muted-foreground">AI will compare student answers semantically with this model answer</p>
                 </div>
               )}
 
