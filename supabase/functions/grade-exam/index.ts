@@ -24,13 +24,15 @@ serve(async (req) => {
   }
 
   try {
-    const { submission, exam, answers, questions } = await req.json();
+    const { submissionId, examId, answers, questions } = await req.json();
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const groqApiKey = Deno.env.get('GROQ_API_KEY');
+    
+    console.log('Starting grading for submission:', submissionId);
     
     let totalScore = 0;
     let maxScore = 0;
@@ -253,6 +255,8 @@ Please grade this answer and return ONLY a valid JSON object (no markdown, no co
       };
     }
 
+    console.log('Grading complete. Total score:', totalScore, 'out of', maxScore);
+    
     const { error: updateError } = await supabase
       .from('student_submissions')
       .update({
@@ -262,7 +266,7 @@ Please grade this answer and return ONLY a valid JSON object (no markdown, no co
         grading_status: 'completed',
         grade_details: gradeDetails
       })
-      .eq('id', submission.id);
+      .eq('id', submissionId);
 
     if (updateError) {
       console.error('Error updating submission:', updateError);
