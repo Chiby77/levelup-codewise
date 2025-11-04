@@ -9,9 +9,12 @@ import { SubmissionViewer } from './SubmissionViewer';
 import { ExamAnalytics } from './ExamAnalytics';
 import { EnhancedExamStats } from './EnhancedExamStats';
 import { AnimatedExamCard } from './AnimatedExamCard';
+import { LiveExamMonitoring } from './LiveExamMonitoring';
+import { ScoreAnalytics } from './ScoreAnalytics';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AdminDownloads } from '@/components/admin/AdminDownloads';
-import { LogOut, Plus, FileText, Users, BarChart3, Sparkles, Trash2, Power } from 'lucide-react';
+import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
+import { LogOut, Plus, FileText, Users, BarChart3, Sparkles, Trash2, Power, Activity, MessageSquare } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -248,12 +251,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 h-auto">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="monitoring" className="text-xs sm:text-sm flex items-center gap-1">
+              <Activity className="h-3 w-3" />
+              Live
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analytics</TabsTrigger>
+            <TabsTrigger value="feedback" className="text-xs sm:text-sm flex items-center gap-1">
+              <MessageSquare className="h-3 w-3" />
+              Feedback
+            </TabsTrigger>
             <TabsTrigger value="exams" className="text-xs sm:text-sm">Exams</TabsTrigger>
             <TabsTrigger value="submissions" className="text-xs sm:text-sm">Submissions</TabsTrigger>
             <TabsTrigger value="users" className="text-xs sm:text-sm">Users</TabsTrigger>
-            <TabsTrigger value="downloads" className="text-xs sm:text-sm">Downloads</TabsTrigger>
             <TabsTrigger value="create" className="text-xs sm:text-sm">Create</TabsTrigger>
           </TabsList>
 
@@ -348,6 +359,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </div>
           </TabsContent>
 
+          <TabsContent value="monitoring" className="space-y-6">
+            <LiveExamMonitoring />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <ScoreAnalytics submissions={submissions} />
+          </TabsContent>
+
+          <TabsContent value="feedback" className="space-y-6">
+            <FeedbackViewer />
+          </TabsContent>
+
           <TabsContent value="exams" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Exam Management</h2>
@@ -416,10 +439,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
           <TabsContent value="users" className="space-y-6">
             <UserManagement />
-          </TabsContent>
-
-          <TabsContent value="downloads" className="space-y-6">
-            <AdminDownloads />
           </TabsContent>
 
           <TabsContent value="create">
