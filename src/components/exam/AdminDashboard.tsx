@@ -11,6 +11,7 @@ import { EnhancedExamStats } from './EnhancedExamStats';
 import { AnimatedExamCard } from './AnimatedExamCard';
 import { LiveExamMonitoring } from './LiveExamMonitoring';
 import { ScoreAnalytics } from './ScoreAnalytics';
+import { StudentLeaderboard } from './StudentLeaderboard';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AdminDownloads } from '@/components/admin/AdminDownloads';
 import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
@@ -251,8 +252,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-9 h-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs sm:text-sm">🏆 Top</TabsTrigger>
             <TabsTrigger value="monitoring" className="text-xs sm:text-sm flex items-center gap-1">
               <Activity className="h-3 w-3" />
               Live
@@ -357,6 +359,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 </Card>
               </motion.div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="leaderboard" className="space-y-6">
+            <StudentLeaderboard />
           </TabsContent>
 
           <TabsContent value="monitoring" className="space-y-6">

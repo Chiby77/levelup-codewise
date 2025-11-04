@@ -37,6 +37,7 @@ interface UserProfile {
   account_status: string;
   last_login_at: string | null;
   created_at: string;
+  email?: string;
 }
 
 interface UserActivity {
@@ -64,15 +65,36 @@ export const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // Use service role to fetch user emails from auth.users
+      const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
-        .order("created_at", { ascending: false })
-        .limit(100); // Limit initial fetch for performance
+        .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setUsers(data || []);
+      if (profilesError) throw profilesError;
+
+      // Fetch auth user data to get emails
+      const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
+      
+      if (authError) {
+        console.error('Error fetching auth users:', authError);
+        // Fallback: use profiles data without emails
+        setUsers(profilesData || []);
+        return;
+      }
+
+      // Merge profile data with auth emails
+      const mergedUsers = (profilesData || []).map(profile => {
+        const authUser = (authUsers || []).find(u => u.id === profile.id);
+        return {
+          ...profile,
+          email: authUser?.email || 'N/A'
+        };
+      });
+
+      setUsers(mergedUsers);
     } catch (error: any) {
+      console.error('Error in fetchUsers:', error);
       toast({
         title: "Error",
         description: error.message,
@@ -181,6 +203,7 @@ export const UserManagement = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Student ID</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Last Login</TableHead>
@@ -191,11 +214,12 @@ export const UserManagement = () => {
               {users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>{user.full_name || "N/A"}</TableCell>
+                  <TableCell className="text-xs">{user.email || "N/A"}</TableCell>
                   <TableCell>{user.student_id || "N/A"}</TableCell>
                   <TableCell>{getStatusBadge(user.account_status)}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-sm">
                     {user.last_login_at
-                      ? new Date(user.last_login_at).toLocaleDateString()
+                      ? new Date(user.last_login_at).toLocaleString()
                       : "Never"}
                   </TableCell>
                   <TableCell>

@@ -24,7 +24,7 @@ serve(async (req) => {
   }
 
   try {
-    const { submissionId, examId, answers, questions } = await req.json();
+    const { submissionId, examId, answers, questions: providedQuestions } = await req.json();
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -33,6 +33,31 @@ serve(async (req) => {
     const groqApiKey = Deno.env.get('GROQ_API_KEY');
     
     console.log('Starting grading for submission:', submissionId);
+    console.log('Exam ID:', examId);
+    console.log('Provided questions:', providedQuestions?.length || 0);
+    
+    // Fetch questions from database if not provided or empty
+    let questions = providedQuestions || [];
+    if (!questions || questions.length === 0) {
+      console.log('Fetching questions from database for exam:', examId);
+      const { data: fetchedQuestions, error: questionsError } = await supabase
+        .from('questions')
+        .select('*')
+        .eq('exam_id', examId)
+        .order('order_number');
+      
+      if (questionsError) {
+        console.error('Error fetching questions:', questionsError);
+        throw new Error('Failed to fetch questions for grading');
+      }
+      
+      questions = fetchedQuestions || [];
+      console.log('Fetched questions:', questions.length);
+    }
+    
+    if (questions.length === 0) {
+      throw new Error('No questions found for this exam');
+    }
     
     let totalScore = 0;
     let maxScore = 0;
