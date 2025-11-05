@@ -7,6 +7,7 @@ import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-c_cpp';
+import 'ace-builds/src-noconflict/mode-vbscript';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/ext-language_tools';
@@ -25,6 +26,23 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   language = 'python' 
 }) => {
   const editorRef = useRef<any>(null);
+
+  // Map language names to ACE editor modes
+  const getEditorMode = (lang: string) => {
+    const langMap: Record<string, string> = {
+      'python': 'python',
+      'javascript': 'javascript',
+      'java': 'java',
+      'c++': 'c_cpp',
+      'c': 'c_cpp',
+      'vb': 'vbscript',
+      'vbscript': 'vbscript',
+      'visualbasic': 'vbscript'
+    };
+    return langMap[lang.toLowerCase()] || 'python';
+  };
+
+  const editorMode = getEditorMode(language);
 
   useEffect(() => {
     if (editorRef.current) {
@@ -58,7 +76,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       
       <AceEditor
         ref={editorRef}
-        mode={language}
+        mode={editorMode}
         theme="github"
         name="code-editor"
         onChange={onChange}

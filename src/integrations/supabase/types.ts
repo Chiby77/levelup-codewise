@@ -139,6 +139,7 @@ export type Database = {
           created_at: string
           created_by: string
           description: string | null
+          difficulty_level: string | null
           duration_minutes: number
           id: string
           status: Database["public"]["Enums"]["exam_status"]
@@ -151,6 +152,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           description?: string | null
+          difficulty_level?: string | null
           duration_minutes?: number
           id?: string
           status?: Database["public"]["Enums"]["exam_status"]
@@ -163,6 +165,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           description?: string | null
+          difficulty_level?: string | null
           duration_minutes?: number
           id?: string
           status?: Database["public"]["Enums"]["exam_status"]

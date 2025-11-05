@@ -182,14 +182,17 @@ serve(async (req) => {
                   messages: [
                     {
                       role: 'system',
-                      content: `You are a fair and understanding teacher grading a student's short answer. Be lenient and give credit for:
-- Correct concepts even if worded differently
-- Partial understanding  
-- Similar explanations with different phrasing
-- Relevant examples
-- Core ideas being present
+                      content: `You are an extremely lenient and compassionate teacher grading a student's short answer. Your grading philosophy:
+- ALWAYS give partial credit for ANY relevant attempt
+- Be VERY generous - give at least 70% marks if the student shows ANY understanding
+- Award marks for effort, relevant keywords, and attempts to answer
+- Focus on what they got RIGHT, not what's missing
+- Give benefit of doubt in all cases
+- Even partially correct answers deserve most of the marks
+- Look for ANY connection to the topic and award marks for it
+- A student mentioning any related concept deserves marks
 
-Grade generously - students should get most marks if they understand the core concept, even if their answer isn't perfect.`
+Be extremely lenient - err on the side of giving MORE marks rather than less.`
                     },
                     {
                       role: 'user',
@@ -201,16 +204,18 @@ Student Answer: ${studentAnswer}
 
 Maximum Marks: ${question.marks}
 
-Please grade this answer and return ONLY a valid JSON object (no markdown, no code blocks) with this exact structure:
+IMPORTANT: Be VERY lenient. Give generous marks for any attempt. If the student shows ANY understanding or effort, give at least 70% of marks.
+
+Return ONLY a valid JSON object (no markdown, no code blocks) with this exact structure:
 {
   "score": <number between 0 and ${question.marks}>,
-  "feedback": "<constructive feedback explaining the grade>",
+  "feedback": "<positive, encouraging feedback>",
   "strengths": ["what they got right"],
   "improvements": ["gentle suggestions if needed"]
 }`
                     }
                   ],
-                  temperature: 0.3,
+                  temperature: 0.2,
                   max_tokens: 500
                 })
               });
@@ -243,28 +248,32 @@ Please grade this answer and return ONLY a valid JSON object (no markdown, no co
             }
           }
 
-          // Fallback: keyword-based grading with correct answer comparison
+          // Fallback: VERY lenient keyword-based grading
           const answerLower = studentAnswer.toLowerCase();
           const correctLower = correctAnswerText.toLowerCase();
           const correctWords = correctLower.split(/\s+/).filter(w => w.length > 3);
           
           const wordCount = studentAnswer.split(/\s+/).length;
           const hasKeywords = correctWords.filter(word => answerLower.includes(word)).length;
-          const keywordScore = correctWords.length > 0 ? hasKeywords / correctWords.length : 0.5;
+          const keywordScore = correctWords.length > 0 ? hasKeywords / correctWords.length : 0.6;
           
+          // VERY generous scoring - give high marks for any effort
+          const baseScore = 0.6; // Start with 60% just for attempting
           const qualityFactors = {
-            length: wordCount >= 20 ? 0.2 : wordCount >= 10 ? 0.15 : 0.1,
-            keywords: keywordScore * 0.5,
-            detail: answerLower.includes('because') || answerLower.includes('example') || 
-                   answerLower.includes('such as') ? 0.2 : 0.1,
-            completeness: wordCount >= 30 && keywordScore > 0.6 ? 0.2 : 0.1
+            base: baseScore,
+            length: wordCount >= 5 ? 0.15 : wordCount >= 3 ? 0.1 : 0.05,
+            keywords: keywordScore * 0.25, // Keywords add bonus
           };
           
-          const totalQualityScore = Object.values(qualityFactors).reduce((a, b) => a + b, 0);
+          const totalQualityScore = Math.min(1.0, Object.values(qualityFactors).reduce((a, b) => a + b, 0));
           score = Math.round(totalQualityScore * question.marks);
-          feedback = `Answer analysis: ${score >= question.marks * 0.7 ? 'Good understanding shown' : 
-                     score >= question.marks * 0.5 ? 'Acceptable answer, could be more detailed' : 
-                     'Answer needs more detail and key concepts'}. Keywords matched: ${Math.round(keywordScore * 100)}%`;
+          // Ensure minimum marks for any attempt
+          if (wordCount >= 3) {
+            score = Math.max(score, Math.round(question.marks * 0.6));
+          }
+          feedback = `Good effort! ${score >= question.marks * 0.7 ? 'Excellent understanding' : 
+                     score >= question.marks * 0.5 ? 'Good answer with relevant points' : 
+                     'Valid attempt, shows understanding'}. Keywords matched: ${Math.round(keywordScore * 100)}%`;
           break;
 
         default:

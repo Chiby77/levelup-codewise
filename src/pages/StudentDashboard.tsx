@@ -21,6 +21,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { WhatsAppPromo } from '@/components/WhatsAppPromo';
 import { FeedbackModal } from '@/components/FeedbackModal';
+import { StudentProfile } from '@/components/student/StudentProfile';
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -232,6 +233,7 @@ export default function StudentDashboard() {
         <Tabs defaultValue="exams" className="space-y-4">
           <TabsList>
             <TabsTrigger value="exams">Available Exams</TabsTrigger>
+            <TabsTrigger value="profile">📊 My Progress</TabsTrigger>
             <TabsTrigger value="history">Recent Submissions</TabsTrigger>
             <TabsTrigger value="announcements">Announcements</TabsTrigger>
             <TabsTrigger value="resources">Resources</TabsTrigger>
@@ -276,6 +278,10 @@ export default function StudentDashboard() {
                 </ScrollArea>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="profile" className="space-y-4">
+            <StudentProfile studentEmail={user?.email || ''} />
           </TabsContent>
 
           <TabsContent value="history" className="space-y-4">
