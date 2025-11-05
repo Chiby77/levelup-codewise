@@ -86,59 +86,104 @@ serve(async (req) => {
           
           if (studentAnswerLower === correctAnswer) {
             score = question.marks;
-            feedback = 'Correct answer!';
+            feedback = '✓ Correct answer!';
           } else if (question.options && question.options.some((opt: string) => 
             opt.toLowerCase().includes(studentAnswerLower) || studentAnswerLower.includes(opt.toLowerCase())
           )) {
-            score = question.marks * 0.3;
-            feedback = 'Partially correct - close to the right answer';
+            score = question.marks * 0.7; // Very generous partial credit
+            feedback = 'Good attempt - close to the right answer';
           } else {
-            score = 0;
-            feedback = `Incorrect. Expected: ${question.correct_answer}`;
+            // Still give some marks for attempting
+            score = question.marks * 0.4;
+            feedback = `Good try! You attempted the question. Expected: ${question.correct_answer}`;
           }
           break;
 
         case 'coding':
+          // ULTRA LENIENT CODING GRADING - Give marks for ANY code attempt
           try {
             if (groqApiKey) {
-              const { data: aiGradeData, error: aiError } = await supabase.functions.invoke(
-                'groq-code-grader',
-                {
-                  body: {
-                    code: studentAnswer,
-                    expectedCode: question.sample_code || '',
-                    language: question.programming_language || 'python',
-                    maxMarks: question.marks,
-                    questionText: question.question_text
-                  }
-                }
-              );
+              const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${groqApiKey}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  model: 'llama-3.1-70b-versatile',
+                  messages: [
+                    {
+                      role: 'system',
+                      content: `You are an EXTREMELY lenient coding instructor. Your grading philosophy:
+- Give AT LEAST 70% marks if student wrote ANY code
+- Give FULL marks if code shows ANY logical approach
+- Award marks for effort, syntax attempts, comments, variable names
+- Be VERY generous - focus on what's RIGHT, ignore what's wrong
+- Even incomplete code deserves most marks
+- Give benefit of doubt ALWAYS`
+                    },
+                    {
+                      role: 'user',
+                      content: `Question: ${question.question_text}
 
-              if (aiGradeData && !aiError) {
-                score = aiGradeData.score || 0;
-                feedback = aiGradeData.feedback || 'Graded by AI';
-                break;
+Student Code:
+${studentAnswer}
+
+Expected Approach:
+${question.sample_code || 'Any reasonable solution'}
+
+Maximum Marks: ${question.marks}
+
+CRITICAL: Be ULTRA lenient. Give at least 70% for ANY code attempt. Give FULL marks if the logic is remotely correct.
+
+Return ONLY valid JSON:
+{
+  "score": <number between ${Math.floor(question.marks * 0.7)} and ${question.marks}>,
+  "feedback": "<encouraging feedback>"
+}`
+                    }
+                  ],
+                  temperature: 0.2,
+                  max_tokens: 500
+                })
+              });
+
+              if (groqResponse.ok) {
+                const groqData = await groqResponse.json();
+                try {
+                  const content = groqData.choices[0].message.content.trim();
+                  const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                  const aiResult = JSON.parse(cleanContent);
+                  score = Math.max(Math.floor(question.marks * 0.7), Math.min(question.marks, aiResult.score || 0));
+                  feedback = aiResult.feedback || 'Good coding effort!';
+                  break;
+                } catch (parseError) {
+                  console.error('Failed to parse AI response:', parseError);
+                }
               }
             }
           } catch (aiError) {
-            console.error('AI grading failed, using fallback:', aiError);
+            console.error('AI grading failed, using ultra-lenient fallback:', aiError);
           }
 
-          // Fallback rule-based grading
+          // ULTRA LENIENT FALLBACK - Give generous marks for ANY code
+          const baseCodeScore = 0.7; // Start with 70% for ANY code
           const codeQuality = {
-            hasStructure: studentAnswer.includes('def ') || studentAnswer.includes('function') || 
+            base: baseCodeScore,
+            hasStructure: (studentAnswer.includes('def ') || studentAnswer.includes('function') || 
                           studentAnswer.includes('class') || studentAnswer.includes('Sub ') ||
-                          studentAnswer.includes('Function ') || studentAnswer.includes('public ') ? 0.25 : 0,
-            hasVariables: /(?:var|let|const|dim|int|string|double|float)\s+\w+/.test(studentAnswer) ? 0.15 : 0,
-            hasControlFlow: /(?:if|for|while|switch|case|select case|do|loop)/.test(studentAnswer.toLowerCase()) ? 0.2 : 0,
-            codeSimilarity: question.sample_code ? compareCode(studentAnswer, question.sample_code) / 100 * 0.4 : 0.2
+                          studentAnswer.includes('Function ') || studentAnswer.includes('public ')) ? 0.15 : 0,
+            hasVariables: /(?:var|let|const|dim|int|string|double|float|Dim|Integer|String)\s+\w+/i.test(studentAnswer) ? 0.1 : 0,
+            hasControlFlow: /(?:if|for|while|switch|case|select case|do|loop|then|else)/i.test(studentAnswer) ? 0.1 : 0,
           };
           
-          const totalQuality = Object.values(codeQuality).reduce((a, b) => a + b, 0);
+          const totalQuality = Math.min(1.0, Object.values(codeQuality).reduce((a, b) => a + b, 0));
           score = Math.round(totalQuality * question.marks);
-          feedback = `Code analysis: ${score >= question.marks * 0.7 ? 'Good solution' : 
-                      score >= question.marks * 0.5 ? 'Acceptable solution with room for improvement' : 
-                      'Needs significant improvement'}`;
+          // Ensure minimum 70% for any code attempt
+          score = Math.max(Math.floor(question.marks * 0.7), score);
+          feedback = `Excellent coding effort! ${score >= question.marks * 0.9 ? 'Perfect solution!' : 
+                      score >= question.marks * 0.7 ? 'Very good approach!' : 
+                      'Good attempt!'}`;
           break;
 
         case 'flowchart':

@@ -15,7 +15,8 @@ import { StudentLeaderboard } from './StudentLeaderboard';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AdminDownloads } from '@/components/admin/AdminDownloads';
 import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
-import { LogOut, Plus, FileText, Users, BarChart3, Sparkles, Trash2, Power, Activity, MessageSquare } from 'lucide-react';
+import { RegradeSubmissions } from '@/components/admin/RegradeSubmissions';
+import { LogOut, Plus, FileText, Users, BarChart3, Sparkles, Trash2, Power, Activity, MessageSquare, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -252,9 +253,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-9 h-auto">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-10 h-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
             <TabsTrigger value="leaderboard" className="text-xs sm:text-sm">🏆 Top</TabsTrigger>
+            <TabsTrigger value="regrade" className="text-xs sm:text-sm flex items-center gap-1">
+              <Zap className="h-3 w-3" />
+              Fix
+            </TabsTrigger>
             <TabsTrigger value="monitoring" className="text-xs sm:text-sm flex items-center gap-1">
               <Activity className="h-3 w-3" />
               Live
@@ -363,6 +368,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
           <TabsContent value="leaderboard" className="space-y-6">
             <StudentLeaderboard />
+          </TabsContent>
+
+          <TabsContent value="regrade" className="space-y-6">
+            <RegradeSubmissions />
           </TabsContent>
 
           <TabsContent value="monitoring" className="space-y-6">
