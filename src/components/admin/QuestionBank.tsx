@@ -81,7 +81,7 @@ export const QuestionBank = () => {
         query = query.eq("subject", filterSubject);
       }
       if (filterType !== "all") {
-        query = query.eq("question_type", filterType);
+        query = query.eq("question_type", filterType as any);
       }
       if (filterDifficulty !== "all") {
         query = query.eq("difficulty_level", filterDifficulty);

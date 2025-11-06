@@ -15,7 +15,7 @@ import { StudentLeaderboard } from './StudentLeaderboard';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AdminDownloads } from '@/components/admin/AdminDownloads';
 import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
-import { RegradeSubmissions } from "./RegradeSubmissions";
+import { RegradeSubmissions } from "@/components/admin/RegradeSubmissions";
 import { QuestionBank } from "../admin/QuestionBank";
 import { LogOut, Plus, FileText, Users, BarChart3, Sparkles, Trash2, Power, Activity, MessageSquare, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
