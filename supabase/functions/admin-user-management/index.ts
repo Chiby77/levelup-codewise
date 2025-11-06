@@ -1,114 +1,111 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.51.0'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+interface AdminActionRequest {
+  action: string;
+  userId?: string;
+  data?: any;
 }
 
-Deno.serve(async (req) => {
+serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseAdmin = createClient(
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { persistSession: false } }
-    )
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
-    // Verify admin role
-    const authHeader = req.headers.get('Authorization')!
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token)
-
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    const { data: roleData } = await supabaseAdmin
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .single()
-
-    if (roleData?.role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    const { action, userId, data } = await req.json()
-
-    let result
+    const { action, userId, data }: AdminActionRequest = await req.json();
 
     switch (action) {
-      case 'reset_password':
-        // Reset user password
-        const { data: updateData, error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-          userId,
-          { password: data.newPassword }
-        )
-        
-        if (updateError) throw updateError
-        
-        // Log activity
-        await supabaseAdmin.from('user_activity_logs').insert({
-          user_id: userId,
-          activity_type: 'password_reset_by_admin',
-          details: { admin_id: user.id }
-        })
-        
-        result = { success: true, message: 'Password reset successfully' }
-        break
+      case 'list_users': {
+        const { data: profilesData, error: profilesError } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      case 'delete_user':
-        // Delete user
-        const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId)
-        
-        if (deleteError) throw deleteError
-        
-        result = { success: true, message: 'User deleted successfully' }
-        break
+        if (profilesError) throw profilesError;
+
+        const { data: { users: authUsers }, error: authError } = 
+          await supabaseClient.auth.admin.listUsers();
+
+        if (authError) throw authError;
+
+        const mergedUsers = (profilesData || []).map(profile => {
+          const authUser = authUsers?.find(u => u.id === profile.id);
+          return {
+            ...profile,
+            email: authUser?.email || 'N/A',
+            last_login_at: profile.last_login_at || authUser?.last_sign_in_at || null
+          };
+        });
+
+        return new Response(JSON.stringify({ users: mergedUsers }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
       case 'update_status':
-        // Update account status
-        const { error: statusError } = await supabaseAdmin
+        await supabaseClient
           .from('profiles')
           .update({ account_status: data.status })
-          .eq('id', userId)
+          .eq('id', userId);
         
-        if (statusError) throw statusError
-        
-        // Log activity
-        await supabaseAdmin.from('user_activity_logs').insert({
+        await supabaseClient.from('user_activity_logs').insert({
           user_id: userId,
           activity_type: 'status_changed',
-          details: { new_status: data.status, admin_id: user.id }
-        })
+          details: { new_status: data.status }
+        });
         
-        result = { success: true, message: 'Account status updated' }
-        break
+        return new Response(JSON.stringify({ message: 'Status updated successfully' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+
+      case 'reset_password': {
+        const { error: resetError } = await supabaseClient.auth.admin.updateUserById(
+          userId!,
+          { password: data.newPassword }
+        );
+        if (resetError) throw resetError;
+        
+        await supabaseClient.from('user_activity_logs').insert({
+          user_id: userId,
+          activity_type: 'password_reset_by_admin',
+          details: {}
+        });
+        
+        return new Response(JSON.stringify({ message: 'Password reset successfully' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      case 'delete_user': {
+        const { error: deleteError } = await supabaseClient.auth.admin.deleteUser(userId!);
+        if (deleteError) throw deleteError;
+        return new Response(JSON.stringify({ message: 'User deleted successfully' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
       default:
         return new Response(JSON.stringify({ error: 'Invalid action' }), {
           status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
     }
-
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-
   } catch (error) {
+    console.error('Admin user management error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
-})
+});

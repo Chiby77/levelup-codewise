@@ -60,39 +60,64 @@ export const UserManagement = () => {
 
   useEffect(() => {
     fetchUsers();
+    
+    // Set up real-time subscription for profile updates
+    const channel = supabase
+      .channel('user-management-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles'
+        },
+        () => {
+          console.log('Profile changed, refreshing...');
+          fetchUsers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // Use service role to fetch user emails from auth.users
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (profilesError) throw profilesError;
-
-      // Fetch auth user data to get emails
-      const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
+      // Get current session
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (authError) {
-        console.error('Error fetching auth users:', authError);
-        // Fallback: use profiles data without emails
-        setUsers(profilesData || []);
+      if (!session) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to view users",
+          variant: "destructive",
+        });
         return;
       }
 
-      // Merge profile data with auth emails
-      const mergedUsers = (profilesData || []).map(profile => {
-        const authUser = (authUsers || []).find(u => u.id === profile.id);
-        return {
-          ...profile,
-          email: authUser?.email || 'N/A'
-        };
-      });
+      // Use admin edge function to fetch users with emails
+      const response = await fetch(
+        `https://lprllsdtgnewmsnjyxhj.supabase.co/functions/v1/admin-user-management`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: "list_users" }),
+        }
+      );
 
-      setUsers(mergedUsers);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to fetch users");
+      }
+
+      const result = await response.json();
+      setUsers(result.users || []);
     } catch (error: any) {
       console.error('Error in fetchUsers:', error);
       toast({

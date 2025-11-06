@@ -136,12 +136,16 @@ export type Database = {
       }
       exams: {
         Row: {
+          auto_activate: boolean | null
+          auto_deactivate: boolean | null
           created_at: string
           created_by: string
           description: string | null
           difficulty_level: string | null
           duration_minutes: number
+          end_time: string | null
           id: string
+          start_time: string | null
           status: Database["public"]["Enums"]["exam_status"]
           subject: string
           title: string
@@ -149,12 +153,16 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auto_activate?: boolean | null
+          auto_deactivate?: boolean | null
           created_at?: string
           created_by?: string
           description?: string | null
           difficulty_level?: string | null
           duration_minutes?: number
+          end_time?: string | null
           id?: string
+          start_time?: string | null
           status?: Database["public"]["Enums"]["exam_status"]
           subject?: string
           title: string
@@ -162,12 +170,16 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auto_activate?: boolean | null
+          auto_deactivate?: boolean | null
           created_at?: string
           created_by?: string
           description?: string | null
           difficulty_level?: string | null
           duration_minutes?: number
+          end_time?: string | null
           id?: string
+          start_time?: string | null
           status?: Database["public"]["Enums"]["exam_status"]
           subject?: string
           title?: string
@@ -235,6 +247,69 @@ export type Database = {
           id?: string
           last_login_at?: string | null
           student_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      question_bank: {
+        Row: {
+          category: string | null
+          correct_answer: string | null
+          created_at: string
+          created_by: string
+          difficulty_level: string | null
+          id: string
+          is_active: boolean | null
+          marks: number
+          options: Json | null
+          programming_language:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
+          question_text: string
+          question_type: Database["public"]["Enums"]["question_type"]
+          sample_code: string | null
+          subject: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          correct_answer?: string | null
+          created_at?: string
+          created_by: string
+          difficulty_level?: string | null
+          id?: string
+          is_active?: boolean | null
+          marks?: number
+          options?: Json | null
+          programming_language?:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
+          question_text: string
+          question_type: Database["public"]["Enums"]["question_type"]
+          sample_code?: string | null
+          subject?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          correct_answer?: string | null
+          created_at?: string
+          created_by?: string
+          difficulty_level?: string | null
+          id?: string
+          is_active?: boolean | null
+          marks?: number
+          options?: Json | null
+          programming_language?:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
+          question_text?: string
+          question_type?: Database["public"]["Enums"]["question_type"]
+          sample_code?: string | null
+          subject?: string
+          tags?: string[] | null
           updated_at?: string
         }
         Relationships: []
@@ -518,6 +593,7 @@ export type Database = {
       }
       increment_chat_tokens: { Args: { _user_id: string }; Returns: undefined }
       request_grading: { Args: { submission_uuid: string }; Returns: boolean }
+      update_exam_status_by_schedule: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "student" | "user"
