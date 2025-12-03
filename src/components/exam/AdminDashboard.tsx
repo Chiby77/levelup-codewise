@@ -3,24 +3,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { ExamCreator } from './ExamCreator';
 import { EnhancedExamCreator } from './EnhancedExamCreator';
 import { SubmissionViewer } from './SubmissionViewer';
-import { ExamAnalytics } from './ExamAnalytics';
 import { EnhancedExamStats } from './EnhancedExamStats';
-import { AnimatedExamCard } from './AnimatedExamCard';
 import { LiveExamMonitoring } from './LiveExamMonitoring';
 import { ScoreAnalytics } from './ScoreAnalytics';
 import { StudentLeaderboard } from './StudentLeaderboard';
 import { UserManagement } from '@/components/admin/UserManagement';
-import { AdminDownloads } from '@/components/admin/AdminDownloads';
 import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
 import { RegradeSubmissions } from "@/components/admin/RegradeSubmissions";
-import { QuestionBank } from "../admin/QuestionBank";
-import { LogOut, Plus, FileText, Users, BarChart3, Sparkles, Trash2, Power, Activity, MessageSquare, Zap } from 'lucide-react';
+import { QuestionBank } from "@/components/admin/QuestionBank";
+import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -34,6 +40,10 @@ interface Exam {
   total_marks: number;
   status: string;
   created_at: string;
+  start_time?: string;
+  end_time?: string;
+  auto_activate?: boolean;
+  auto_deactivate?: boolean;
 }
 
 interface Submission {
@@ -56,9 +66,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [totalQuestions, setTotalQuestions] = useState(0);
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [showScheduleDialog, setShowScheduleDialog] = useState(false);
+  const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
+  const [scheduleData, setScheduleData] = useState({ startTime: '', endTime: '', autoActivate: true, autoDeactivate: true });
 
   useEffect(() => {
     fetchData();
+    const interval = setInterval(fetchData, 30000); // Refresh every 30s
+    return () => clearInterval(interval);
   }, []);
 
   const fetchData = async () => {
@@ -83,29 +100,89 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     }
   };
 
-  const gradeAllPending = async () => {
-    setLoading(true);
-    const pendingSubmissions = submissions.filter(s => !s.graded);
-    
+  const deleteExam = async (examId: string) => {
+    if (!confirm('Delete this exam and all related data?')) return;
     try {
-      for (const submission of pendingSubmissions) {
-        await supabase.functions.invoke('grade-exam', {
-          body: {
-            submissionId: submission.id,
-            examId: submission.exam_id || '',
-            studentAnswers: submission.answers,
-            questions: []
-          }
-        });
-      }
-      
-      toast.success(`Initiated grading for ${pendingSubmissions.length} submissions`);
-      await fetchData();
+      const { error } = await supabase.from('exams').delete().eq('id', examId);
+      if (error) throw error;
+      toast.success('Exam deleted');
+      fetchData();
     } catch (error) {
-      console.error('Error grading submissions:', error);
-      toast.error('Failed to grade submissions');
-    } finally {
-      setLoading(false);
+      toast.error('Failed to delete exam');
+    }
+  };
+
+  const toggleExamStatus = async (examId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'draft' : 'active';
+    try {
+      const { error } = await supabase.from('exams').update({ status: newStatus }).eq('id', examId);
+      if (error) throw error;
+      toast.success(`Exam ${newStatus === 'active' ? 'activated' : 'deactivated'}`);
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to update status');
+    }
+  };
+
+  const scheduleExam = async () => {
+    if (!selectedExam) return;
+    try {
+      const { error } = await supabase.from('exams').update({
+        start_time: scheduleData.startTime || null,
+        end_time: scheduleData.endTime || null,
+        auto_activate: scheduleData.autoActivate,
+        auto_deactivate: scheduleData.autoDeactivate
+      }).eq('id', selectedExam.id);
+
+      if (error) throw error;
+      toast.success('Exam schedule updated');
+      setShowScheduleDialog(false);
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to schedule exam');
+    }
+  };
+
+  const sendResultsEmail = async () => {
+    if (!selectedSubmission || !selectedSubmission.student_email) {
+      toast.error('No email address available');
+      return;
+    }
+
+    try {
+      const exam = exams.find(e => e.id === selectedSubmission.exam_id);
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const response = await fetch(
+        'https://lprllsdtgnewmsnjyxhj.supabase.co/functions/v1/admin-user-management',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'send_results_email',
+            data: {
+              submissionId: selectedSubmission.id,
+              studentEmail: selectedSubmission.student_email,
+              studentName: selectedSubmission.student_name,
+              totalScore: selectedSubmission.total_score,
+              maxScore: selectedSubmission.max_score,
+              gradeDetails: selectedSubmission.grade_details,
+              examTitle: exam?.title
+            }
+          }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+
+      toast.success('Results email sent successfully!');
+      setShowEmailDialog(false);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send email');
     }
   };
 
@@ -122,64 +199,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     a.download = 'exam-grades.csv';
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Grades exported successfully');
+    toast.success('Grades exported');
   };
 
-  const deleteExam = async (examId: string) => {
-    if (!confirm('Are you sure you want to delete this exam? This will also delete all related questions.')) return;
-
+  const gradeSubmission = async (submission: Submission) => {
     try {
-      const { error } = await supabase
-        .from('exams')
-        .delete()
-        .eq('id', examId);
-
-      if (error) throw error;
-      toast.success('Exam deleted successfully');
-      await fetchData();
-    } catch (error) {
-      console.error('Error deleting exam:', error);
-      toast.error('Failed to delete exam');
-    }
-  };
-
-  const toggleExamStatus = async (examId: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'active' ? 'draft' : 'active';
-    
-    try {
-      const { error } = await supabase
-        .from('exams')
-        .update({ status: newStatus })
-        .eq('id', examId);
-
-      if (error) throw error;
-      toast.success(`Exam ${newStatus === 'active' ? 'activated' : 'deactivated'}`);
-      await fetchData();
-    } catch (error) {
-      console.error('Error toggling exam status:', error);
-      toast.error('Failed to update exam status');
-    }
-  };
-
-  const requestGrading = async (submissionId: string) => {
-    try {
-      const submission = submissions.find(s => s.id === submissionId);
-      if (!submission) return;
-
       await supabase.functions.invoke('grade-exam', {
-        body: {
-          submissionId,
-          examId: submission.exam_id || '',
-          studentAnswers: submission.answers,
-          questions: []
-        }
+        body: { submissionId: submission.id, examId: submission.exam_id || '', answers: submission.answers, questions: [] }
       });
-      
-      toast.success('Grading requested successfully');
-      await fetchData();
+      toast.success('Grading initiated');
+      setTimeout(fetchData, 2000);
     } catch (error) {
-      console.error('Error requesting grading:', error);
-      toast.error('Failed to request grading');
+      toast.error('Grading failed');
     }
   };
 
@@ -187,22 +218,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     totalExams: exams.length,
     activeExams: exams.filter(e => e.status === 'active').length,
     totalSubmissions: submissions.length,
-    totalQuestions: totalQuestions,
+    totalQuestions,
     averageScore: submissions.filter(s => s.graded && s.max_score > 0).length > 0
-      ? submissions
-          .filter(s => s.graded && s.max_score > 0)
-          .reduce((acc, s) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / 
-        submissions.filter(s => s.graded && s.max_score > 0).length
+      ? submissions.filter(s => s.graded && s.max_score > 0).reduce((acc, s) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / submissions.filter(s => s.graded && s.max_score > 0).length
       : 0,
-    completionRate: submissions.length > 0
-      ? (submissions.filter(s => s.graded).length / submissions.length) * 100
-      : 0,
-    gradedSubmissions: submissions.filter(s => s.graded).length
+    completionRate: submissions.length > 0 ? (submissions.filter(s => s.graded).length / submissions.length) * 100 : 0,
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading dashboard...</p>
@@ -212,68 +237,38 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse delay-1000" />
-      </div>
-
-      <div className="container mx-auto p-4 sm:p-6 relative z-10">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-4 sm:p-6">
+        {/* Header */}
         <motion.div 
-          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 p-6 rounded-xl border border-primary/20 backdrop-blur-sm"
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-6 rounded-xl border bg-card"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
         >
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent flex items-center gap-2">
-              <Sparkles className="h-8 w-8 text-primary animate-pulse" />
-              Admin Dashboard
-            </h1>
-            <p className="text-muted-foreground text-sm sm:text-base mt-1">CS Experts Zimbabwe - Next-Gen Digital Examination System</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Admin Dashboard</h1>
+            <p className="text-muted-foreground text-sm mt-1">CS Experts Zimbabwe - Examination System</p>
           </div>
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => window.location.href = '/admin-content'}
-              className="flex items-center gap-2"
-            >
-              <FileText className="h-4 w-4" />
-              Manage Content
+            <Button variant="outline" onClick={exportGrades}>
+              <Download className="h-4 w-4 mr-2" />Export
             </Button>
-            <Button 
-              variant="outline"
-              onClick={onLogout} 
-              className="w-full sm:w-auto hover:bg-destructive/10 hover:text-destructive hover:scale-105 transition-all"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+            <Button variant="outline" onClick={onLogout} className="hover:bg-destructive/10 hover:text-destructive">
+              <LogOut className="h-4 w-4 mr-2" />Logout
             </Button>
           </div>
         </motion.div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-10 h-auto">
-            <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
-            <TabsTrigger value="leaderboard" className="text-xs sm:text-sm">🏆 Top</TabsTrigger>
-            <TabsTrigger value="regrade" className="text-xs sm:text-sm flex items-center gap-1">
-              <Zap className="h-3 w-3" />
-              Fix
-            </TabsTrigger>
-            <TabsTrigger value="monitoring" className="text-xs sm:text-sm flex items-center gap-1">
-              <Activity className="h-3 w-3" />
-              Live
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analytics</TabsTrigger>
-            <TabsTrigger value="feedback" className="text-xs sm:text-sm flex items-center gap-1">
-              <MessageSquare className="h-3 w-3" />
-              Feedback
-            </TabsTrigger>
-            <TabsTrigger value="exams" className="text-xs sm:text-sm">Exams</TabsTrigger>
-            <TabsTrigger value="submissions" className="text-xs sm:text-sm">Submissions</TabsTrigger>
-            <TabsTrigger value="users" className="text-xs sm:text-sm">Users</TabsTrigger>
-            <TabsTrigger value="create" className="text-xs sm:text-sm">Create</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 h-auto gap-1">
+            <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+            <TabsTrigger value="exams" className="text-xs">Exams</TabsTrigger>
+            <TabsTrigger value="submissions" className="text-xs">Submissions</TabsTrigger>
+            <TabsTrigger value="users" className="text-xs">Users</TabsTrigger>
+            <TabsTrigger value="bank" className="text-xs">Q-Bank</TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
+            <TabsTrigger value="monitoring" className="text-xs">Live</TabsTrigger>
+            <TabsTrigger value="create" className="text-xs">Create</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -287,150 +282,92 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Card className="border-primary/20 hover:border-primary/40 transition-all">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-primary" />
-                      Recent Exams
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {exams.slice(0, 5).map((exam, index) => (
-                        <motion.div 
-                          key={exam.id} 
-                          className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/5 to-transparent rounded-lg border border-primary/10 hover:border-primary/30 transition-all"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          whileHover={{ x: 5 }}
-                        >
-                          <div>
-                            <p className="font-medium">{exam.title}</p>
-                            <p className="text-sm text-muted-foreground">
-                              ⏱️ {exam.duration_minutes} mins | 📝 {exam.total_marks} marks
-                            </p>
-                          </div>
-                          <Badge variant={exam.status === 'active' ? 'default' : 'secondary'} className="animate-pulse">
-                            {exam.status}
-                          </Badge>
-                        </motion.div>
-                      ))}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <FileText className="h-5 w-5 text-primary" />Recent Exams
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {exams.slice(0, 5).map((exam) => (
+                    <div key={exam.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-sm">{exam.title}</p>
+                        <p className="text-xs text-muted-foreground">{exam.duration_minutes} mins | {exam.total_marks} marks</p>
+                      </div>
+                      <Badge variant={exam.status === 'active' ? 'default' : 'secondary'}>{exam.status}</Badge>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                  ))}
+                </CardContent>
+              </Card>
 
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Card className="border-accent/20 hover:border-accent/40 transition-all">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-accent" />
-                      Recent Submissions
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {submissions.slice(0, 5).map((submission, index) => (
-                        <motion.div 
-                          key={submission.id} 
-                          className="flex items-center justify-between p-4 bg-gradient-to-r from-accent/5 to-transparent rounded-lg border border-accent/10 hover:border-accent/30 transition-all"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          whileHover={{ x: -5 }}
-                        >
-                          <div>
-                            <p className="font-medium">{submission.student_name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              Score: <span className="font-semibold text-primary">{submission.total_score}/{submission.max_score}</span> ({Math.round((submission.total_score / submission.max_score) * 100)}%)
-                            </p>
-                          </div>
-                          <Badge variant={submission.graded ? 'default' : 'secondary'}>
-                            {submission.graded ? '✅ Graded' : '⏳ Pending'}
-                          </Badge>
-                        </motion.div>
-                      ))}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Users className="h-5 w-5 text-primary" />Recent Submissions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {submissions.slice(0, 5).map((sub) => (
+                    <div key={sub.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-sm">{sub.student_name}</p>
+                        <p className="text-xs text-muted-foreground">{sub.total_score}/{sub.max_score} ({Math.round((sub.total_score / sub.max_score) * 100)}%)</p>
+                      </div>
+                      <Badge variant={sub.graded ? 'default' : 'secondary'}>{sub.graded ? 'Graded' : 'Pending'}</Badge>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                  ))}
+                </CardContent>
+              </Card>
             </div>
-          </TabsContent>
 
-          <TabsContent value="leaderboard" className="space-y-6">
             <StudentLeaderboard />
           </TabsContent>
 
-          <TabsContent value="regrade" className="space-y-6">
-            <RegradeSubmissions />
-          </TabsContent>
-
-          <TabsContent value="monitoring" className="space-y-6">
-            <LiveExamMonitoring />
-          </TabsContent>
-
-          <TabsContent value="analytics" className="space-y-6">
-            <ScoreAnalytics submissions={submissions} />
-          </TabsContent>
-
-          <TabsContent value="feedback" className="space-y-6">
-            <FeedbackViewer />
-          </TabsContent>
-
-          <TabsContent value="exams" className="space-y-6">
+          <TabsContent value="exams" className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Exam Management</h2>
-              <Button onClick={() => setActiveTab('create')}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create New Exam
-              </Button>
+              <h2 className="text-xl font-bold">Exam Management</h2>
+              <Button onClick={() => setActiveTab('create')}><Plus className="h-4 w-4 mr-2" />Create Exam</Button>
             </div>
             
             <div className="grid gap-4">
               {exams.map((exam) => (
                 <Card key={exam.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle>{exam.title}</CardTitle>
-                        <p className="text-muted-foreground mt-1">{exam.description}</p>
+                  <CardContent className="p-4">
+                    <div className="flex flex-col sm:flex-row justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold">{exam.title}</h3>
+                          <Badge variant={exam.status === 'active' ? 'default' : 'secondary'}>{exam.status}</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{exam.description}</p>
+                        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                          <span>⏱️ {exam.duration_minutes} mins</span>
+                          <span>📝 {exam.total_marks} marks</span>
+                          {exam.start_time && <span>🗓️ Start: {new Date(exam.start_time).toLocaleString()}</span>}
+                          {exam.end_time && <span>🔚 End: {new Date(exam.end_time).toLocaleString()}</span>}
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Badge variant={exam.status === 'active' ? 'default' : 'secondary'}>
-                          {exam.status}
-                        </Badge>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleExamStatus(exam.id, exam.status)}
-                        >
+                      <div className="flex gap-2 items-start">
+                        <Button size="sm" variant="outline" onClick={() => { 
+                          setSelectedExam(exam); 
+                          setScheduleData({
+                            startTime: exam.start_time || '',
+                            endTime: exam.end_time || '',
+                            autoActivate: exam.auto_activate || false,
+                            autoDeactivate: exam.auto_deactivate || false
+                          });
+                          setShowScheduleDialog(true);
+                        }}>
+                          <Calendar className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => toggleExamStatus(exam.id, exam.status)}>
                           <Power className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => deleteExam(exam.id)}
-                        >
+                        <Button size="sm" variant="destructive" onClick={() => deleteExam(exam.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex gap-4 text-sm text-muted-foreground">
-                      <span>Duration: {exam.duration_minutes} minutes</span>
-                      <span>Total Marks: {exam.total_marks}</span>
-                      <span>Created: {new Date(exam.created_at).toLocaleDateString()}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -438,35 +375,115 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </div>
           </TabsContent>
 
-          <TabsContent value="submissions" className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <h2 className="text-xl sm:text-2xl font-bold">Submissions & Grading</h2>
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                <Button onClick={gradeAllPending} disabled={loading} className="w-full sm:w-auto">
-                  Grade All Pending
-                </Button>
-                <Button variant="outline" onClick={exportGrades} disabled={submissions.length === 0} className="w-full sm:w-auto">
-                  Export Grades
-                </Button>
-              </div>
+          <TabsContent value="submissions" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">Submissions ({submissions.length})</h2>
+              <Button variant="outline" onClick={exportGrades}><Download className="h-4 w-4 mr-2" />Export CSV</Button>
             </div>
-            <SubmissionViewer submissions={submissions} onGradeRequest={requestGrading} />
+
+            <div className="grid gap-3">
+              {submissions.map((sub) => {
+                const exam = exams.find(e => e.id === sub.exam_id);
+                return (
+                  <Card key={sub.id}>
+                    <CardContent className="p-4">
+                      <div className="flex flex-col sm:flex-row justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold">{sub.student_name}</h3>
+                            <Badge variant={sub.graded ? 'default' : 'secondary'}>{sub.graded ? 'Graded' : 'Pending'}</Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{sub.student_email}</p>
+                          <div className="flex flex-wrap gap-3 text-sm mt-2">
+                            <span className="font-medium text-primary">{sub.total_score}/{sub.max_score} ({Math.round((sub.total_score / sub.max_score) * 100)}%)</span>
+                            <span className="text-muted-foreground">Exam: {exam?.title || 'Unknown'}</span>
+                            <span className="text-muted-foreground">{new Date(sub.submitted_at).toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 items-start">
+                          {!sub.graded && (
+                            <Button size="sm" onClick={() => gradeSubmission(sub)}>
+                              <Activity className="h-4 w-4 mr-1" />Grade
+                            </Button>
+                          )}
+                          {sub.graded && sub.student_email && (
+                            <Button size="sm" variant="outline" onClick={() => { setSelectedSubmission(sub); setShowEmailDialog(true); }}>
+                              <Mail className="h-4 w-4 mr-1" />Send Results
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+
+            <RegradeSubmissions />
           </TabsContent>
 
-          <TabsContent value="users" className="space-y-6">
-            <UserManagement />
-          </TabsContent>
-
-          <TabsContent value="create">
-            <EnhancedExamCreator onExamCreated={fetchData} />
-          </TabsContent>
+          <TabsContent value="users"><UserManagement /></TabsContent>
+          <TabsContent value="bank"><QuestionBank /></TabsContent>
+          <TabsContent value="analytics"><ScoreAnalytics submissions={submissions} /><FeedbackViewer /></TabsContent>
+          <TabsContent value="monitoring"><LiveExamMonitoring /></TabsContent>
+          <TabsContent value="create"><EnhancedExamCreator onExamCreated={fetchData} /></TabsContent>
         </Tabs>
-
-        <div className="mt-12 text-center text-sm text-muted-foreground">
-          <p>CS Experts Zimbabwe Digital Examination System</p>
-          <p>Powered by Intellix Inc | Founded by Tinodaishe M Chibi</p>
-        </div>
       </div>
+
+      {/* Schedule Exam Dialog */}
+      <Dialog open={showScheduleDialog} onOpenChange={setShowScheduleDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Schedule Exam: {selectedExam?.title}</DialogTitle>
+            <DialogDescription>Set automatic start and end times for the exam.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Start Time</Label>
+              <Input type="datetime-local" value={scheduleData.startTime ? scheduleData.startTime.slice(0, 16) : ''} 
+                onChange={(e) => setScheduleData(prev => ({ ...prev, startTime: e.target.value ? new Date(e.target.value).toISOString() : '' }))} />
+            </div>
+            <div>
+              <Label>End Time</Label>
+              <Input type="datetime-local" value={scheduleData.endTime ? scheduleData.endTime.slice(0, 16) : ''} 
+                onChange={(e) => setScheduleData(prev => ({ ...prev, endTime: e.target.value ? new Date(e.target.value).toISOString() : '' }))} />
+            </div>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2">
+                <input type="checkbox" checked={scheduleData.autoActivate} onChange={(e) => setScheduleData(prev => ({ ...prev, autoActivate: e.target.checked }))} />
+                Auto-activate at start
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" checked={scheduleData.autoDeactivate} onChange={(e) => setScheduleData(prev => ({ ...prev, autoDeactivate: e.target.checked }))} />
+                Auto-deactivate at end
+              </label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowScheduleDialog(false)}>Cancel</Button>
+            <Button onClick={scheduleExam}>Save Schedule</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Results Email Dialog */}
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Results Email</DialogTitle>
+            <DialogDescription>
+              Send exam results to {selectedSubmission?.student_name} ({selectedSubmission?.student_email})
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-4 bg-muted rounded-lg">
+            <p><strong>Score:</strong> {selectedSubmission?.total_score}/{selectedSubmission?.max_score} ({selectedSubmission && Math.round((selectedSubmission.total_score / selectedSubmission.max_score) * 100)}%)</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEmailDialog(false)}>Cancel</Button>
+            <Button onClick={sendResultsEmail}><Mail className="h-4 w-4 mr-2" />Send Email</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
