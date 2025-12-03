@@ -7,17 +7,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const compareCode = (studentCode: string, expectedCode: string): number => {
-  const normalize = (code: string) => code.toLowerCase().replace(/\s+/g, ' ').trim();
-  const student = normalize(studentCode);
-  const expected = normalize(expectedCode);
-  
-  if (student === expected) return 100;
-  
-  const similarityScore = (student.length / expected.length) * 100;
-  return Math.min(similarityScore, 100);
-};
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -32,11 +21,10 @@ serve(async (req) => {
 
     const groqApiKey = Deno.env.get('GROQ_API_KEY');
     
-    console.log('Starting grading for submission:', submissionId);
+    console.log('Starting ULTRA-LENIENT grading for submission:', submissionId);
     console.log('Exam ID:', examId);
-    console.log('Provided questions:', providedQuestions?.length || 0);
     
-    // Fetch questions from database if not provided or empty
+    // Fetch questions from database
     let questions = providedQuestions || [];
     if (!questions || questions.length === 0) {
       console.log('Fetching questions from database for exam:', examId);
@@ -52,7 +40,6 @@ serve(async (req) => {
       }
       
       questions = fetchedQuestions || [];
-      console.log('Fetched questions:', questions.length);
     }
     
     if (questions.length === 0) {
@@ -62,6 +49,8 @@ serve(async (req) => {
     let totalScore = 0;
     let maxScore = 0;
     const gradeDetails: any = {};
+    const weakAreas: string[] = [];
+    const strongAreas: string[] = [];
 
     for (const question of questions) {
       maxScore += question.marks;
@@ -71,8 +60,9 @@ serve(async (req) => {
         gradeDetails[question.id] = {
           score: 0,
           maxScore: question.marks,
-          feedback: 'No answer provided'
+          feedback: 'No answer provided - please attempt all questions!'
         };
+        weakAreas.push(question.question_type);
         continue;
       }
 
@@ -86,23 +76,19 @@ serve(async (req) => {
           
           if (studentAnswerLower === correctAnswer) {
             score = question.marks;
-            feedback = '✓ Correct answer!';
-          } else if (question.options && question.options.some((opt: string) => 
-            opt.toLowerCase().includes(studentAnswerLower) || studentAnswerLower.includes(opt.toLowerCase())
-          )) {
-            score = question.marks * 0.7; // Very generous partial credit
-            feedback = 'Good attempt - close to the right answer';
+            feedback = '✅ Perfect! Correct answer!';
+            strongAreas.push('multiple_choice');
           } else {
-            // Still give some marks for attempting
-            score = question.marks * 0.4;
-            feedback = `Good try! You attempted the question. Expected: ${question.correct_answer}`;
+            // ULTRA LENIENT - give partial marks for any attempt
+            score = Math.round(question.marks * 0.5);
+            feedback = `Good try! The correct answer was: ${question.correct_answer}. You still earned partial marks for attempting!`;
           }
           break;
 
         case 'coding':
-          // ULTRA LENIENT CODING GRADING - Give marks for ANY code attempt
-          try {
-            if (groqApiKey) {
+          // ULTRA LENIENT GROQ LLAMA 8B GRADING
+          if (groqApiKey) {
+            try {
               const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -110,40 +96,44 @@ serve(async (req) => {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  model: 'llama-3.1-70b-versatile',
+                  model: 'llama-3.1-8b-instant', // Using Llama 8B as requested
                   messages: [
                     {
                       role: 'system',
-                      content: `You are an EXTREMELY lenient coding instructor. Your grading philosophy:
-- Give AT LEAST 70% marks if student wrote ANY code
-- Give FULL marks if code shows ANY logical approach
-- Award marks for effort, syntax attempts, comments, variable names
-- Be VERY generous - focus on what's RIGHT, ignore what's wrong
-- Even incomplete code deserves most marks
-- Give benefit of doubt ALWAYS`
+                      content: `You are an EXTREMELY lenient and encouraging programming instructor. Your philosophy:
+- Award AT LEAST 75% marks for ANY code attempt
+- Give FULL marks (100%) if the code shows ANY logical approach to the problem
+- Award marks generously for: variable declarations, function definitions, loops, conditions, comments
+- Focus ONLY on what the student did RIGHT
+- Be maximally encouraging and supportive
+- NEVER be harsh or critical
+- Every attempt deserves recognition
+- Syntax errors should not significantly reduce marks
+- Partial solutions deserve most marks`
                     },
                     {
                       role: 'user',
                       content: `Question: ${question.question_text}
 
-Student Code:
+Student's Code:
 ${studentAnswer}
 
-Expected Approach:
+Expected Approach (for reference only):
 ${question.sample_code || 'Any reasonable solution'}
 
 Maximum Marks: ${question.marks}
+Minimum marks to award: ${Math.round(question.marks * 0.75)} (for any attempt)
 
-CRITICAL: Be ULTRA lenient. Give at least 70% for ANY code attempt. Give FULL marks if the logic is remotely correct.
+CRITICAL INSTRUCTION: Be ULTRA LENIENT. Award at minimum 75% for ANY code. Award 100% if code shows understanding.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (no markdown):
 {
-  "score": <number between ${Math.floor(question.marks * 0.7)} and ${question.marks}>,
-  "feedback": "<encouraging feedback>"
+  "score": <number between ${Math.round(question.marks * 0.75)} and ${question.marks}>,
+  "feedback": "<encouraging, positive feedback highlighting what they did well>"
 }`
                     }
                   ],
-                  temperature: 0.2,
+                  temperature: 0.1,
                   max_tokens: 500
                 })
               });
@@ -154,67 +144,50 @@ Return ONLY valid JSON:
                   const content = groqData.choices[0].message.content.trim();
                   const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
                   const aiResult = JSON.parse(cleanContent);
-                  score = Math.max(Math.floor(question.marks * 0.7), Math.min(question.marks, aiResult.score || 0));
-                  feedback = aiResult.feedback || 'Good coding effort!';
-                  break;
+                  score = Math.max(Math.round(question.marks * 0.75), Math.min(question.marks, aiResult.score || question.marks * 0.8));
+                  feedback = aiResult.feedback || '🎉 Great coding effort! Keep it up!';
+                  strongAreas.push('coding');
                 } catch (parseError) {
                   console.error('Failed to parse AI response:', parseError);
+                  score = Math.round(question.marks * 0.8);
+                  feedback = '🎉 Great coding effort! Your code shows good understanding.';
                 }
+              } else {
+                throw new Error('Groq API failed');
               }
+            } catch (aiError) {
+              console.error('AI grading failed, using ultra-lenient fallback:', aiError);
+              score = Math.round(question.marks * 0.8);
+              feedback = '🎉 Excellent attempt! Your code demonstrates good programming skills.';
             }
-          } catch (aiError) {
-            console.error('AI grading failed, using ultra-lenient fallback:', aiError);
+          } else {
+            // Fallback without AI - still ultra lenient
+            score = Math.round(question.marks * 0.8);
+            feedback = '🎉 Great coding attempt! Keep practicing!';
           }
-
-          // ULTRA LENIENT FALLBACK - Give generous marks for ANY code
-          const baseCodeScore = 0.7; // Start with 70% for ANY code
-          const codeQuality = {
-            base: baseCodeScore,
-            hasStructure: (studentAnswer.includes('def ') || studentAnswer.includes('function') || 
-                          studentAnswer.includes('class') || studentAnswer.includes('Sub ') ||
-                          studentAnswer.includes('Function ') || studentAnswer.includes('public ')) ? 0.15 : 0,
-            hasVariables: /(?:var|let|const|dim|int|string|double|float|Dim|Integer|String)\s+\w+/i.test(studentAnswer) ? 0.1 : 0,
-            hasControlFlow: /(?:if|for|while|switch|case|select case|do|loop|then|else)/i.test(studentAnswer) ? 0.1 : 0,
-          };
-          
-          const totalQuality = Math.min(1.0, Object.values(codeQuality).reduce((a, b) => a + b, 0));
-          score = Math.round(totalQuality * question.marks);
-          // Ensure minimum 70% for any code attempt
-          score = Math.max(Math.floor(question.marks * 0.7), score);
-          feedback = `Excellent coding effort! ${score >= question.marks * 0.9 ? 'Perfect solution!' : 
-                      score >= question.marks * 0.7 ? 'Very good approach!' : 
-                      'Good attempt!'}`;
+          strongAreas.push('coding');
           break;
 
         case 'flowchart':
           try {
             const flowchartData = JSON.parse(studentAnswer);
             const elements = flowchartData.elements || [];
-            const connections = flowchartData.connections || [];
             
-            const hasStart = elements.some((e: any) => e.type === 'start');
-            const hasEnd = elements.some((e: any) => e.type === 'end');
-            const hasProcess = elements.some((e: any) => e.type === 'process');
-            const hasDecision = elements.some((e: any) => e.type === 'decision');
-            const hasConnections = connections.length > 0;
-            
-            const flowchartScore = [hasStart, hasEnd, hasProcess, hasDecision, hasConnections]
-              .filter(Boolean).length / 5;
-            
-            score = Math.round(flowchartScore * question.marks);
-            feedback = `Flowchart evaluation: ${score >= question.marks * 0.8 ? 'Excellent flowchart structure' : 
-                       score >= question.marks * 0.5 ? 'Good attempt, consider adding more detail' : 
-                       'Basic flowchart, needs more components'}`;
+            // Give high marks for any flowchart attempt
+            score = elements.length > 0 ? Math.round(question.marks * 0.85) : Math.round(question.marks * 0.6);
+            feedback = elements.length > 0 
+              ? '🎨 Excellent flowchart! Great visual representation of the algorithm.'
+              : '👍 Good attempt at creating a flowchart. Try adding more elements.';
+            strongAreas.push('flowchart');
           } catch (e) {
-            score = question.marks * 0.2;
-            feedback = 'Flowchart submitted but could not be fully evaluated';
+            score = Math.round(question.marks * 0.6);
+            feedback = '👍 Flowchart submitted. Keep practicing visual algorithm design!';
           }
           break;
 
         case 'short_answer':
-          const correctAnswerText = question.correct_answer || '';
-          
-          if (correctAnswerText && groqApiKey) {
+          // ULTRA LENIENT SHORT ANSWER GRADING
+          if (groqApiKey) {
             try {
               const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
@@ -223,107 +196,62 @@ Return ONLY valid JSON:
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  model: 'llama-3.1-70b-versatile',
+                  model: 'llama-3.1-8b-instant',
                   messages: [
                     {
                       role: 'system',
-                      content: `You are an extremely lenient and compassionate teacher grading a student's short answer. Your grading philosophy:
-- ALWAYS give partial credit for ANY relevant attempt
-- Be VERY generous - give at least 70% marks if the student shows ANY understanding
-- Award marks for effort, relevant keywords, and attempts to answer
-- Focus on what they got RIGHT, not what's missing
-- Give benefit of doubt in all cases
-- Even partially correct answers deserve most of the marks
-- Look for ANY connection to the topic and award marks for it
-- A student mentioning any related concept deserves marks
-
-Be extremely lenient - err on the side of giving MORE marks rather than less.`
+                      content: `You are an EXTREMELY lenient teacher. Award marks generously:
+- Give AT LEAST 70% for ANY relevant attempt
+- Award full marks if answer shows ANY understanding
+- Focus on what's RIGHT, ignore what's missing
+- Be maximally encouraging
+- Any mention of related concepts deserves high marks`
                     },
                     {
                       role: 'user',
                       content: `Question: ${question.question_text}
-
-Expected Answer: ${correctAnswerText}
-
+Expected: ${question.correct_answer || 'Any reasonable answer'}
 Student Answer: ${studentAnswer}
+Max Marks: ${question.marks}
 
-Maximum Marks: ${question.marks}
-
-IMPORTANT: Be VERY lenient. Give generous marks for any attempt. If the student shows ANY understanding or effort, give at least 70% of marks.
-
-Return ONLY a valid JSON object (no markdown, no code blocks) with this exact structure:
-{
-  "score": <number between 0 and ${question.marks}>,
-  "feedback": "<positive, encouraging feedback>",
-  "strengths": ["what they got right"],
-  "improvements": ["gentle suggestions if needed"]
-}`
+Be ULTRA LENIENT. Return ONLY JSON:
+{"score": <min 70% of ${question.marks}>, "feedback": "<encouraging>"}`
                     }
                   ],
-                  temperature: 0.2,
-                  max_tokens: 500
+                  temperature: 0.1,
+                  max_tokens: 300
                 })
               });
 
               if (groqResponse.ok) {
                 const groqData = await groqResponse.json();
-                let aiResult;
-                
                 try {
-                  const content = groqData.choices[0].message.content.trim();
-                  const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-                  aiResult = JSON.parse(cleanContent);
-                  
-                  score = Math.min(Math.max(0, aiResult.score || 0), question.marks);
-                  feedback = aiResult.feedback || 'Graded by AI';
-                  
-                  if (aiResult.strengths && aiResult.strengths.length > 0) {
-                    feedback += '\n\nStrengths: ' + aiResult.strengths.join(', ');
-                  }
-                  if (aiResult.improvements && aiResult.improvements.length > 0) {
-                    feedback += '\n\nSuggestions: ' + aiResult.improvements.join(', ');
-                  }
-                  break;
-                } catch (parseError) {
-                  console.error('Failed to parse AI response:', parseError);
+                  const content = groqData.choices[0].message.content.trim().replace(/```json\n?/g, '').replace(/```\n?/g, '');
+                  const aiResult = JSON.parse(content);
+                  score = Math.max(Math.round(question.marks * 0.7), Math.min(question.marks, aiResult.score || question.marks * 0.75));
+                  feedback = aiResult.feedback || '📝 Good answer! Well explained.';
+                } catch {
+                  score = Math.round(question.marks * 0.75);
+                  feedback = '📝 Good response! Shows understanding of the topic.';
                 }
+              } else {
+                score = Math.round(question.marks * 0.75);
+                feedback = '📝 Nice answer! Keep up the good work.';
               }
-            } catch (aiError) {
-              console.error('AI grading failed:', aiError);
+            } catch {
+              score = Math.round(question.marks * 0.75);
+              feedback = '📝 Good attempt! Your answer shows effort.';
             }
+          } else {
+            score = Math.round(question.marks * 0.7);
+            feedback = '📝 Good answer! Shows understanding.';
           }
-
-          // Fallback: VERY lenient keyword-based grading
-          const answerLower = studentAnswer.toLowerCase();
-          const correctLower = correctAnswerText.toLowerCase();
-          const correctWords = correctLower.split(/\s+/).filter(w => w.length > 3);
-          
-          const wordCount = studentAnswer.split(/\s+/).length;
-          const hasKeywords = correctWords.filter(word => answerLower.includes(word)).length;
-          const keywordScore = correctWords.length > 0 ? hasKeywords / correctWords.length : 0.6;
-          
-          // VERY generous scoring - give high marks for any effort
-          const baseScore = 0.6; // Start with 60% just for attempting
-          const qualityFactors = {
-            base: baseScore,
-            length: wordCount >= 5 ? 0.15 : wordCount >= 3 ? 0.1 : 0.05,
-            keywords: keywordScore * 0.25, // Keywords add bonus
-          };
-          
-          const totalQualityScore = Math.min(1.0, Object.values(qualityFactors).reduce((a, b) => a + b, 0));
-          score = Math.round(totalQualityScore * question.marks);
-          // Ensure minimum marks for any attempt
-          if (wordCount >= 3) {
-            score = Math.max(score, Math.round(question.marks * 0.6));
-          }
-          feedback = `Good effort! ${score >= question.marks * 0.7 ? 'Excellent understanding' : 
-                     score >= question.marks * 0.5 ? 'Good answer with relevant points' : 
-                     'Valid attempt, shows understanding'}. Keywords matched: ${Math.round(keywordScore * 100)}%`;
+          strongAreas.push('short_answer');
           break;
 
         default:
-          score = 0;
-          feedback = 'Unable to grade this question type';
+          score = Math.round(question.marks * 0.5);
+          feedback = 'Answer recorded.';
       }
 
       totalScore += score;
@@ -334,8 +262,9 @@ Return ONLY a valid JSON object (no markdown, no code blocks) with this exact st
       };
     }
 
-    console.log('Grading complete. Total score:', totalScore, 'out of', maxScore);
+    console.log('ULTRA-LENIENT grading complete. Total score:', totalScore, 'out of', maxScore);
     
+    // Update submission
     const { error: updateError } = await supabase
       .from('student_submissions')
       .update({
@@ -352,12 +281,26 @@ Return ONLY a valid JSON object (no markdown, no code blocks) with this exact st
       throw updateError;
     }
 
+    // Generate study recommendations based on weak areas
+    const uniqueWeakAreas = [...new Set(weakAreas)];
+    const studyRecommendations = uniqueWeakAreas.map(area => {
+      const recommendations: Record<string, string> = {
+        'multiple_choice': 'Review theory concepts and practice more MCQs',
+        'coding': 'Practice coding exercises on platforms like LeetCode or HackerRank',
+        'flowchart': 'Study algorithm design and practice creating flowcharts',
+        'short_answer': 'Read more about the topics and practice explaining concepts'
+      };
+      return recommendations[area] || 'Continue practicing!';
+    });
+
     return new Response(
       JSON.stringify({
         success: true,
         totalScore: Math.round(totalScore * 10) / 10,
         maxScore: maxScore,
-        percentage: Math.round((totalScore / maxScore) * 100)
+        percentage: Math.round((totalScore / maxScore) * 100),
+        weakAreas: uniqueWeakAreas,
+        studyRecommendations
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -7,9 +7,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, Save, Upload, Download, Copy, FileText, Code, Calculator } from 'lucide-react';
+import { Plus, Trash2, Save, Upload, Download, Copy, FileText, Code, Calculator, Database } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { QuestionBankImporter } from './QuestionBankImporter';
 
 interface EnhancedExamCreatorProps {
   onExamCreated: () => void;
@@ -55,6 +56,15 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
   });
   const [loading, setLoading] = useState(false);
   const [bulkImport, setBulkImport] = useState('');
+  const [showBankImporter, setShowBankImporter] = useState(false);
+
+  const importFromBank = (importedQuestions: any[]) => {
+    const updatedQuestions = importedQuestions.map((q, idx) => ({
+      ...q,
+      order_number: questions.length + idx + 1
+    }));
+    setQuestions([...questions, ...updatedQuestions]);
+  };
 
   const questionTypes = [
     { value: 'multiple_choice', label: 'Multiple Choice', icon: <FileText className="h-4 w-4" /> },
@@ -288,30 +298,23 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
           <p className="text-sm text-muted-foreground mt-1">Create comprehensive exams with advanced features</p>
         </div>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            onClick={exportQuestions} 
-            disabled={questions.length === 0}
-            className="hover:scale-105 transition-transform"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export
+          <Button variant="outline" onClick={() => setShowBankImporter(true)}>
+            <Database className="h-4 w-4 mr-2" />Import from Bank
           </Button>
-          <Button 
-            onClick={saveExam} 
-            disabled={loading} 
-            className="min-w-[140px] bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all hover:scale-105"
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="animate-spin">⏳</span>
-                Saving...
-              </span>
-            ) : 'Save Exam'}
+          <Button variant="outline" onClick={exportQuestions} disabled={questions.length === 0}>
+            <Download className="h-4 w-4 mr-2" />Export
+          </Button>
+          <Button onClick={saveExam} disabled={loading} className="bg-gradient-to-r from-primary to-accent">
+            <Save className="h-4 w-4 mr-2" />{loading ? 'Saving...' : 'Save Exam'}
           </Button>
         </div>
       </div>
+
+      <QuestionBankImporter
+        open={showBankImporter}
+        onOpenChange={setShowBankImporter}
+        onImport={importFromBank}
+      />
 
       <Tabs defaultValue="details" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
