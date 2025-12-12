@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,12 +13,14 @@ import { UserManagement } from '@/components/admin/UserManagement';
 import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
 import { RegradeSubmissions } from "@/components/admin/RegradeSubmissions";
 import { QuestionBank } from "@/components/admin/QuestionBank";
-import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar } from 'lucide-react';
+import { AdminDownloads } from "@/components/admin/AdminDownloads";
+import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useRealtimeSubmissions } from '@/hooks/useRealtimeSubmissions';
 import {
   Dialog,
   DialogContent,
@@ -72,9 +74,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [scheduleData, setScheduleData] = useState({ startTime: '', endTime: '', autoActivate: true, autoDeactivate: true });
 
+  // Real-time notifications for new submissions
+  const handleNewSubmission = useCallback(() => {
+    fetchData();
+  }, []);
+
+  useRealtimeSubmissions({ onNewSubmission: handleNewSubmission, enabled: true });
+
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30s
+    const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -260,12 +269,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 h-auto gap-1">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 h-auto gap-1">
             <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
             <TabsTrigger value="exams" className="text-xs">Exams</TabsTrigger>
             <TabsTrigger value="submissions" className="text-xs">Submissions</TabsTrigger>
             <TabsTrigger value="users" className="text-xs">Users</TabsTrigger>
             <TabsTrigger value="bank" className="text-xs">Q-Bank</TabsTrigger>
+            <TabsTrigger value="downloads" className="text-xs">Downloads</TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
             <TabsTrigger value="monitoring" className="text-xs">Live</TabsTrigger>
             <TabsTrigger value="create" className="text-xs">Create</TabsTrigger>
@@ -424,6 +434,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
           <TabsContent value="users"><UserManagement /></TabsContent>
           <TabsContent value="bank"><QuestionBank /></TabsContent>
+          <TabsContent value="downloads"><AdminDownloads /></TabsContent>
           <TabsContent value="analytics"><ScoreAnalytics submissions={submissions} /><FeedbackViewer /></TabsContent>
           <TabsContent value="monitoring"><LiveExamMonitoring /></TabsContent>
           <TabsContent value="create"><EnhancedExamCreator onExamCreated={fetchData} /></TabsContent>
