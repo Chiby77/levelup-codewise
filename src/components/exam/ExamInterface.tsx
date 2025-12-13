@@ -40,6 +40,7 @@ interface Question {
   sample_code?: string;
   marks: number;
   order_number: number;
+  programming_language?: string;
 }
 
 export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData, onComplete }) => {
@@ -553,6 +554,7 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({ question, answer, o
           initialCode={question.sample_code || ''}
           value={answer || question.sample_code || ''}
           onChange={onAnswerChange}
+          language={question.programming_language || 'python'}
         />
       );
 

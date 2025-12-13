@@ -174,17 +174,17 @@ const NextGenHero = () => {
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold mb-4">Why Choose Computer Science?</DialogTitle>
+              <DialogTitle className="text-2xl font-bold mb-4 text-foreground">Why Choose Computer Science?</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 text-gray-700">
-              <p>
+            <div className="space-y-4 text-foreground">
+              <p className="text-muted-foreground">
                 Computer Science is more than just programming – it's about solving real-world problems 
                 through computational thinking and innovative solutions. In today's digital age, 
                 understanding computer science is becoming increasingly crucial for success in almost 
                 any field.
               </p>
-              <h3 className="font-semibold text-lg">Why Join Us?</h3>
-              <ul className="list-disc pl-6 space-y-2">
+              <h3 className="font-semibold text-lg text-foreground">Why Join Us?</h3>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                 <li>Expert guidance from experienced educators</li>
                 <li>Comprehensive study materials and resources</li>
                 <li>Hands-on programming practice</li>
@@ -192,7 +192,7 @@ const NextGenHero = () => {
                 <li>Supportive community of learners</li>
                 <li>Access to past papers and detailed solutions</li>
               </ul>
-              <p>
+              <p className="text-muted-foreground">
                 By joining A Level Computer Science Experts, you're not just preparing for an exam – 
                 you're investing in your future in the ever-growing tech industry. Our proven track 
                 record of success and comprehensive approach to teaching ensures you'll have the best 
