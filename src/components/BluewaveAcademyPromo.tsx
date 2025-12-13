@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { MessageCircle, Users, BookOpen, Trophy, GraduationCap, Star, Sparkles } from 'lucide-react';
+import React from 'react';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { MessageCircle, Users, BookOpen, Sparkles, GraduationCap, Star, Zap } from 'lucide-react';
 
 export const BluewaveAcademyPromo = () => {
   const handleJoinGroup = () => {
@@ -10,117 +10,133 @@ export const BluewaveAcademyPromo = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="py-12"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="my-16"
     >
-      <Card className="bg-gradient-to-br from-blue-600/20 via-purple-600/10 to-green-500/20 border-2 border-blue-500/30 shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 overflow-hidden relative">
-        {/* Animated background elements */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-2xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-green-500/20 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="relative overflow-hidden rounded-3xl">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-600 animate-gradientShift bg-[length:200%_200%]" />
         
-        <CardHeader className="pb-4 relative z-10">
-          <motion.div 
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-            className="flex items-center justify-center gap-2 mb-4"
-          >
-            <Star className="h-6 w-6 text-yellow-400 animate-spin" style={{ animationDuration: '3s' }} />
-            <Sparkles className="h-8 w-8 text-blue-400" />
-            <Star className="h-6 w-6 text-yellow-400 animate-spin" style={{ animationDuration: '3s' }} />
-          </motion.div>
-          
-          <CardTitle className="flex flex-col items-center gap-3 text-center">
-            <div className="p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-lg">
-              <GraduationCap className="h-10 w-10 text-white" />
-            </div>
-            <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 bg-clip-text text-transparent">
-              Join Bluewave Academy!
-            </span>
-          </CardTitle>
-        </CardHeader>
+        {/* Glowing orbs */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-emerald-300/20 rounded-full blur-3xl animate-floatLarge" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl animate-pulse" />
         
-        <CardContent className="space-y-6 relative z-10">
-          <div className="text-center space-y-2">
-            <p className="text-xl font-semibold text-foreground">
-              Whether you're in <span className="text-blue-400">Form 5</span> or <span className="text-purple-400">Form 6</span>
-            </p>
-            <p className="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent animate-pulse">
-              Bluewave Academy is THE PLACE TO BE! 🌊
-            </p>
-          </div>
-          
-          <p className="text-muted-foreground text-center text-lg">
-            Led by <span className="font-bold text-primary">Tino Chibi</span>, get expert guidance, exclusive resources, and join a community of future tech leaders!
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex flex-col items-center gap-2 p-4 bg-background/50 rounded-xl border border-blue-500/20"
-            >
-              <Users className="h-8 w-8 text-blue-500" />
-              <div className="text-center">
-                <p className="font-bold text-foreground">Study Together</p>
-                <p className="text-xs text-muted-foreground">Form 5 & 6 Students</p>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex flex-col items-center gap-2 p-4 bg-background/50 rounded-xl border border-green-500/20"
-            >
-              <BookOpen className="h-8 w-8 text-green-500" />
-              <div className="text-center">
-                <p className="font-bold text-foreground">Free Resources</p>
-                <p className="text-xs text-muted-foreground">Exclusive Materials</p>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex flex-col items-center gap-2 p-4 bg-background/50 rounded-xl border border-purple-500/20"
-            >
-              <Trophy className="h-8 w-8 text-purple-500" />
-              <div className="text-center">
-                <p className="font-bold text-foreground">Exam Tips</p>
-                <p className="text-xs text-muted-foreground">Success Strategies</p>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex flex-col items-center gap-2 p-4 bg-background/50 rounded-xl border border-yellow-500/20"
-            >
-              <MessageCircle className="h-8 w-8 text-yellow-500" />
-              <div className="text-center">
-                <p className="font-bold text-foreground">24/7 Help</p>
-                <p className="text-xs text-muted-foreground">Community Support</p>
-              </div>
-            </motion.div>
-          </div>
+        {/* Pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }} />
 
+        <div className="relative z-10 px-6 py-12 md:px-12 md:py-16">
+          {/* Badge */}
           <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="flex justify-center mb-6"
           >
-            <Button 
-              onClick={handleJoinGroup}
-              className="w-full bg-gradient-to-r from-green-600 via-green-500 to-emerald-600 hover:from-green-500 hover:via-green-400 hover:to-emerald-500 text-white font-bold py-6 text-xl shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all duration-300"
-              size="lg"
-            >
-              <MessageCircle className="h-6 w-6 mr-3 animate-bounce" />
-              Join Bluewave Academy WhatsApp Now!
-            </Button>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-semibold border border-white/30">
+              <Sparkles className="w-4 h-4 animate-pulse" />
+              A Level Excellence Hub
+              <Sparkles className="w-4 h-4 animate-pulse" />
+            </span>
           </motion.div>
 
-          <p className="text-sm text-center text-muted-foreground">
-            🎓 Free to join • 📚 Active community • 🏆 Expert guidance by Tino Chibi
-          </p>
-        </CardContent>
-      </Card>
+          {/* Main heading */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="text-3xl md:text-5xl lg:text-6xl font-bold text-center text-white mb-4"
+          >
+            Join <span className="text-yellow-300">Bluewave Academy</span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="text-xl md:text-2xl text-center text-white/90 mb-3 font-medium"
+          >
+            Whether you're Form 5 or Form 6 — This is YOUR Place!
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="text-base md:text-lg text-center text-white/80 mb-10 max-w-2xl mx-auto"
+          >
+            Led by <span className="font-semibold text-yellow-300">Tino Chibi</span> — Get exclusive study materials, 
+            exam tips, and connect with a community of ambitious A Level students.
+          </motion.p>
+
+          {/* Benefits grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10"
+          >
+            {[
+              { icon: Users, label: "Active Community", desc: "1000+ Students" },
+              { icon: BookOpen, label: "Free Resources", desc: "Notes & Papers" },
+              { icon: GraduationCap, label: "Expert Help", desc: "24/7 Support" },
+              { icon: Zap, label: "Exam Tips", desc: "Insider Secrets" },
+            ].map((item, index) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7 + index * 0.1, duration: 0.4 }}
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105"
+              >
+                <item.icon className="w-8 h-8 text-yellow-300 mx-auto mb-2" />
+                <p className="text-white font-semibold text-sm">{item.label}</p>
+                <p className="text-white/70 text-xs">{item.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <Button
+              onClick={handleJoinGroup}
+              size="lg"
+              className="bg-white text-emerald-600 hover:bg-yellow-300 hover:text-emerald-700 font-bold text-lg px-10 py-6 rounded-full shadow-2xl hover:shadow-yellow-300/50 transition-all duration-300 hover:scale-110 group"
+            >
+              <MessageCircle className="w-6 h-6 mr-3 group-hover:animate-bounce" />
+              Join WhatsApp Group Now
+              <Star className="w-5 h-5 ml-3 text-yellow-500 group-hover:animate-spin" />
+            </Button>
+            
+            <div className="flex items-center gap-2 text-white/80 text-sm">
+              <span className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
+                    {String.fromCharCode(64 + i)}
+                  </div>
+                ))}
+              </span>
+              <span>+1,000 students already joined!</span>
+            </div>
+          </motion.div>
+
+          {/* Floating elements */}
+          <div className="absolute top-10 left-10 text-4xl animate-float opacity-50">📚</div>
+          <div className="absolute top-20 right-16 text-3xl animate-floatLarge opacity-50">🎓</div>
+          <div className="absolute bottom-16 left-20 text-3xl animate-float opacity-50">💡</div>
+          <div className="absolute bottom-10 right-10 text-4xl animate-floatLarge opacity-50">🏆</div>
+        </div>
+      </div>
     </motion.div>
   );
 };
