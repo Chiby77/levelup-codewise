@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.send-exam-grade-email]
 verify_jwt = false
+
+[functions.exam-reminder-emails]
+verify_jwt = false
