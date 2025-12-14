@@ -186,27 +186,65 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
               <CardTitle>Question Breakdown</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {Object.entries(submission.grade_details).map(([questionId, details]: [string, any], index) => (
-                  <div key={questionId} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                    <div className="flex items-center gap-3">
-                      {details.score === details.maxScore ? (
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : details.score > 0 ? (
-                        <div className="h-5 w-5 rounded-full bg-yellow-500 flex items-center justify-center">
-                          <div className="h-2 w-2 rounded-full bg-white"></div>
-                        </div>
-                      ) : (
-                        <XCircle className="h-5 w-5 text-red-600" />
-                      )}
-                      <div>
-                        <p className="font-medium">Question {index + 1}</p>
-                        <p className="text-sm text-muted-foreground">{details.feedback}</p>
+                  <div key={questionId} className="p-4 rounded-lg bg-muted/50 border">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        {details.score === details.maxScore ? (
+                          <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                        ) : details.score > 0 ? (
+                          <div className="h-5 w-5 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0">
+                            <div className="h-2 w-2 rounded-full bg-white"></div>
+                          </div>
+                        ) : (
+                          <XCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                        )}
+                        <p className="font-semibold">Question {index + 1}</p>
                       </div>
+                      <Badge variant={details.score === details.maxScore ? "default" : details.score > 0 ? "secondary" : "destructive"}>
+                        {details.score}/{details.maxScore}
+                      </Badge>
                     </div>
-                    <Badge variant="outline">
-                      {details.score}/{details.maxScore}
-                    </Badge>
+                    
+                    {/* Question Text */}
+                    {details.questionText && (
+                      <div className="mb-3 p-3 bg-background rounded border-l-4 border-primary">
+                        <p className="text-sm font-medium text-muted-foreground mb-1">Question:</p>
+                        <p className="text-sm whitespace-pre-wrap">{details.questionText}</p>
+                      </div>
+                    )}
+                    
+                    {/* Correct Answer */}
+                    {details.correctAnswer && (
+                      <div className="mb-3 p-3 bg-green-50 dark:bg-green-950/30 rounded border-l-4 border-green-500">
+                        <p className="text-sm font-medium text-green-700 dark:text-green-400 mb-1">Correct Answer:</p>
+                        <p className="text-sm whitespace-pre-wrap">{details.correctAnswer}</p>
+                      </div>
+                    )}
+                    
+                    {/* Student's Answer */}
+                    {details.studentAnswer && (
+                      <div className={`mb-3 p-3 rounded border-l-4 ${
+                        details.score === details.maxScore 
+                          ? 'bg-green-50 dark:bg-green-950/30 border-green-500' 
+                          : details.score > 0 
+                            ? 'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-500'
+                            : 'bg-red-50 dark:bg-red-950/30 border-red-500'
+                      }`}>
+                        <p className={`text-sm font-medium mb-1 ${
+                          details.score === details.maxScore 
+                            ? 'text-green-700 dark:text-green-400' 
+                            : details.score > 0 
+                              ? 'text-yellow-700 dark:text-yellow-400'
+                              : 'text-red-700 dark:text-red-400'
+                        }`}>Your Answer:</p>
+                        <p className="text-sm whitespace-pre-wrap">{details.studentAnswer}</p>
+                      </div>
+                    )}
+                    
+                    {/* Feedback */}
+                    <p className="text-sm text-muted-foreground italic">{details.feedback}</p>
                   </div>
                 ))}
               </div>
@@ -247,6 +285,13 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
           <p className="text-xs mt-1">BTech Software Engineering Student at HIT</p>
         </div>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal 
+        isOpen={showFeedback} 
+        onClose={() => setShowFeedback(false)} 
+        examId={submission?.id}
+      />
     </div>
   );
 };

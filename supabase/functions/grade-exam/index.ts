@@ -349,7 +349,11 @@ Return ONLY JSON: {"score": <70-100>, "feedback": "<encouraging>"}`
       gradeDetails[question.id] = {
         score: Math.round(score * 10) / 10,
         maxScore: question.marks,
-        feedback: feedback
+        feedback: feedback,
+        questionText: question.question_text,
+        correctAnswer: question.correct_answer || question.sample_code || 'See model answer',
+        studentAnswer: studentAnswer,
+        questionType: question.question_type
       };
     }
 
