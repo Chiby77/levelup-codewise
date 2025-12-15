@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,13 +14,14 @@ import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
 import { RegradeSubmissions } from "@/components/admin/RegradeSubmissions";
 import { QuestionBank } from "@/components/admin/QuestionBank";
 import { AdminDownloads } from "@/components/admin/AdminDownloads";
-import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen } from 'lucide-react';
+import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen, MessageSquare } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRealtimeSubmissions } from '@/hooks/useRealtimeSubmissions';
+import { useCachedExams, useCachedSubmissions, useInvalidateCache } from '@/hooks/useCachedData';
 import {
   Dialog,
   DialogContent,
@@ -63,51 +64,46 @@ interface Submission {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
-  const [exams, setExams] = useState<Exam[]>([]);
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
-  const [totalQuestions, setTotalQuestions] = useState(0);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [scheduleData, setScheduleData] = useState({ startTime: '', endTime: '', autoActivate: true, autoDeactivate: true });
 
+  // Use cached data for better performance
+  const { data: exams = [], isLoading: examsLoading, refetch: refetchExams } = useCachedExams();
+  const { data: submissions = [], isLoading: submissionsLoading, refetch: refetchSubmissions } = useCachedSubmissions();
+  const { invalidateExams, invalidateSubmissions } = useInvalidateCache();
+
+  const loading = examsLoading || submissionsLoading;
+
   // Real-time notifications for new submissions
   const handleNewSubmission = useCallback(() => {
-    fetchData();
-  }, []);
+    invalidateSubmissions();
+  }, [invalidateSubmissions]);
 
   useRealtimeSubmissions({ onNewSubmission: handleNewSubmission, enabled: true });
 
-  useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  const fetchData = useCallback(() => {
+    refetchExams();
+    refetchSubmissions();
+  }, [refetchExams, refetchSubmissions]);
 
-  const fetchData = async () => {
-    try {
-      const [examsResponse, submissionsResponse, questionsResponse] = await Promise.all([
-        supabase.from('exams').select('*').order('created_at', { ascending: false }),
-        supabase.from('student_submissions').select('*').order('submitted_at', { ascending: false }),
-        supabase.from('questions').select('id', { count: 'exact', head: true })
-      ]);
-
-      if (examsResponse.error) throw examsResponse.error;
-      if (submissionsResponse.error) throw submissionsResponse.error;
-
-      setExams(examsResponse.data || []);
-      setSubmissions(submissionsResponse.data || []);
-      setTotalQuestions(questionsResponse.count || 0);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Failed to load dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Memoized stats for performance
+  const stats = useMemo(() => {
+    const gradedSubmissions = submissions.filter((s: Submission) => s.graded && s.max_score > 0);
+    return {
+      totalExams: exams.length,
+      activeExams: exams.filter((e: Exam) => e.status === 'active').length,
+      totalSubmissions: submissions.length,
+      totalQuestions: 0, // Will be calculated on demand
+      averageScore: gradedSubmissions.length > 0
+        ? gradedSubmissions.reduce((acc: number, s: Submission) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / gradedSubmissions.length
+        : 0,
+      completionRate: submissions.length > 0 ? (submissions.filter((s: Submission) => s.graded).length / submissions.length) * 100 : 0,
+    };
+  }, [exams, submissions]);
 
   const deleteExam = async (examId: string) => {
     if (!confirm('Delete this exam and all related data?')) return;
@@ -223,16 +219,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     }
   };
 
-  const stats = {
-    totalExams: exams.length,
-    activeExams: exams.filter(e => e.status === 'active').length,
-    totalSubmissions: submissions.length,
-    totalQuestions,
-    averageScore: submissions.filter(s => s.graded && s.max_score > 0).length > 0
-      ? submissions.filter(s => s.graded && s.max_score > 0).reduce((acc, s) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / submissions.filter(s => s.graded && s.max_score > 0).length
-      : 0,
-    completionRate: submissions.length > 0 ? (submissions.filter(s => s.graded).length / submissions.length) * 100 : 0,
-  };
 
   if (loading) {
     return (
@@ -269,13 +255,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 h-auto gap-1">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 h-auto gap-1">
             <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
             <TabsTrigger value="exams" className="text-xs">Exams</TabsTrigger>
             <TabsTrigger value="submissions" className="text-xs">Submissions</TabsTrigger>
             <TabsTrigger value="users" className="text-xs">Users</TabsTrigger>
             <TabsTrigger value="bank" className="text-xs">Q-Bank</TabsTrigger>
             <TabsTrigger value="downloads" className="text-xs">Downloads</TabsTrigger>
+            <TabsTrigger value="feedback" className="text-xs">Feedback</TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
             <TabsTrigger value="monitoring" className="text-xs">Live</TabsTrigger>
             <TabsTrigger value="create" className="text-xs">Create</TabsTrigger>
@@ -286,7 +273,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               totalExams={stats.totalExams}
               activeExams={stats.activeExams}
               totalSubmissions={stats.totalSubmissions}
-              totalQuestions={stats.totalQuestions}
+              totalQuestions={0}
               averageScore={stats.averageScore}
               completionRate={stats.completionRate}
             />
@@ -435,7 +422,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           <TabsContent value="users"><UserManagement /></TabsContent>
           <TabsContent value="bank"><QuestionBank /></TabsContent>
           <TabsContent value="downloads"><AdminDownloads /></TabsContent>
-          <TabsContent value="analytics"><ScoreAnalytics submissions={submissions} /><FeedbackViewer /></TabsContent>
+          <TabsContent value="feedback"><FeedbackViewer /></TabsContent>
+          <TabsContent value="analytics"><ScoreAnalytics submissions={submissions} /></TabsContent>
           <TabsContent value="monitoring"><LiveExamMonitoring /></TabsContent>
           <TabsContent value="create"><EnhancedExamCreator onExamCreated={fetchData} /></TabsContent>
         </Tabs>
