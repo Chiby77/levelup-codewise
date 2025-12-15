@@ -8,6 +8,8 @@ import { Download, MessageSquare, Star, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
+import { usePagination } from '@/hooks/usePagination';
+import { PaginationControls } from '@/components/PaginationControls';
 
 interface Feedback {
   id: string;
@@ -252,42 +254,76 @@ export function FeedbackViewer() {
           </div>
         </div>
 
-        {/* Feedback list */}
-        {filteredFeedbacks.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            No feedback found
-          </div>
-        ) : (
-          <div className="space-y-4 max-h-[600px] overflow-y-auto">
-            {filteredFeedbacks.map((feedback) => (
-              <div
-                key={feedback.id}
-                className="p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    {feedback.rating && (
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: feedback.rating }).map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                    )}
-                    {feedback.exam_title && (
-                      <Badge variant="outline">{feedback.exam_title}</Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    {format(new Date(feedback.submitted_at), 'PPp')}
-                  </div>
-                </div>
-                <p className="text-sm whitespace-pre-wrap">{feedback.feedback_text}</p>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Feedback list with pagination */}
+        <FeedbackList feedbacks={filteredFeedbacks} />
       </CardContent>
     </Card>
+  );
+}
+
+// Separate component for paginated feedback list
+function FeedbackList({ feedbacks }: { feedbacks: Feedback[] }) {
+  const {
+    currentPage,
+    totalPages,
+    paginatedData,
+    goToPage,
+    setItemsPerPage,
+    itemsPerPage,
+    startIndex,
+    endIndex,
+    totalItems,
+  } = usePagination({ data: feedbacks, itemsPerPage: 10 });
+
+  if (feedbacks.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        No feedback found
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-4">
+        {paginatedData.map((feedback) => (
+          <div
+            key={feedback.id}
+            className="p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+          >
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-center gap-2">
+                {feedback.rating && (
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: feedback.rating }).map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                )}
+                {feedback.exam_title && (
+                  <Badge variant="outline">{feedback.exam_title}</Badge>
+                )}
+              </div>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" />
+                {format(new Date(feedback.submitted_at), 'PPp')}
+              </div>
+            </div>
+            <p className="text-sm whitespace-pre-wrap">{feedback.feedback_text}</p>
+          </div>
+        ))}
+      </div>
+      
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        startIndex={startIndex}
+        endIndex={endIndex}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={goToPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
+    </div>
   );
 }
