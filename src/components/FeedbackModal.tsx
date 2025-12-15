@@ -32,30 +32,47 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, e
 
     setSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Get authenticated user
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Auth error:', authError);
+        toast.error('Authentication error. Please login again.');
+        return;
+      }
+      
       if (!user) {
-        toast.error('You must be logged in');
+        toast.error('You must be logged in to submit feedback');
         return;
       }
 
-      const { error } = await supabase
+      console.log('Submitting feedback for user:', user.id, 'exam:', examId);
+
+      const { data, error } = await supabase
         .from('student_feedback')
         .insert({
           user_id: user.id,
           exam_id: examId || null,
           feedback_text: feedback.trim(),
-          rating: rating
-        });
+          rating: rating,
+          submitted_at: new Date().toISOString()
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Feedback submission error:', error);
+        throw error;
+      }
 
+      console.log('Feedback submitted successfully:', data);
       toast.success('Thank you for your feedback!');
       setFeedback('');
       setRating(0);
       onClose();
     } catch (error: any) {
       console.error('Error submitting feedback:', error);
-      toast.error('Failed to submit feedback');
+      toast.error(error.message || 'Failed to submit feedback. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -65,15 +82,15 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, e
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Share Your Feedback</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-foreground">Share Your Feedback</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             Help us improve your experience at CS Experts. Your feedback is valuable to us!
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Rate Your Experience</Label>
+            <Label className="text-foreground">Rate Your Experience</Label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -88,7 +105,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, e
                     className={`h-8 w-8 ${
                       star <= (hoveredRating || rating)
                         ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-gray-300'
+                        : 'text-muted-foreground'
                     }`}
                   />
                 </button>
@@ -97,14 +114,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, e
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="feedback">Your Feedback</Label>
+            <Label htmlFor="feedback" className="text-foreground">Your Feedback</Label>
             <Textarea
               id="feedback"
               placeholder="Tell us about your experience, suggestions for improvement, or any issues you encountered..."
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               rows={5}
-              className="resize-none"
+              className="resize-none bg-background text-foreground border-border"
             />
           </div>
         </div>

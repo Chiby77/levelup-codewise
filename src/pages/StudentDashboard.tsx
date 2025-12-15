@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -23,22 +23,50 @@ import { WhatsAppPromo } from '@/components/WhatsAppPromo';
 import { FeedbackModal } from '@/components/FeedbackModal';
 import { StudentProfile } from '@/components/student/StudentProfile';
 import { StudyRecommendations } from '@/components/student/StudyRecommendations';
+import { useCachedActiveExams, useCachedAnnouncements, useCachedStudyTips } from '@/hooks/useCachedData';
+import { useQuery } from '@tanstack/react-query';
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [exams, setExams] = useState<any[]>([]);
-  const [submissions, setSubmissions] = useState<any[]>([]);
-  const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [tips, setTips] = useState<any[]>([]);
-  const [books, setBooks] = useState<any[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [loading, setLoading] = useState(true);
+
+  // Use cached data for better performance
+  const { data: exams = [], isLoading: examsLoading } = useCachedActiveExams();
+  const { data: announcements = [], isLoading: announcementsLoading } = useCachedAnnouncements();
+  const { data: tips = [], isLoading: tipsLoading } = useCachedStudyTips();
+
+  // Cached submissions query
+  const { data: submissions = [], isLoading: submissionsLoading } = useQuery({
+    queryKey: ['student-submissions', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      const { data } = await supabase
+        .from('student_submissions')
+        .select('*, exams(title)')
+        .eq('student_email', user.email)
+        .order('submitted_at', { ascending: false });
+      return data || [];
+    },
+    enabled: !!user?.email,
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
+
+  // Cached books query
+  const { data: books = [], isLoading: booksLoading } = useQuery({
+    queryKey: ['books'],
+    queryFn: async () => {
+      const { data } = await supabase.storage.from('books').list();
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 15, // 15 minutes
+  });
+
+  const loading = examsLoading || announcementsLoading || tipsLoading || submissionsLoading;
 
   useEffect(() => {
     checkAuth();
-    fetchData();
     
     // Show feedback modal occasionally (every 5th login)
     const loginCount = parseInt(localStorage.getItem('loginCount') || '0') + 1;
@@ -68,81 +96,24 @@ export default function StudentDashboard() {
     if (data) setProfile(data);
   };
 
-  const fetchData = async () => {
-    try {
-      // Fetch active exams
-      const { data: examsData } = await supabase
-        .from('exams')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-      
-      if (examsData) setExams(examsData);
-
-      // Fetch student submissions
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: submissionsData } = await supabase
-          .from('student_submissions')
-          .select('*, exams(title)')
-          .eq('student_email', user.email)
-          .order('submitted_at', { ascending: false });
-        
-        if (submissionsData) setSubmissions(submissionsData);
-      }
-
-      // Fetch announcements
-      const { data: announcementsData } = await supabase
-        .from('announcements')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      
-      if (announcementsData) setAnnouncements(announcementsData);
-
-      // Fetch study tips
-      const { data: tipsData } = await supabase
-        .from('study_tips')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-      
-      if (tipsData) setTips(tipsData);
-
-      // Fetch books (public files from storage)
-      const { data: booksData } = await supabase
-        .storage
-        .from('books')
-        .list();
-      
-      if (booksData) setBooks(booksData);
-
-    } catch (error: any) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/');
   };
 
-  const calculateStats = () => {
+  // Memoized stats calculation for performance
+  const stats = useMemo(() => {
     const totalExams = submissions.length;
-    const gradedExams = submissions.filter(s => s.graded && s.max_score && s.max_score > 0).length;
+    const gradedExams = submissions.filter((s: any) => s.graded && s.max_score && s.max_score > 0).length;
     const avgScore = gradedExams > 0 
       ? submissions
-          .filter(s => s.graded && s.max_score && s.max_score > 0)
-          .reduce((acc, s) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / gradedExams 
+          .filter((s: any) => s.graded && s.max_score && s.max_score > 0)
+          .reduce((acc: number, s: any) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / gradedExams 
       : 0;
 
     return { totalExams, gradedExams, avgScore: avgScore.toFixed(1) };
-  };
+  }, [submissions]);
 
-  const stats = calculateStats();
 
   if (loading) {
     return (
@@ -428,6 +399,12 @@ export default function StudentDashboard() {
           <WhatsAppPromo />
         </div>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal 
+        isOpen={showFeedback} 
+        onClose={() => setShowFeedback(false)} 
+      />
     </div>
   );
 }

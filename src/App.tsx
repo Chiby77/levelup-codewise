@@ -17,8 +17,18 @@ import AdminContent from "./pages/AdminContent";
 import StudentSubmissionHistory from "./pages/StudentSubmissionHistory";
 import { ExamSystem } from "./pages/ExamSystem";
 
-// Create a client
-const queryClient = new QueryClient();
+// Create a client with optimized caching for performance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
+      gcTime: 1000 * 60 * 30, // Cache garbage collection after 30 minutes
+      refetchOnWindowFocus: false, // Don't refetch on window focus for mobile
+      retry: 2, // Retry failed requests twice
+      refetchOnReconnect: true, // Refetch when internet reconnects
+    },
+  },
+});
 
 const App = () => {
   console.log('App component is rendering...');
