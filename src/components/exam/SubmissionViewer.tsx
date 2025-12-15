@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Download, Eye, FileText } from 'lucide-react';
 import { generatePDFReport } from '@/utils/reportGenerator';
 import { toast } from 'sonner';
+import { usePagination } from '@/hooks/usePagination';
+import { PaginationControls } from '@/components/PaginationControls';
 
 interface Submission {
   id: string;
@@ -29,6 +31,18 @@ interface SubmissionViewerProps {
 
 export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({ submissions, onGradeRequest }) => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+
+  const {
+    currentPage,
+    totalPages,
+    paginatedData,
+    goToPage,
+    setItemsPerPage,
+    itemsPerPage,
+    startIndex,
+    endIndex,
+    totalItems,
+  } = usePagination({ data: submissions, itemsPerPage: 10 });
 
   const handleDownloadReport = async (submission: Submission) => {
     try {
@@ -71,87 +85,100 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({ submissions,
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4">
-          {submissions.map((submission) => (
-            <Card key={submission.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg">{submission.student_name}</CardTitle>
-                    {submission.student_email && (
-                      <p className="text-sm text-muted-foreground">{submission.student_email}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={submission.graded ? 'default' : 'secondary'}>
-                      {submission.graded ? 'Graded' : 'Pending'}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <div className="space-y-2">
-                    <div className="flex gap-6 text-sm">
-                      <span>Submitted: {formatDate(submission.submitted_at)}</span>
-                      {submission.time_taken_minutes && (
-                        <span>Time: {submission.time_taken_minutes} minutes</span>
+        <div className="space-y-4">
+          <div className="grid gap-4">
+            {paginatedData.map((submission) => (
+              <Card key={submission.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{submission.student_name}</CardTitle>
+                      {submission.student_email && (
+                        <p className="text-sm text-muted-foreground">{submission.student_email}</p>
                       )}
                     </div>
-                    {submission.graded && (
-                      <div className={`text-lg font-semibold ${getScoreColor(submission.total_score, submission.max_score)}`}>
-                        Score: {submission.total_score}/{submission.max_score} 
-                        ({Math.round((submission.total_score / submission.max_score) * 100)}%)
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <Badge variant={submission.graded ? 'default' : 'secondary'}>
+                        {submission.graded ? 'Graded' : 'Pending'}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Dialog>
-                      <DialogTrigger asChild>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center">
+                    <div className="space-y-2">
+                      <div className="flex gap-6 text-sm">
+                        <span>Submitted: {formatDate(submission.submitted_at)}</span>
+                        {submission.time_taken_minutes && (
+                          <span>Time: {submission.time_taken_minutes} minutes</span>
+                        )}
+                      </div>
+                      {submission.graded && (
+                        <div className={`text-lg font-semibold ${getScoreColor(submission.total_score, submission.max_score)}`}>
+                          Score: {submission.total_score}/{submission.max_score} 
+                          ({Math.round((submission.total_score / submission.max_score) * 100)}%)
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setSelectedSubmission(submission)}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Details
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>
+                              Submission Details - {submission.student_name}
+                            </DialogTitle>
+                          </DialogHeader>
+                          <SubmissionDetails submission={submission} />
+                        </DialogContent>
+                      </Dialog>
+                      
+                      {!submission.graded && onGradeRequest && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          onClick={() => onGradeRequest(submission.id)}
+                        >
+                          Grade This
+                        </Button>
+                      )}
+                      
+                      {submission.graded && (
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => setSelectedSubmission(submission)}
+                          onClick={() => handleDownloadReport(submission)}
                         >
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
+                          <Download className="h-4 w-4 mr-2" />
+                          Download Report
                         </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>
-                            Submission Details - {submission.student_name}
-                          </DialogTitle>
-                        </DialogHeader>
-                        <SubmissionDetails submission={submission} />
-                      </DialogContent>
-                    </Dialog>
-                    
-                    {!submission.graded && onGradeRequest && (
-                      <Button 
-                        variant="default" 
-                        size="sm"
-                        onClick={() => onGradeRequest(submission.id)}
-                      >
-                        Grade This
-                      </Button>
-                    )}
-                    
-                    {submission.graded && (
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleDownloadReport(submission)}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download Report
-                      </Button>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            startIndex={startIndex}
+            endIndex={endIndex}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={goToPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
         </div>
       )}
     </div>
