@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRealtimeSubmissions } from '@/hooks/useRealtimeSubmissions';
 import { useCachedExams, useCachedSubmissions, useInvalidateCache } from '@/hooks/useCachedData';
+import { useQuery } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -76,6 +77,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const { data: submissions = [], isLoading: submissionsLoading, refetch: refetchSubmissions } = useCachedSubmissions();
   const { invalidateExams, invalidateSubmissions } = useInvalidateCache();
 
+  // Fetch total questions count
+  const { data: totalQuestions = 0 } = useQuery({
+    queryKey: ['totalQuestions'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('questions')
+        .select('*', { count: 'exact', head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   const loading = examsLoading || submissionsLoading;
 
   // Real-time notifications for new submissions
@@ -97,7 +111,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       totalExams: exams.length,
       activeExams: exams.filter((e: Exam) => e.status === 'active').length,
       totalSubmissions: submissions.length,
-      totalQuestions: 0, // Will be calculated on demand
       averageScore: gradedSubmissions.length > 0
         ? gradedSubmissions.reduce((acc: number, s: Submission) => acc + ((s.total_score || 0) / s.max_score) * 100, 0) / gradedSubmissions.length
         : 0,
@@ -273,7 +286,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               totalExams={stats.totalExams}
               activeExams={stats.activeExams}
               totalSubmissions={stats.totalSubmissions}
-              totalQuestions={0}
+              totalQuestions={totalQuestions}
               averageScore={stats.averageScore}
               completionRate={stats.completionRate}
             />
