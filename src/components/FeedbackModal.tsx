@@ -48,11 +48,22 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, e
 
       console.log('Submitting feedback for user:', user.id, 'exam:', examId);
 
+      // Validate exam_id exists before submitting (to avoid FK constraint violation)
+      let validExamId: string | null = null;
+      if (examId) {
+        const { data: examExists } = await supabase
+          .from('exams')
+          .select('id')
+          .eq('id', examId)
+          .single();
+        validExamId = examExists ? examId : null;
+      }
+
       const { data, error } = await supabase
         .from('student_feedback')
         .insert({
           user_id: user.id,
-          exam_id: examId || null,
+          exam_id: validExamId,
           feedback_text: feedback.trim(),
           rating: rating,
           submitted_at: new Date().toISOString()
