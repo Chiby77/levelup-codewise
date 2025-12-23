@@ -65,6 +65,115 @@ export type Database = {
         }
         Relationships: []
       }
+      assignment_submissions: {
+        Row: {
+          assignment_id: string
+          feedback: string | null
+          file_name: string
+          file_path: string
+          file_type: string
+          graded: boolean | null
+          graded_at: string | null
+          graded_by: string | null
+          id: string
+          marks: number | null
+          student_email: string
+          student_id: string
+          student_name: string
+          submitted_at: string
+        }
+        Insert: {
+          assignment_id: string
+          feedback?: string | null
+          file_name: string
+          file_path: string
+          file_type: string
+          graded?: boolean | null
+          graded_at?: string | null
+          graded_by?: string | null
+          id?: string
+          marks?: number | null
+          student_email: string
+          student_id: string
+          student_name: string
+          submitted_at?: string
+        }
+        Update: {
+          assignment_id?: string
+          feedback?: string | null
+          file_name?: string
+          file_path?: string
+          file_type?: string
+          graded?: boolean | null
+          graded_at?: string | null
+          graded_by?: string | null
+          id?: string
+          marks?: number | null
+          student_email?: string
+          student_id?: string
+          student_name?: string
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_submissions_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignments: {
+        Row: {
+          class_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          due_date: string | null
+          id: string
+          is_active: boolean | null
+          max_marks: number
+          results_released: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_marks?: number
+          results_released?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_marks?: number
+          results_released?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_tokens: {
         Row: {
           created_at: string
@@ -89,6 +198,80 @@ export type Database = {
           tokens_used?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      class_enrollments: {
+        Row: {
+          class_id: string
+          enrolled_at: string
+          enrolled_by: string
+          id: string
+          is_active: boolean | null
+          student_email: string
+          student_id: string
+        }
+        Insert: {
+          class_id: string
+          enrolled_at?: string
+          enrolled_by: string
+          id?: string
+          is_active?: boolean | null
+          student_email: string
+          student_id: string
+        }
+        Update: {
+          class_id?: string
+          enrolled_at?: string
+          enrolled_by?: string
+          id?: string
+          is_active?: boolean | null
+          student_email?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_enrollments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          subject: string
+          updated_at: string
+          year_level: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          subject: string
+          updated_at?: string
+          year_level?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          subject?: string
+          updated_at?: string
+          year_level?: string
         }
         Relationships: []
       }
@@ -133,6 +316,45 @@ export type Database = {
           year?: string | null
         }
         Relationships: []
+      }
+      exam_class_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          class_id: string
+          exam_id: string
+          id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          class_id: string
+          exam_id: string
+          id?: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          class_id?: string
+          exam_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_class_assignments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_class_assignments_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       exams: {
         Row: {
