@@ -35,19 +35,8 @@ export default function Auth() {
   }, [navigate]);
 
   const redirectBasedOnRole = async (userId: string) => {
-    // Check if user is admin
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .eq('role', 'admin')
-      .single();
-    
-    if (roleData) {
-      navigate('/exams');
-    } else {
-      navigate('/student-dashboard');
-    }
+    // Students go to student dashboard - admins should use the secret portal
+    navigate('/student-dashboard');
   };
 
   const handleLogin = async (e: React.FormEvent) => {

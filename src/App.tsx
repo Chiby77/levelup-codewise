@@ -12,6 +12,7 @@ import { registerServiceWorker } from "@/utils/serviceWorkerRegistration";
 // Eagerly loaded - critical path
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import AdminPortal from "./pages/AdminPortal";
 
 // Lazy loaded - code splitting for better mobile performance
 const About = lazy(() => import("./pages/About"));
@@ -64,6 +65,7 @@ const App = () => {
                   <Route path="/downloads" element={<Downloads />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/admin-portal-secret" element={<AdminPortal />} />
                   <Route path="/student-dashboard" element={<StudentDashboard />} />
                   <Route path="/student-exam" element={<StudentExam />} />
                   <Route path="/exams" element={<ExamSystem />} />
