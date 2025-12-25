@@ -14,13 +14,16 @@ import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
 import { RegradeSubmissions } from "@/components/admin/RegradeSubmissions";
 import { QuestionBank } from "@/components/admin/QuestionBank";
 import { AdminDownloads } from "@/components/admin/AdminDownloads";
-import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen, MessageSquare } from 'lucide-react';
+import ClassManagement from '@/components/admin/ClassManagement';
+import AssignmentManagement from '@/components/admin/AssignmentManagement';
+import AnnouncementManagement from '@/components/admin/AnnouncementManagement';
+import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen, MessageSquare, Volume2, VolumeX, BookOpen, Megaphone, ClipboardList } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useRealtimeSubmissions } from '@/hooks/useRealtimeSubmissions';
+import { useRealtimeSubmissionsWithSound } from '@/hooks/useRealtimeSubmissionsWithSound';
 import { useCachedExams, useCachedSubmissions, useInvalidateCache } from '@/hooks/useCachedData';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -92,12 +95,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
   const loading = examsLoading || submissionsLoading;
 
-  // Real-time notifications for new submissions
+  // Real-time notifications for new submissions with sound
   const handleNewSubmission = useCallback(() => {
     invalidateSubmissions();
   }, [invalidateSubmissions]);
 
-  useRealtimeSubmissions({ onNewSubmission: handleNewSubmission, enabled: true });
+  const { soundEnabled, toggleSound } = useRealtimeSubmissionsWithSound({ onNewSubmission: handleNewSubmission, enabled: true });
 
   const fetchData = useCallback(() => {
     refetchExams();
@@ -258,6 +261,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             <p className="text-muted-foreground text-sm mt-1">CS Experts Zimbabwe - Examination System</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" size="icon" onClick={toggleSound} title={soundEnabled ? 'Mute notifications' : 'Enable sound notifications'}>
+              {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            </Button>
             <Button variant="outline" onClick={exportGrades}>
               <Download className="h-4 w-4 mr-2" />Export
             </Button>
@@ -265,13 +271,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               <LogOut className="h-4 w-4 mr-2" />Logout
             </Button>
           </div>
+          </div>
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 h-auto gap-1">
+          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 lg:grid-cols-13 h-auto gap-1">
             <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
             <TabsTrigger value="exams" className="text-xs">Exams</TabsTrigger>
             <TabsTrigger value="submissions" className="text-xs">Submissions</TabsTrigger>
+            <TabsTrigger value="classes" className="text-xs">Classes</TabsTrigger>
+            <TabsTrigger value="assignments" className="text-xs">Assignments</TabsTrigger>
+            <TabsTrigger value="announcements" className="text-xs">Announce</TabsTrigger>
             <TabsTrigger value="users" className="text-xs">Users</TabsTrigger>
             <TabsTrigger value="bank" className="text-xs">Q-Bank</TabsTrigger>
             <TabsTrigger value="downloads" className="text-xs">Downloads</TabsTrigger>
@@ -432,6 +442,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             <RegradeSubmissions />
           </TabsContent>
 
+          <TabsContent value="classes"><ClassManagement /></TabsContent>
+          <TabsContent value="assignments"><AssignmentManagement /></TabsContent>
+          <TabsContent value="announcements"><AnnouncementManagement /></TabsContent>
           <TabsContent value="users"><UserManagement /></TabsContent>
           <TabsContent value="bank"><QuestionBank /></TabsContent>
           <TabsContent value="downloads"><AdminDownloads /></TabsContent>
