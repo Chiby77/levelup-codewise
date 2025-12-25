@@ -16,13 +16,15 @@ import {
   Clock,
   Award,
   Calendar,
-  History
+  History,
+  FileUp
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { WhatsAppPromo } from '@/components/WhatsAppPromo';
 import { FeedbackModal } from '@/components/FeedbackModal';
 import { StudentProfile } from '@/components/student/StudentProfile';
 import { StudyRecommendations } from '@/components/student/StudyRecommendations';
+import StudentAssignments from '@/components/student/StudentAssignments';
 import { useCachedActiveExams, useCachedAnnouncements, useCachedStudyTips } from '@/hooks/useCachedData';
 import { useQuery } from '@tanstack/react-query';
 
@@ -203,8 +205,9 @@ export default function StudentDashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="exams" className="space-y-4">
-          <TabsList>
+          <TabsList className="flex flex-wrap h-auto gap-1">
             <TabsTrigger value="exams">Available Exams</TabsTrigger>
+            <TabsTrigger value="assignments"><FileUp className="h-4 w-4 mr-1" />Assignments</TabsTrigger>
             <TabsTrigger value="profile">📊 My Progress</TabsTrigger>
             <TabsTrigger value="recommendations">💡 Study Plan</TabsTrigger>
             <TabsTrigger value="history">Recent Submissions</TabsTrigger>
@@ -251,6 +254,10 @@ export default function StudentDashboard() {
                 </ScrollArea>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="assignments" className="space-y-4">
+            <StudentAssignments />
           </TabsContent>
 
           <TabsContent value="profile" className="space-y-4">
