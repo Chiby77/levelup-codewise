@@ -62,21 +62,21 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900/10 via-background to-teal-900/5 text-foreground overflow-hidden">
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-12 relative">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-10 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 left-10 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
+          <div className="absolute top-20 right-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 left-10 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
         </div>
         
         <h1 className={`text-4xl md:text-6xl font-bold text-foreground mb-2 relative z-10 ${animate ? "animate-fadeIn" : "opacity-0"}`}>
           Get in 
           <span className="relative ml-3">
             Touch
-            <span className="absolute -top-6 -right-8 text-2xl animate-float text-accent">
+            <span className="absolute -top-6 -right-8 text-2xl animate-float text-emerald-500">
               <Sparkles className="h-8 w-8" />
             </span>
           </span>
@@ -88,14 +88,14 @@ const Contact = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
           {/* Contact Form with enhanced animations */}
-          <Card className={`bg-background/80 backdrop-blur-sm border-border shadow-lg ${animate ? "animate-fadeIn [animation-delay:400ms]" : "opacity-0"}`}>
-            <CardHeader>
-              <CardTitle className="text-2xl text-foreground flex items-center gap-2">
+          <Card className={`bg-background/80 backdrop-blur-sm border-emerald-200/50 shadow-lg ${animate ? "animate-fadeIn [animation-delay:400ms]" : "opacity-0"}`}>
+            <CardHeader className="bg-gradient-to-r from-emerald-50/50 to-teal-50/50 rounded-t-lg">
+              <CardTitle className="text-2xl text-emerald-700 flex items-center gap-2">
                 <span>Send us a Message</span>
-                <MessageSquare className="h-5 w-5 text-accent animate-pulse" />
+                <MessageSquare className="h-5 w-5 text-emerald-500 animate-pulse" />
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                  <div className={`space-y-2 ${animate ? "animate-fadeIn [animation-delay:600ms]" : "opacity-0"}`}>
                    <label htmlFor="name" className="text-foreground">Name</label>
@@ -103,7 +103,7 @@ const Contact = () => {
                      id="name" 
                      name="from_name"
                      placeholder="Your name" 
-                     className="bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25" 
+                     className="bg-background/50 backdrop-blur-sm border-emerald-200 transition-all focus:ring-2 focus:ring-emerald-400/25" 
                      required
                    />
                  </div>
@@ -114,7 +114,7 @@ const Contact = () => {
                      name="from_email"
                      type="email" 
                      placeholder="Your email" 
-                     className="bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25" 
+                     className="bg-background/50 backdrop-blur-sm border-emerald-200 transition-all focus:ring-2 focus:ring-emerald-400/25" 
                      required
                    />
                  </div>
@@ -124,20 +124,19 @@ const Contact = () => {
                      id="message" 
                      name="message"
                      placeholder="Your message" 
-                     className="min-h-[150px] bg-background/50 backdrop-blur-sm border-border transition-all focus:ring-2 focus:ring-accent/25"
+                     className="min-h-[150px] bg-background/50 backdrop-blur-sm border-emerald-200 transition-all focus:ring-2 focus:ring-emerald-400/25"
                      required
                    />
                  </div>
                 <Button 
                   type="submit" 
-                  className={`w-full relative overflow-hidden group ${animate ? "animate-fadeIn [animation-delay:900ms]" : "opacity-0"}`}
+                  className={`w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 relative overflow-hidden group ${animate ? "animate-fadeIn [animation-delay:900ms]" : "opacity-0"}`}
                   disabled={isSubmitting}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     {isSubmitting ? "Sending..." : "Send Message"}
                     <Send className={`h-4 w-4 transition-transform ${!isSubmitting && "group-hover:translate-x-1"}`} />
                   </span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-accent to-accent/80 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Button>
               </form>
             </CardContent>
@@ -145,50 +144,50 @@ const Contact = () => {
 
           {/* Contact Information with enhanced animations */}
           <div className="space-y-6">
-            <Card className={`bg-background/80 backdrop-blur-sm border-border shadow-lg hover:shadow-xl transition-all ${animate ? "animate-fadeIn [animation-delay:500ms]" : "opacity-0"}`}>
+            <Card className={`bg-background/80 backdrop-blur-sm border-emerald-200/50 shadow-lg hover:shadow-xl transition-all ${animate ? "animate-fadeIn [animation-delay:500ms]" : "opacity-0"}`}>
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-4 text-foreground">
-                  <div className="p-3 rounded-full bg-primary/10 text-accent">
+                  <div className="p-3 rounded-full bg-emerald-500/10 text-emerald-600">
                     <Mail className="h-6 w-6" />
                   </div>
                   <div>
                     <h3 className="font-semibold">Email</h3>
                     <a 
                       href="mailto:tinodaishemchibi@gmail.com" 
-                      className="hover:text-accent transition-colors relative group"
+                      className="hover:text-emerald-600 transition-colors relative group"
                     >
                       tinodaishemchibi@gmail.com
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full"></span>
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all group-hover:w-full"></span>
                     </a>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className={`bg-background/80 backdrop-blur-sm border-border shadow-lg hover:shadow-xl transition-all ${animate ? "animate-fadeIn [animation-delay:600ms]" : "opacity-0"}`}>
+            <Card className={`bg-background/80 backdrop-blur-sm border-emerald-200/50 shadow-lg hover:shadow-xl transition-all ${animate ? "animate-fadeIn [animation-delay:600ms]" : "opacity-0"}`}>
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-4 text-foreground">
-                  <div className="p-3 rounded-full bg-primary/10 text-accent">
+                  <div className="p-3 rounded-full bg-emerald-500/10 text-emerald-600">
                     <Phone className="h-6 w-6" />
                   </div>
                   <div>
                     <h3 className="font-semibold">Phone</h3>
                     <a 
                       href="tel:+263781081816" 
-                      className="hover:text-accent transition-colors relative group"
+                      className="hover:text-emerald-600 transition-colors relative group"
                     >
                       +263 78 108 1816
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full"></span>
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all group-hover:w-full"></span>
                     </a>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className={`bg-background/80 backdrop-blur-sm border-border shadow-lg hover:shadow-xl transition-all ${animate ? "animate-fadeIn [animation-delay:700ms]" : "opacity-0"}`}>
+            <Card className={`bg-background/80 backdrop-blur-sm border-emerald-200/50 shadow-lg hover:shadow-xl transition-all ${animate ? "animate-fadeIn [animation-delay:700ms]" : "opacity-0"}`}>
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-4 text-foreground">
-                  <div className="p-3 rounded-full bg-primary/10 text-accent">
+                  <div className="p-3 rounded-full bg-emerald-500/10 text-emerald-600">
                     <MessageSquare className="h-6 w-6" />
                   </div>
                   <div>
@@ -197,20 +196,20 @@ const Contact = () => {
                       href="https://wa.me/263718176525" 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="hover:text-accent transition-colors relative group"
+                      className="hover:text-emerald-600 transition-colors relative group"
                     >
                       +263 71 817 6525
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full"></span>
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all group-hover:w-full"></span>
                     </a>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className={`bg-background/80 backdrop-blur-sm border-border shadow-lg hover:shadow-xl transition-all ${animate ? "animate-fadeIn [animation-delay:800ms]" : "opacity-0"}`}>
+            <Card className={`bg-background/80 backdrop-blur-sm border-emerald-200/50 shadow-lg hover:shadow-xl transition-all ${animate ? "animate-fadeIn [animation-delay:800ms]" : "opacity-0"}`}>
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-4 text-foreground">
-                  <div className="p-3 rounded-full bg-primary/10 text-accent">
+                  <div className="p-3 rounded-full bg-emerald-500/10 text-emerald-600">
                     <MapPin className="h-6 w-6" />
                   </div>
                   <div>
@@ -219,16 +218,21 @@ const Contact = () => {
                       href="https://maps.app.goo.gl/yMY8dqBXFpkc5ALB6" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="hover:text-accent transition-colors relative group"
+                      className="hover:text-emerald-600 transition-colors relative group"
                     >
                       View on Google Maps
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full"></span>
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all group-hover:w-full"></span>
                     </a>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-16 text-center text-muted-foreground">
+          <p className="text-sm">© 2026 Bluewave Technologies. All rights reserved.</p>
         </div>
       </div>
 

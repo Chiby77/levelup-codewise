@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, GraduationCap } from 'lucide-react';
+import { ArrowLeft, GraduationCap, Sparkles, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 export default function Auth() {
@@ -110,43 +110,66 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900/30 via-background to-teal-900/20 flex items-center justify-center p-4">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+      </div>
+
+      <div className="w-full max-w-md space-y-6 relative z-10">
         <Button 
           variant="outline" 
           onClick={() => navigate('/')}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Button>
 
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-3">
           <div className="flex items-center justify-center">
-            <div className="bg-gradient-to-br from-primary to-accent p-4 rounded-full">
-              <GraduationCap className="h-12 w-12 text-white" />
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full blur-lg animate-pulse" />
+              <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-full">
+                <GraduationCap className="h-12 w-12 text-white" />
+              </div>
             </div>
           </div>
-          <h1 className="text-3xl font-bold">CS Experts Zimbabwe</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            CS Experts Zimbabwe
+          </h1>
           <p className="text-muted-foreground">Digital Examination System</p>
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span>Powered by <strong className="text-emerald-600">Bluewave Technologies</strong></span>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Authentication</CardTitle>
-            <CardDescription>Sign in to your account or create a new one</CardDescription>
+        <Card className="border-emerald-200/50 shadow-xl bg-background/80 backdrop-blur">
+          <CardHeader className="space-y-1 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 rounded-t-lg">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-emerald-600" />
+              <CardTitle className="text-emerald-700">Student Portal</CardTitle>
+            </div>
+            <CardDescription>Sign in to access your exams and results</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <Tabs defaultValue="login">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-emerald-50">
+                <TabsTrigger value="login" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                  Login
+                </TabsTrigger>
+                <TabsTrigger value="signup" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                  Sign Up
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
+                    <Label htmlFor="login-email" className="text-foreground">Email</Label>
                     <Input
                       id="login-email"
                       type="email"
@@ -154,10 +177,11 @@ export default function Auth() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
+                    <Label htmlFor="login-password" className="text-foreground">Password</Label>
                     <Input
                       id="login-password"
                       type="password"
@@ -165,23 +189,28 @@ export default function Auth() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold" 
+                    disabled={loading}
+                  >
                     {loading ? 'Logging in...' : 'Login'}
                   </Button>
                 </form>
               </TabsContent>
 
               <TabsContent value="signup">
-                <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="bg-muted/50 border border-border rounded-lg p-4 mb-4">
-                    <p className="text-sm text-muted-foreground">
+                <form onSubmit={handleSignup} className="space-y-4 mt-4">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-emerald-700">
                       <strong>Student Registration:</strong> Create your account to access exams and view your results.
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name</Label>
+                    <Label htmlFor="signup-name" className="text-foreground">Full Name</Label>
                     <Input
                       id="signup-name"
                       type="text"
@@ -189,20 +218,22 @@ export default function Auth() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       required
+                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-student-id">Student ID (Optional)</Label>
+                    <Label htmlFor="signup-student-id" className="text-foreground">Student ID (Optional)</Label>
                     <Input
                       id="signup-student-id"
                       type="text"
                       placeholder="STU12345"
                       value={studentId}
                       onChange={(e) => setStudentId(e.target.value)}
+                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email" className="text-foreground">Email</Label>
                     <Input
                       id="signup-email"
                       type="email"
@@ -210,10 +241,11 @@ export default function Auth() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                    <Label htmlFor="signup-password" className="text-foreground">Password</Label>
                     <Input
                       id="signup-password"
                       type="password"
@@ -222,12 +254,17 @@ export default function Auth() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       minLength={6}
+                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
                     />
                     <p className="text-xs text-muted-foreground">
                       Minimum 6 characters
                     </p>
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold" 
+                    disabled={loading}
+                  >
                     {loading ? 'Creating account...' : 'Sign Up as Student'}
                   </Button>
                 </form>
@@ -235,6 +272,16 @@ export default function Auth() {
             </Tabs>
           </CardContent>
         </Card>
+
+        {/* Footer */}
+        <div className="text-center space-y-2">
+          <p className="text-xs text-muted-foreground">
+            Co-founder & CEO: <strong className="text-emerald-600">Tinodaishe M. Chibi</strong>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            © 2026 Bluewave Technologies. All rights reserved.
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -185,12 +185,12 @@ const Downloads = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${downloadsBackground})` }}
       />
-      <div className="absolute inset-0 bg-background/90" />
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 via-background/95 to-teal-900/90" />
       <div className="relative z-10">
         <Navbar />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-12 space-y-6 sm:space-y-8">
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent mb-4 animate-fadeIn">Study Resources</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-green-400 bg-clip-text text-transparent mb-4 animate-fadeIn">Study Resources</h1>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-xl sm:max-w-2xl mx-auto px-4">
             Access our comprehensive collection of learning materials to help you excel in your A Level Computer Science studies.
           </p>
@@ -198,10 +198,10 @@ const Downloads = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <div onClick={() => document.getElementById('programming-notes')?.scrollIntoView({behavior: 'smooth'})}
-            className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
+            className="bg-gradient-to-br from-emerald-900/50 to-emerald-950/50 p-6 rounded-lg shadow-lg hover:shadow-emerald-500/10 transition-all cursor-pointer border border-emerald-500/20 hover:border-emerald-500/40 backdrop-blur">
             <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mr-4">
-                <Code className="h-6 w-6 text-accent" />
+              <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center mr-4">
+                <Code className="h-6 w-6 text-emerald-400" />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-white">Programming Notes</h2>
@@ -214,10 +214,10 @@ const Downloads = () => {
           </div>
           
           <div onClick={() => document.getElementById('special-resources')?.scrollIntoView({behavior: 'smooth'})}
-            className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
+            className="bg-gradient-to-br from-teal-900/50 to-teal-950/50 p-6 rounded-lg shadow-lg hover:shadow-teal-500/10 transition-all cursor-pointer border border-teal-500/20 hover:border-teal-500/40 backdrop-blur">
             <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mr-4">
-                <BookOpen className="h-6 w-6 text-accent" />
+              <div className="w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center mr-4">
+                <BookOpen className="h-6 w-6 text-teal-400" />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-white">Special Resources</h2>
@@ -230,10 +230,10 @@ const Downloads = () => {
           </div>
           
           <div onClick={() => document.getElementById('past-papers')?.scrollIntoView({behavior: 'smooth'})}
-            className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
+            className="bg-gradient-to-br from-green-900/50 to-green-950/50 p-6 rounded-lg shadow-lg hover:shadow-green-500/10 transition-all cursor-pointer border border-green-500/20 hover:border-green-500/40 backdrop-blur">
             <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mr-4">
-                <FileText className="h-6 w-6 text-accent" />
+              <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mr-4">
+                <FileText className="h-6 w-6 text-green-400" />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-white">CS Past Papers</h2>
@@ -246,10 +246,10 @@ const Downloads = () => {
           </div>
 
           <div onClick={() => document.getElementById('pure-maths-papers')?.scrollIntoView({behavior: 'smooth'})}
-            className="bg-gradient-to-br from-[#1a1a1a] to-[#111] p-6 rounded-lg shadow-lg hover:shadow-accent/5 transition-all cursor-pointer border border-accent/10 hover:border-accent/30">
+            className="bg-gradient-to-br from-cyan-900/50 to-cyan-950/50 p-6 rounded-lg shadow-lg hover:shadow-cyan-500/10 transition-all cursor-pointer border border-cyan-500/20 hover:border-cyan-500/40 backdrop-blur">
             <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mr-4">
-                <FileText className="h-6 w-6 text-accent" />
+              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center mr-4">
+                <FileText className="h-6 w-6 text-cyan-400" />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-white">Pure Maths Papers</h2>
@@ -443,13 +443,14 @@ const Downloads = () => {
           </Card>
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-12 text-center space-y-4">
           <p className="text-gray-400">
             Having trouble downloading? Contact us at 
-            <a href="mailto:support@csexperts.co.zw" className="text-accent hover:underline ml-1">
+            <a href="mailto:support@csexperts.co.zw" className="text-emerald-400 hover:underline ml-1">
               support@csexperts.co.zw
             </a>
           </p>
+          <p className="text-sm text-gray-500">© 2026 Bluewave Technologies. All rights reserved.</p>
         </div>
       </div>
       </div>
