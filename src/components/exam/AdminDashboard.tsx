@@ -271,7 +271,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               <LogOut className="h-4 w-4 mr-2" />Logout
             </Button>
           </div>
-          </div>
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
