@@ -272,6 +272,43 @@ serve(async (req) => {
         });
       }
 
+      case 'find_user_by_email': {
+        const email = String(data?.email ?? '').trim().toLowerCase();
+        if (!email) {
+          return new Response(JSON.stringify({ error: 'Email is required' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const perPage = 200;
+        const maxPages = 50; // supports up to 10k users without timing out
+
+        for (let page = 1; page <= maxPages; page++) {
+          const { data: listData, error: listError } = await supabaseClient.auth.admin.listUsers({
+            page,
+            perPage,
+          });
+
+          if (listError) throw listError;
+
+          const users = listData?.users ?? [];
+          const match = users.find((u) => (u.email ?? '').toLowerCase() === email);
+
+          if (match) {
+            return new Response(JSON.stringify({ user: { id: match.id, email: match.email } }), {
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+          }
+
+          if (users.length < perPage) break; // no more pages
+        }
+
+        return new Response(JSON.stringify({ user: null }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
       default:
         return new Response(JSON.stringify({ error: 'Invalid action' }), {
           status: 400,

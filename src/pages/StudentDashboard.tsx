@@ -28,7 +28,7 @@ import { FeedbackModal } from '@/components/FeedbackModal';
 import { StudentProfile } from '@/components/student/StudentProfile';
 import { StudyRecommendations } from '@/components/student/StudyRecommendations';
 import StudentAssignments from '@/components/student/StudentAssignments';
-import { useCachedActiveExams, useCachedAnnouncements, useCachedStudyTips } from '@/hooks/useCachedData';
+import { useCachedAssignedActiveExams, useCachedAnnouncements, useCachedStudyTips } from '@/hooks/useCachedData';
 import { useQuery } from '@tanstack/react-query';
 
 export default function StudentDashboard() {
@@ -38,7 +38,7 @@ export default function StudentDashboard() {
   const [showFeedback, setShowFeedback] = useState(false);
 
   // Use cached data for better performance
-  const { data: exams = [], isLoading: examsLoading } = useCachedActiveExams();
+  const { data: exams = [], isLoading: examsLoading } = useCachedAssignedActiveExams(user?.id);
   const { data: announcements = [], isLoading: announcementsLoading } = useCachedAnnouncements();
   const { data: tips = [], isLoading: tipsLoading } = useCachedStudyTips();
 

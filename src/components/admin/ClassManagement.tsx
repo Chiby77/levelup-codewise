@@ -158,18 +158,30 @@ export default function ClassManagement() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Find student by email in profiles
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('id')
-      .ilike('id', `%${enrollEmail}%`);
-    
-    // Try to get user from auth if not found
-    let studentId = profiles?.[0]?.id;
-    
-    // If no profile found, we'll just use a generated UUID and the email
+    // Find student by email (must already have an account)
+    const normalizedEmail = enrollEmail.trim().toLowerCase();
+
+    const { data: lookupData, error: lookupError } = await supabase.functions.invoke(
+      'admin-user-management',
+      {
+        body: {
+          action: 'find_user_by_email',
+          data: { email: normalizedEmail },
+        },
+      }
+    );
+
+    if (lookupError) {
+      console.error('find_user_by_email error:', lookupError);
+      toast.error('Failed to look up student account');
+      return;
+    }
+
+    const studentId: string | undefined = lookupData?.user?.id;
+
     if (!studentId) {
-      studentId = crypto.randomUUID();
+      toast.error('Student must sign up first (account not found for this email)');
+      return;
     }
 
     const { error } = await supabase
