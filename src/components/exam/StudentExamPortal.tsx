@@ -38,14 +38,29 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
 
   const fetchActiveExams = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setExams([]);
+        return;
+      }
+
+      // Only show exams assigned to the student's enrolled classes
       const { data, error } = await supabase
-        .from('exams')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .from('exam_class_assignments')
+        .select('assigned_at, exams(*)')
+        .eq('exams.status', 'active')
+        .order('assigned_at', { ascending: false });
 
       if (error) throw error;
-      setExams(data || []);
+
+      const assigned = (data || [])
+        .map((row: any) => row.exams)
+        .filter(Boolean) as Exam[];
+
+      const unique = new Map<string, Exam>();
+      for (const ex of assigned) unique.set(ex.id, ex);
+
+      setExams(Array.from(unique.values()));
     } catch (error) {
       console.error('Error fetching exams:', error);
       toast.error('Failed to load exams');
@@ -252,9 +267,9 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
         )}
 
         <div className="mt-12 text-center text-sm text-muted-foreground space-y-2">
-          <p>CS Experts Zimbabwe Digital Examination System</p>
-          <p>Powered by Intellix Inc | Founded by Tinodaishe M Chibi</p>
-          <p className="text-xs">BTech Software Engineering Student at HIT</p>
+          <p>Bluewave Technologies Digital Examination System</p>
+          <p>Co-founder & CEO: Tinodaishe M. Chibi</p>
+          <p className="text-xs">© 2026 Bluewave Technologies. All rights reserved.</p>
         </div>
       </div>
     </div>

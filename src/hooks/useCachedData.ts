@@ -46,6 +46,34 @@ export function useCachedActiveExams() {
   });
 }
 
+// Cached active exams assigned to the currently enrolled student
+export function useCachedAssignedActiveExams(userId?: string) {
+  return useQuery({
+    queryKey: [CACHE_KEYS.EXAMS, 'assigned-active', userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      // RLS ensures students only see assignments for their own enrolled classes
+      const { data, error } = await supabase
+        .from('exam_class_assignments')
+        .select('assigned_at, exams(*)')
+        .eq('exams.status', 'active')
+        .order('assigned_at', { ascending: false });
+
+      if (error) throw error;
+
+      const exams = (data || [])
+        .map((row: any) => row.exams)
+        .filter(Boolean) as any[];
+
+      // de-dupe (same exam can be assigned via multiple classes)
+      const unique = new Map<string, any>();
+      for (const ex of exams) unique.set(ex.id, ex);
+      return Array.from(unique.values());
+    },
+    staleTime: 1000 * 60 * 1,
+  });
+}
+
 // Cached submissions hook
 export function useCachedSubmissions() {
   return useQuery({
