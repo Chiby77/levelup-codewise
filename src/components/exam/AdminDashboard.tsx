@@ -17,7 +17,7 @@ import { AdminDownloads } from "@/components/admin/AdminDownloads";
 import ClassManagement from '@/components/admin/ClassManagement';
 import AssignmentManagement from '@/components/admin/AssignmentManagement';
 import AnnouncementManagement from '@/components/admin/AnnouncementManagement';
-import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen, MessageSquare, Volume2, VolumeX, BookOpen, Megaphone, ClipboardList } from 'lucide-react';
+import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen, MessageSquare, Volume2, VolumeX, BookOpen, Megaphone, ClipboardList, Globe } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -51,6 +51,7 @@ interface Exam {
   end_time?: string;
   auto_activate?: boolean;
   auto_deactivate?: boolean;
+  is_general?: boolean;
 }
 
 interface Submission {
@@ -355,9 +356,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                   <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row justify-between gap-4">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <h3 className="font-semibold">{exam.title}</h3>
                           <Badge variant={exam.status === 'active' ? 'default' : 'secondary'}>{exam.status}</Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {exam.is_general !== false ? <><Globe className="h-3 w-3 mr-1" />General</> : <><Users className="h-3 w-3 mr-1" />Class-specific</>}
+                          </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">{exam.description}</p>
                         <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
