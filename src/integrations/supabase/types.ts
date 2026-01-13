@@ -203,31 +203,49 @@ export type Database = {
       }
       class_enrollments: {
         Row: {
+          auto_suspended: boolean | null
           class_id: string
           enrolled_at: string
           enrolled_by: string
           id: string
           is_active: boolean | null
+          last_payment_date: string | null
+          payment_amount: number | null
+          payment_due_date: string | null
+          payment_status: string | null
           student_email: string
           student_id: string
+          suspension_reason: string | null
         }
         Insert: {
+          auto_suspended?: boolean | null
           class_id: string
           enrolled_at?: string
           enrolled_by: string
           id?: string
           is_active?: boolean | null
+          last_payment_date?: string | null
+          payment_amount?: number | null
+          payment_due_date?: string | null
+          payment_status?: string | null
           student_email: string
           student_id: string
+          suspension_reason?: string | null
         }
         Update: {
+          auto_suspended?: boolean | null
           class_id?: string
           enrolled_at?: string
           enrolled_by?: string
           id?: string
           is_active?: boolean | null
+          last_payment_date?: string | null
+          payment_amount?: number | null
+          payment_due_date?: string | null
+          payment_status?: string | null
           student_email?: string
           student_id?: string
+          suspension_reason?: string | null
         }
         Relationships: [
           {
@@ -802,7 +820,34 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      enrollment_payment_status: {
+        Row: {
+          auto_suspended: boolean | null
+          class_id: string | null
+          class_name: string | null
+          enrolled_at: string | null
+          id: string | null
+          is_active: boolean | null
+          last_payment_date: string | null
+          payment_amount: number | null
+          payment_due_date: string | null
+          payment_status: string | null
+          student_email: string | null
+          student_id: string | null
+          student_name: string | null
+          subject: string | null
+          suspension_reason: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_enrollments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       check_chat_tokens: { Args: { _user_id: string }; Returns: boolean }
@@ -815,6 +860,7 @@ export type Database = {
       }
       increment_chat_tokens: { Args: { _user_id: string }; Returns: undefined }
       request_grading: { Args: { submission_uuid: string }; Returns: boolean }
+      suspend_overdue_enrollments: { Args: never; Returns: undefined }
       update_exam_status_by_schedule: { Args: never; Returns: undefined }
     }
     Enums: {

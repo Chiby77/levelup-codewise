@@ -52,18 +52,34 @@ export function useCachedAssignedActiveExams(userId?: string) {
     queryKey: [CACHE_KEYS.EXAMS, 'assigned-active', userId],
     enabled: !!userId,
     queryFn: async () => {
-      // RLS ensures students only see assignments for their own enrolled classes
+      // First get the user's email to find their enrollments
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) return [];
+
+      // Get classes the student is enrolled in
+      const { data: enrollments, error: enrollError } = await supabase
+        .from('class_enrollments')
+        .select('class_id')
+        .eq('student_email', user.email)
+        .eq('is_active', true);
+
+      if (enrollError) throw enrollError;
+      if (!enrollments || enrollments.length === 0) return [];
+
+      const enrolledClassIds = enrollments.map(e => e.class_id);
+
+      // Get exams assigned to those classes
       const { data, error } = await supabase
         .from('exam_class_assignments')
-        .select('assigned_at, exams(*)')
-        .eq('exams.status', 'active')
-        .order('assigned_at', { ascending: false });
+        .select('class_id, exams(*)')
+        .in('class_id', enrolledClassIds);
 
       if (error) throw error;
 
+      // Filter for active exams only
       const exams = (data || [])
         .map((row: any) => row.exams)
-        .filter(Boolean) as any[];
+        .filter((ex: any) => ex && ex.status === 'active') as any[];
 
       // de-dupe (same exam can be assigned via multiple classes)
       const unique = new Map<string, any>();

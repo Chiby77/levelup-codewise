@@ -59,23 +59,41 @@ export const EnhancedStudentPortal: React.FC<StudentPortalProps> = ({ onStartExa
   const fetchExams = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      if (!user?.email) {
         setExams([]);
+        setLoading(false);
         return;
       }
 
-      // Only show exams assigned to the student's enrolled classes
+      // Get classes the student is enrolled in
+      const { data: enrollments, error: enrollError } = await supabase
+        .from('class_enrollments')
+        .select('class_id')
+        .eq('student_email', user.email)
+        .eq('is_active', true);
+
+      if (enrollError) throw enrollError;
+      
+      if (!enrollments || enrollments.length === 0) {
+        setExams([]);
+        setLoading(false);
+        return;
+      }
+
+      const enrolledClassIds = enrollments.map(e => e.class_id);
+
+      // Get exams assigned to those classes
       const { data, error } = await supabase
         .from('exam_class_assignments')
-        .select('assigned_at, exams(*)')
-        .eq('exams.status', 'active')
-        .order('assigned_at', { ascending: false });
+        .select('class_id, exams(*)')
+        .in('class_id', enrolledClassIds);
 
       if (error) throw error;
 
+      // Filter for active exams only
       const assigned = (data || [])
         .map((row: any) => row.exams)
-        .filter(Boolean) as Exam[];
+        .filter((ex: any) => ex && ex.status === 'active') as Exam[];
 
       const unique = new Map<string, Exam>();
       for (const ex of assigned) unique.set(ex.id, ex);
