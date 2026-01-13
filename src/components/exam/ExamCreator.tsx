@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Save } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, Trash2, Save, Calendar, Users, Globe } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -26,13 +27,24 @@ interface Question {
   order_number: number;
 }
 
+interface ClassOption {
+  id: string;
+  name: string;
+  subject: string;
+}
+
 export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
   const [examData, setExamData] = useState({
     title: '',
     description: '',
     duration_minutes: 60,
     total_marks: 100,
-    status: 'draft' as 'draft' | 'active'
+    status: 'draft' as 'draft' | 'active',
+    is_general: true,
+    start_time: '',
+    end_time: '',
+    auto_activate: false,
+    auto_deactivate: false,
   });
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -46,6 +58,31 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
     marks: 10
   });
   const [loading, setLoading] = useState(false);
+  const [classes, setClasses] = useState<ClassOption[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  const fetchClasses = async () => {
+    const { data, error } = await supabase
+      .from('classes')
+      .select('id, name, subject')
+      .eq('is_active', true)
+      .order('name');
+    if (!error && data) {
+      setClasses(data);
+    }
+  };
+
+  const toggleClassSelection = (classId: string) => {
+    setSelectedClasses(prev => 
+      prev.includes(classId) 
+        ? prev.filter(id => id !== classId)
+        : [...prev, classId]
+    );
+  };
 
   const addQuestion = () => {
     if (!currentQuestion.question_text?.trim()) {
@@ -98,13 +135,34 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
       return;
     }
 
+    if (!examData.is_general && selectedClasses.length === 0) {
+      toast.error('Please select at least one class for class-specific exams');
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
       // Insert exam
+      const examInsert = {
+        title: examData.title,
+        description: examData.description,
+        duration_minutes: examData.duration_minutes,
+        total_marks: examData.total_marks,
+        status: examData.status,
+        is_general: examData.is_general,
+        start_time: examData.start_time || null,
+        end_time: examData.end_time || null,
+        auto_activate: examData.auto_activate,
+        auto_deactivate: examData.auto_deactivate,
+      };
+
       const { data: examResponse, error: examError } = await supabase
         .from('exams')
-        .insert(examData)
+        .insert(examInsert)
         .select()
         .single();
 
@@ -129,6 +187,21 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
 
       if (questionsError) throw questionsError;
 
+      // If class-specific, create class assignments
+      if (!examData.is_general && selectedClasses.length > 0) {
+        const classAssignments = selectedClasses.map(classId => ({
+          exam_id: examResponse.id,
+          class_id: classId,
+          assigned_by: user.id,
+        }));
+
+        const { error: assignError } = await supabase
+          .from('exam_class_assignments')
+          .insert(classAssignments);
+
+        if (assignError) throw assignError;
+      }
+
       toast.success('Exam created successfully!');
       
       // Reset form
@@ -137,9 +210,15 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
         description: '',
         duration_minutes: 60,
         total_marks: 100,
-        status: 'draft'
+        status: 'draft',
+        is_general: true,
+        start_time: '',
+        end_time: '',
+        auto_activate: false,
+        auto_deactivate: false,
       });
       setQuestions([]);
+      setSelectedClasses([]);
       setCurrentQuestion({
         question_text: '',
         question_type: 'multiple_choice',
@@ -228,6 +307,97 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Target Audience */}
+            <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+              <Label className="flex items-center gap-2 text-base font-semibold">
+                <Users className="h-4 w-4" /> Target Audience
+              </Label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    checked={examData.is_general} 
+                    onChange={() => setExamData({ ...examData, is_general: true })}
+                    className="w-4 h-4"
+                  />
+                  <Globe className="h-4 w-4 text-primary" />
+                  <span className="text-sm">General (All Students)</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    checked={!examData.is_general} 
+                    onChange={() => setExamData({ ...examData, is_general: false })}
+                    className="w-4 h-4"
+                  />
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Specific Classes</span>
+                </label>
+              </div>
+
+              {!examData.is_general && (
+                <div className="space-y-2 pt-2">
+                  <Label className="text-sm text-muted-foreground">Select Classes</Label>
+                  <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
+                    {classes.map((cls) => (
+                      <label key={cls.id} className="flex items-center gap-2 p-2 rounded border bg-background cursor-pointer hover:bg-muted/50">
+                        <Checkbox 
+                          checked={selectedClasses.includes(cls.id)}
+                          onCheckedChange={() => toggleClassSelection(cls.id)}
+                        />
+                        <span className="text-sm flex-1">{cls.name}</span>
+                        <Badge variant="outline" className="text-xs">{cls.subject}</Badge>
+                      </label>
+                    ))}
+                    {classes.length === 0 && (
+                      <p className="text-sm text-muted-foreground">No classes available. Create classes first.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Scheduling */}
+            <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+              <Label className="flex items-center gap-2 text-base font-semibold">
+                <Calendar className="h-4 w-4" /> Schedule Exam
+              </Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm text-muted-foreground">Start Time</Label>
+                  <Input
+                    type="datetime-local"
+                    value={examData.start_time}
+                    onChange={(e) => setExamData({ ...examData, start_time: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm text-muted-foreground">End Time</Label>
+                  <Input
+                    type="datetime-local"
+                    value={examData.end_time}
+                    onChange={(e) => setExamData({ ...examData, end_time: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-4 pt-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox 
+                    checked={examData.auto_activate}
+                    onCheckedChange={(checked) => setExamData({ ...examData, auto_activate: !!checked })}
+                  />
+                  <span className="text-sm">Auto-activate at start time</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox 
+                    checked={examData.auto_deactivate}
+                    onCheckedChange={(checked) => setExamData({ ...examData, auto_deactivate: !!checked })}
+                  />
+                  <span className="text-sm">Auto-close at end time</span>
+                </label>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -315,13 +485,32 @@ export const ExamCreator: React.FC<ExamCreatorProps> = ({ onExamCreated }) => {
                     <SelectItem value="javascript">JavaScript</SelectItem>
                   </SelectContent>
                 </Select>
-                <Label htmlFor="sampleCode">Sample Code</Label>
+                <Label htmlFor="sampleCode">Sample Code / Expected Solution</Label>
                 <Textarea
                   id="sampleCode"
                   value={currentQuestion.sample_code}
                   onChange={(e) => setCurrentQuestion({ ...currentQuestion, sample_code: e.target.value })}
-                  placeholder="Enter sample code template"
+                  placeholder="Enter sample code template or expected solution"
                   className="font-mono"
+                />
+                <Label htmlFor="correct">Correct Answer / Expected Output</Label>
+                <Textarea
+                  id="correct"
+                  value={currentQuestion.correct_answer}
+                  onChange={(e) => setCurrentQuestion({ ...currentQuestion, correct_answer: e.target.value })}
+                  placeholder="Enter expected output or marking scheme"
+                />
+              </div>
+            )}
+
+            {currentQuestion.question_type === 'short_answer' && (
+              <div className="space-y-2">
+                <Label htmlFor="correct">Correct Answer</Label>
+                <Textarea
+                  id="correct"
+                  value={currentQuestion.correct_answer}
+                  onChange={(e) => setCurrentQuestion({ ...currentQuestion, correct_answer: e.target.value })}
+                  placeholder="Enter the correct answer or key points"
                 />
               </div>
             )}

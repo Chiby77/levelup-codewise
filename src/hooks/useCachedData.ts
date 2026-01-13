@@ -29,11 +29,14 @@ export function useCachedExams() {
   });
 }
 
-// Cached active exams for students
+// Cached active exams for students (general exams + class-specific for enrolled)
 export function useCachedActiveExams() {
   return useQuery({
     queryKey: [CACHE_KEYS.EXAMS, 'active'],
     queryFn: async () => {
+      // RLS on exams table now handles visibility:
+      // - General exams (is_general=true) visible to all authenticated users
+      // - Class-specific exams visible only to enrolled students
       const { data, error } = await supabase
         .from('exams')
         .select('*')
@@ -46,45 +49,21 @@ export function useCachedActiveExams() {
   });
 }
 
-// Cached active exams assigned to the currently enrolled student
+// Cached active exams assigned to the currently enrolled student (includes general + class-specific)
 export function useCachedAssignedActiveExams(userId?: string) {
   return useQuery({
     queryKey: [CACHE_KEYS.EXAMS, 'assigned-active', userId],
     enabled: !!userId,
     queryFn: async () => {
-      // First get the user's email to find their enrollments
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user?.email) return [];
-
-      // Get classes the student is enrolled in
-      const { data: enrollments, error: enrollError } = await supabase
-        .from('class_enrollments')
-        .select('class_id')
-        .eq('student_email', user.email)
-        .eq('is_active', true);
-
-      if (enrollError) throw enrollError;
-      if (!enrollments || enrollments.length === 0) return [];
-
-      const enrolledClassIds = enrollments.map(e => e.class_id);
-
-      // Get exams assigned to those classes
+      // RLS now handles this - just fetch active exams and the policy will filter
       const { data, error } = await supabase
-        .from('exam_class_assignments')
-        .select('class_id, exams(*)')
-        .in('class_id', enrolledClassIds);
+        .from('exams')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-
-      // Filter for active exams only
-      const exams = (data || [])
-        .map((row: any) => row.exams)
-        .filter((ex: any) => ex && ex.status === 'active') as any[];
-
-      // de-dupe (same exam can be assigned via multiple classes)
-      const unique = new Map<string, any>();
-      for (const ex of exams) unique.set(ex.id, ex);
-      return Array.from(unique.values());
+      return data || [];
     },
     staleTime: 1000 * 60 * 1,
   });

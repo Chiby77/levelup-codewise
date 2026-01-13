@@ -385,6 +385,7 @@ export type Database = {
           duration_minutes: number
           end_time: string | null
           id: string
+          is_general: boolean | null
           start_time: string | null
           status: Database["public"]["Enums"]["exam_status"]
           subject: string
@@ -402,6 +403,7 @@ export type Database = {
           duration_minutes?: number
           end_time?: string | null
           id?: string
+          is_general?: boolean | null
           start_time?: string | null
           status?: Database["public"]["Enums"]["exam_status"]
           subject?: string
@@ -419,6 +421,7 @@ export type Database = {
           duration_minutes?: number
           end_time?: string | null
           id?: string
+          is_general?: boolean | null
           start_time?: string | null
           status?: Database["public"]["Enums"]["exam_status"]
           subject?: string
