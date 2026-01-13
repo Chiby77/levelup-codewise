@@ -238,6 +238,18 @@ serve(async (req) => {
       let score = 0;
       let feedback = '';
 
+      // Check if this is a Data Representation numeric question (strict matching)
+      const isDataRepQuestion = question.category?.toLowerCase().includes('data representation') ||
+                                question.question_text?.toLowerCase().includes('convert') ||
+                                question.question_text?.toLowerCase().includes('binary') ||
+                                question.question_text?.toLowerCase().includes('hexadecimal') ||
+                                question.question_text?.toLowerCase().includes('denary') ||
+                                question.question_text?.toLowerCase().includes('octal') ||
+                                question.question_text?.toLowerCase().includes('two\'s complement') ||
+                                question.question_text?.toLowerCase().includes('bcd');
+      
+      const isNumericAnswer = question.correct_answer && /^[\d\sA-Fa-f.,+-]+$/.test(question.correct_answer.trim());
+
       switch (question.question_type) {
         case 'multiple_choice':
           const correctAnswer = question.correct_answer?.toLowerCase().trim();
@@ -258,6 +270,38 @@ serve(async (req) => {
           }
           break;
 
+        case 'short_answer':
+          // STRICT NUMERIC GRADING FOR DATA REPRESENTATION
+          if (isDataRepQuestion && isNumericAnswer) {
+            const expectedNumeric = question.correct_answer.toString().replace(/\s+/g, '').toLowerCase();
+            const studentNumeric = studentAnswer.toString().replace(/\s+/g, '').toLowerCase();
+            
+            if (studentNumeric === expectedNumeric) {
+              score = question.marks;
+              feedback = '✅ Perfect! Correct numeric answer!';
+              strongAreas.push('data_representation');
+            } else {
+              // STRICT: 0 marks for incorrect numeric answer in data representation
+              score = 0;
+              feedback = `❌ Incorrect. The correct answer was: ${question.correct_answer}. Data representation requires exact numeric answers.`;
+              weakAreas.push('data_representation');
+            }
+            
+            gradeDetails[question.id] = {
+              score: score,
+              maxScore: question.marks,
+              feedback: feedback,
+              questionText: question.question_text,
+              correctAnswer: question.correct_answer,
+              studentAnswer: studentAnswer,
+              questionType: question.question_type,
+              isStrictNumeric: true
+            };
+            totalScore += score;
+            continue; // Skip the default short_answer grading
+          }
+          
+          // Regular short answer grading follows below...
         case 'coding':
           const language = question.programming_language || 'python';
           const isVBNet = language === 'vb' || language === 'vbnet';
