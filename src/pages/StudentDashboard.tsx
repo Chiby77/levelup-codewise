@@ -28,6 +28,7 @@ import { FeedbackModal } from '@/components/FeedbackModal';
 import { StudentProfile } from '@/components/student/StudentProfile';
 import { StudyRecommendations } from '@/components/student/StudyRecommendations';
 import StudentAssignments from '@/components/student/StudentAssignments';
+import PaymentStatusCard from '@/components/student/PaymentStatusCard';
 import { useCachedAssignedActiveExams, useCachedAnnouncements, useCachedStudyTips } from '@/hooks/useCachedData';
 import { useQuery } from '@tanstack/react-query';
 
@@ -250,6 +251,9 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Payment Status Card */}
+        {user?.id && <PaymentStatusCard userId={user.id} />}
 
         {/* Quick Actions */}
         <div className="mb-6 flex flex-wrap gap-3">
