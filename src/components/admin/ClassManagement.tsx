@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Users, BookOpen, Trash2, UserPlus, UserMinus, ClipboardList } from 'lucide-react';
+import { Plus, Users, BookOpen, Trash2, UserPlus, UserMinus, ClipboardList, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
+import PaymentManagement from './PaymentManagement';
 
 interface Class {
   id: string;
@@ -30,6 +31,12 @@ interface Enrollment {
   student_email: string;
   enrolled_at: string;
   is_active: boolean;
+  payment_status: string | null;
+  payment_due_date: string | null;
+  last_payment_date: string | null;
+  payment_amount: number | null;
+  auto_suspended: boolean | null;
+  suspension_reason: string | null;
 }
 
 interface Exam {
@@ -421,14 +428,18 @@ export default function ClassManagement() {
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="students">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="students">
                       <Users className="h-4 w-4 mr-2" />
                       Students ({enrollments.length})
                     </TabsTrigger>
+                    <TabsTrigger value="payments">
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Payments
+                    </TabsTrigger>
                     <TabsTrigger value="exams">
                       <ClipboardList className="h-4 w-4 mr-2" />
-                      Assigned Exams ({examAssignments.length})
+                      Exams ({examAssignments.length})
                     </TabsTrigger>
                   </TabsList>
 
@@ -493,6 +504,13 @@ export default function ClassManagement() {
                         </TableBody>
                       </Table>
                     )}
+                  </TabsContent>
+
+                  <TabsContent value="payments" className="space-y-4">
+                    <PaymentManagement 
+                      enrollments={enrollments} 
+                      onRefresh={() => selectedClass && fetchEnrollments(selectedClass.id)} 
+                    />
                   </TabsContent>
 
                   <TabsContent value="exams" className="space-y-4">
