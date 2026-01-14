@@ -117,14 +117,14 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
   }
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-background">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <DollarSign className="h-5 w-5 text-primary" />
+    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-background mb-4">
+      <CardHeader className="p-3 sm:pb-3">
+        <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+          <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
           Payment Status
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="p-3 pt-0 space-y-2 sm:space-y-3">
         {enrollments.map((enrollment) => {
           const statusInfo = getStatusInfo(enrollment);
           const StatusIcon = statusInfo.icon;
@@ -134,53 +134,51 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
           return (
             <div
               key={enrollment.id}
-              className={`p-4 rounded-lg border ${statusInfo.borderColor} ${statusInfo.bgColor}/50`}
+              className={`p-2.5 sm:p-4 rounded-lg border ${statusInfo.borderColor} ${statusInfo.bgColor}/50`}
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="font-medium text-foreground">{enrollment.classes?.name}</p>
-                  <p className="text-sm text-muted-foreground">{enrollment.classes?.subject}</p>
+              <div className="flex items-start sm:items-center justify-between gap-2">
+                <div className="space-y-0.5 min-w-0 flex-1">
+                  <p className="font-medium text-sm sm:text-base text-foreground truncate">{enrollment.classes?.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{enrollment.classes?.subject}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Badge className={`${statusInfo.bgColor} ${statusInfo.color} border-0 gap-1`}>
-                    <StatusIcon className="h-3 w-3" />
-                    {statusInfo.label}
-                  </Badge>
-                </div>
+                <Badge className={`${statusInfo.bgColor} ${statusInfo.color} border-0 gap-1 text-[10px] sm:text-xs flex-shrink-0`}>
+                  <StatusIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                  {statusInfo.label}
+                </Badge>
               </div>
 
-              <div className="mt-3 pt-3 border-t border-current/10 grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+              <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-current/10 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
                 <div>
-                  <p className="text-muted-foreground text-xs">Balance</p>
-                  <p className={`font-bold ${balance > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                  <p className="text-muted-foreground text-[10px] sm:text-xs">Balance</p>
+                  <p className={`font-bold text-sm sm:text-base ${balance > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
                     {balance > 0 ? `-$${balance.toFixed(2)}` : '$0.00'}
                   </p>
                 </div>
                 
                 {enrollment.payment_due_date && (
                   <div>
-                    <p className="text-muted-foreground text-xs">Due Date</p>
-                    <p className="font-medium flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {format(new Date(enrollment.payment_due_date), 'MMM dd, yyyy')}
+                    <p className="text-muted-foreground text-[10px] sm:text-xs">Due</p>
+                    <p className="font-medium text-xs sm:text-sm flex items-center gap-1">
+                      <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                      {format(new Date(enrollment.payment_due_date), 'MMM dd')}
                     </p>
                     {daysUntilDue !== null && daysUntilDue >= 0 && enrollment.payment_status !== 'paid' && (
-                      <p className={`text-xs ${daysUntilDue <= 3 ? 'text-red-500' : 'text-yellow-600'}`}>
-                        {daysUntilDue === 0 ? 'Due today!' : `${daysUntilDue} days left`}
+                      <p className={`text-[10px] sm:text-xs ${daysUntilDue <= 3 ? 'text-red-500' : 'text-yellow-600'}`}>
+                        {daysUntilDue === 0 ? 'Due today!' : `${daysUntilDue}d left`}
                       </p>
                     )}
                     {daysUntilDue !== null && daysUntilDue < 0 && enrollment.payment_status !== 'paid' && (
-                      <p className="text-xs text-red-500 font-medium">
-                        {Math.abs(daysUntilDue)} days overdue
+                      <p className="text-[10px] sm:text-xs text-red-500 font-medium">
+                        {Math.abs(daysUntilDue)}d overdue
                       </p>
                     )}
                   </div>
                 )}
 
                 {enrollment.last_payment_date && (
-                  <div>
+                  <div className="hidden sm:block">
                     <p className="text-muted-foreground text-xs">Last Payment</p>
-                    <p className="font-medium">
+                    <p className="font-medium text-sm">
                       {format(new Date(enrollment.last_payment_date), 'MMM dd, yyyy')}
                     </p>
                   </div>
@@ -188,10 +186,10 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
               </div>
 
               {enrollment.auto_suspended && (
-                <div className="mt-3 p-2 bg-red-100 rounded-md">
-                  <p className="text-xs text-red-700 flex items-center gap-1">
-                    <AlertTriangle className="h-3 w-3" />
-                    {enrollment.suspension_reason || 'Account suspended due to overdue payment. Please contact admin.'}
+                <div className="mt-2 p-1.5 sm:p-2 bg-red-100 rounded-md">
+                  <p className="text-[10px] sm:text-xs text-red-700 flex items-center gap-1">
+                    <AlertTriangle className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
+                    <span className="line-clamp-2">{enrollment.suspension_reason || 'Suspended - contact admin'}</span>
                   </p>
                 </div>
               )}
