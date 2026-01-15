@@ -116,3 +116,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Mobile-optimized utilities */
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Safe area padding for mobile keyboards */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  
+  /* Mobile keyboard-aware input focus */
+  @supports (-webkit-touch-callout: none) {
+    .keyboard-aware:focus-within {
+      scroll-margin-bottom: 200px;
+    }
+  }
+}
