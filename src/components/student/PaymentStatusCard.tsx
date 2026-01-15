@@ -129,7 +129,8 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
           const statusInfo = getStatusInfo(enrollment);
           const StatusIcon = statusInfo.icon;
           const daysUntilDue = getDaysUntilDue(enrollment.payment_due_date);
-          const balance = enrollment.payment_status === 'paid' ? 0 : (enrollment.payment_amount || 0);
+          const isPaid = enrollment.payment_status === 'paid';
+          const amount = enrollment.payment_amount || 0;
 
           return (
             <div
@@ -147,38 +148,58 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
                 </Badge>
               </div>
 
-              <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-current/10 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
+              <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-current/10 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-xs sm:text-sm">
+                {/* Amount Paid / Balance */}
                 <div>
-                  <p className="text-muted-foreground text-[10px] sm:text-xs">Balance</p>
-                  <p className={`font-bold text-sm sm:text-base ${balance > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
-                    {balance > 0 ? `-$${balance.toFixed(2)}` : '$0.00'}
+                  <p className="text-muted-foreground text-[10px] sm:text-xs">
+                    {isPaid ? 'Amount Paid' : 'Balance Due'}
+                  </p>
+                  <p className={`font-bold text-sm sm:text-base ${isPaid ? 'text-emerald-600' : 'text-red-600'}`}>
+                    {isPaid ? (
+                      <span className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3" />
+                        ${amount.toFixed(2)}
+                      </span>
+                    ) : (
+                      <span>-${amount.toFixed(2)}</span>
+                    )}
                   </p>
                 </div>
                 
+                {/* Due Date */}
                 {enrollment.payment_due_date && (
                   <div>
-                    <p className="text-muted-foreground text-[10px] sm:text-xs">Due</p>
+                    <p className="text-muted-foreground text-[10px] sm:text-xs">Due Date</p>
                     <p className="font-medium text-xs sm:text-sm flex items-center gap-1">
                       <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       {format(new Date(enrollment.payment_due_date), 'MMM dd')}
                     </p>
-                    {daysUntilDue !== null && daysUntilDue >= 0 && enrollment.payment_status !== 'paid' && (
-                      <p className={`text-[10px] sm:text-xs ${daysUntilDue <= 3 ? 'text-red-500' : 'text-yellow-600'}`}>
-                        {daysUntilDue === 0 ? 'Due today!' : `${daysUntilDue}d left`}
+                    {daysUntilDue !== null && daysUntilDue >= 0 && !isPaid && (
+                      <p className={`text-[10px] sm:text-xs ${daysUntilDue <= 3 ? 'text-red-500 font-medium' : 'text-yellow-600'}`}>
+                        {daysUntilDue === 0 ? '⚠️ Due today!' : `${daysUntilDue}d left`}
                       </p>
                     )}
-                    {daysUntilDue !== null && daysUntilDue < 0 && enrollment.payment_status !== 'paid' && (
-                      <p className="text-[10px] sm:text-xs text-red-500 font-medium">
-                        {Math.abs(daysUntilDue)}d overdue
+                    {daysUntilDue !== null && daysUntilDue < 0 && !isPaid && (
+                      <p className="text-[10px] sm:text-xs text-red-500 font-bold">
+                        ⚠️ {Math.abs(daysUntilDue)}d overdue
                       </p>
                     )}
                   </div>
                 )}
 
+                {/* Current Balance */}
+                <div>
+                  <p className="text-muted-foreground text-[10px] sm:text-xs">Current Balance</p>
+                  <p className={`font-bold text-sm sm:text-base ${isPaid ? 'text-emerald-600' : 'text-red-600'}`}>
+                    {isPaid ? '$0.00' : `-$${amount.toFixed(2)}`}
+                  </p>
+                </div>
+
+                {/* Last Payment */}
                 {enrollment.last_payment_date && (
                   <div className="hidden sm:block">
                     <p className="text-muted-foreground text-xs">Last Payment</p>
-                    <p className="font-medium text-sm">
+                    <p className="font-medium text-sm text-emerald-600">
                       {format(new Date(enrollment.last_payment_date), 'MMM dd, yyyy')}
                     </p>
                   </div>
@@ -187,9 +208,9 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
 
               {enrollment.auto_suspended && (
                 <div className="mt-2 p-1.5 sm:p-2 bg-red-100 rounded-md">
-                  <p className="text-[10px] sm:text-xs text-red-700 flex items-center gap-1">
+                  <p className="text-[10px] sm:text-xs text-red-700 flex items-center gap-1 font-medium">
                     <AlertTriangle className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
-                    <span className="line-clamp-2">{enrollment.suspension_reason || 'Suspended - contact admin'}</span>
+                    <span className="line-clamp-2">{enrollment.suspension_reason || 'Account suspended - Please contact admin to make payment'}</span>
                   </p>
                 </div>
               )}
