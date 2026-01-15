@@ -9,6 +9,7 @@ import { EnhancedExamStats } from './EnhancedExamStats';
 import { LiveExamMonitoring } from './LiveExamMonitoring';
 import { ScoreAnalytics } from './ScoreAnalytics';
 import { StudentLeaderboard } from './StudentLeaderboard';
+import { ExamPreview } from './ExamPreview';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
 import { RegradeSubmissions } from "@/components/admin/RegradeSubmissions";
@@ -17,12 +18,13 @@ import { AdminDownloads } from "@/components/admin/AdminDownloads";
 import ClassManagement from '@/components/admin/ClassManagement';
 import AssignmentManagement from '@/components/admin/AssignmentManagement';
 import AnnouncementManagement from '@/components/admin/AnnouncementManagement';
-import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen, MessageSquare, Volume2, VolumeX, BookOpen, Megaphone, ClipboardList, Globe } from 'lucide-react';
+import { LogOut, Plus, FileText, Users, BarChart3, Trash2, Power, Activity, Clock, Mail, Download, Calendar, FolderOpen, MessageSquare, Volume2, VolumeX, BookOpen, Megaphone, ClipboardList, Globe, Eye, Send } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useRealtimeSubmissionsWithSound } from '@/hooks/useRealtimeSubmissionsWithSound';
 import { useCachedExams, useCachedSubmissions, useInvalidateCache } from '@/hooks/useCachedData';
 import { useQuery } from '@tanstack/react-query';
@@ -73,6 +75,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const [previewExamId, setPreviewExamId] = useState<string | null>(null);
+  const [sendingReminders, setSendingReminders] = useState(false);
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [scheduleData, setScheduleData] = useState({ startTime: '', endTime: '', autoActivate: true, autoDeactivate: true });
 
@@ -236,6 +241,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     }
   };
 
+  const sendBulkPaymentReminders = async () => {
+    setSendingReminders(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        'https://lprllsdtgnewmsnjyxhj.supabase.co/functions/v1/send-payment-reminders',
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${session?.access_token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'send_bulk_reminders' }),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      toast.success(`Payment reminders sent: ${result.success} successful, ${result.failed} failed`);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send payment reminders');
+    } finally {
+      setSendingReminders(false);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -275,21 +302,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 lg:grid-cols-13 h-auto gap-1">
-            <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-            <TabsTrigger value="exams" className="text-xs">Exams</TabsTrigger>
-            <TabsTrigger value="submissions" className="text-xs">Submissions</TabsTrigger>
-            <TabsTrigger value="classes" className="text-xs">Classes</TabsTrigger>
-            <TabsTrigger value="assignments" className="text-xs">Assignments</TabsTrigger>
-            <TabsTrigger value="announcements" className="text-xs">Announce</TabsTrigger>
-            <TabsTrigger value="users" className="text-xs">Users</TabsTrigger>
-            <TabsTrigger value="bank" className="text-xs">Q-Bank</TabsTrigger>
-            <TabsTrigger value="downloads" className="text-xs">Downloads</TabsTrigger>
-            <TabsTrigger value="feedback" className="text-xs">Feedback</TabsTrigger>
-            <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
-            <TabsTrigger value="monitoring" className="text-xs">Live</TabsTrigger>
-            <TabsTrigger value="create" className="text-xs">Create</TabsTrigger>
-          </TabsList>
+          {/* Mobile-optimized scrollable tabs */}
+          <ScrollArea className="w-full whitespace-nowrap">
+            <TabsList className="inline-flex h-auto gap-1 p-1 w-max min-w-full">
+              <TabsTrigger value="overview" className="text-xs px-3 py-1.5">Overview</TabsTrigger>
+              <TabsTrigger value="exams" className="text-xs px-3 py-1.5">Exams</TabsTrigger>
+              <TabsTrigger value="submissions" className="text-xs px-3 py-1.5">Submissions</TabsTrigger>
+              <TabsTrigger value="classes" className="text-xs px-3 py-1.5">Classes</TabsTrigger>
+              <TabsTrigger value="assignments" className="text-xs px-3 py-1.5">Assignments</TabsTrigger>
+              <TabsTrigger value="announcements" className="text-xs px-3 py-1.5">Announce</TabsTrigger>
+              <TabsTrigger value="users" className="text-xs px-3 py-1.5">Users</TabsTrigger>
+              <TabsTrigger value="bank" className="text-xs px-3 py-1.5">Q-Bank</TabsTrigger>
+              <TabsTrigger value="downloads" className="text-xs px-3 py-1.5">Downloads</TabsTrigger>
+              <TabsTrigger value="feedback" className="text-xs px-3 py-1.5">Feedback</TabsTrigger>
+              <TabsTrigger value="analytics" className="text-xs px-3 py-1.5">Analytics</TabsTrigger>
+              <TabsTrigger value="monitoring" className="text-xs px-3 py-1.5">Live</TabsTrigger>
+              <TabsTrigger value="create" className="text-xs px-3 py-1.5">Create</TabsTrigger>
+            </TabsList>
+            <ScrollBar orientation="horizontal" className="h-2" />
+          </ScrollArea>
 
           <TabsContent value="overview" className="space-y-6">
             <EnhancedExamStats 
@@ -347,8 +378,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           <TabsContent value="exams" className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold">Exam Management</h2>
-              <Button onClick={() => setActiveTab('create')}><Plus className="h-4 w-4 mr-2" />Create Exam</Button>
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={() => setActiveTab('create')}><Plus className="h-4 w-4 mr-2" />Create</Button>
+              <Button variant="outline" onClick={sendBulkPaymentReminders} disabled={sendingReminders}>
+                <Send className="h-4 w-4 mr-2" />
+                {sendingReminders ? 'Sending...' : 'Payment Reminders'}
+              </Button>
             </div>
+          </div>
             
             <div className="grid gap-4">
               {exams.map((exam) => (
@@ -371,7 +408,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                           {exam.end_time && <span>🔚 End: {new Date(exam.end_time).toLocaleString()}</span>}
                         </div>
                       </div>
-                      <div className="flex gap-2 items-start">
+                      <div className="flex flex-wrap gap-1 sm:gap-2 items-start">
+                        <Button size="sm" variant="outline" onClick={() => {
+                          setPreviewExamId(exam.id);
+                          setShowPreviewDialog(true);
+                        }} title="Preview exam">
+                          <Eye className="h-4 w-4" />
+                        </Button>
                         <Button size="sm" variant="outline" onClick={() => { 
                           setSelectedExam(exam); 
                           setScheduleData({
@@ -381,13 +424,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                             autoDeactivate: exam.auto_deactivate || false
                           });
                           setShowScheduleDialog(true);
-                        }}>
+                        }} title="Schedule">
                           <Calendar className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => toggleExamStatus(exam.id, exam.status)}>
+                        <Button size="sm" variant="outline" onClick={() => toggleExamStatus(exam.id, exam.status)} title={exam.status === 'active' ? 'Deactivate' : 'Activate'}>
                           <Power className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => deleteExam(exam.id)}>
+                        <Button size="sm" variant="destructive" onClick={() => deleteExam(exam.id)} title="Delete">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -496,7 +539,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
       {/* Send Results Email Dialog */}
       <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Send Results Email</DialogTitle>
             <DialogDescription>
@@ -510,6 +553,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             <Button variant="outline" onClick={() => setShowEmailDialog(false)}>Cancel</Button>
             <Button onClick={sendResultsEmail}><Mail className="h-4 w-4 mr-2" />Send Email</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Exam Preview Dialog */}
+      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-primary" />
+              Exam Preview Mode
+            </DialogTitle>
+            <DialogDescription>
+              Test the exam as a student would see it
+            </DialogDescription>
+          </DialogHeader>
+          {previewExamId && (
+            <ExamPreview 
+              examId={previewExamId} 
+              onClose={() => setShowPreviewDialog(false)} 
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

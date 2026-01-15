@@ -57,8 +57,29 @@ export default function AdminContent() {
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedBookTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      
+      const isValidType = uploadType === 'book' 
+        ? allowedBookTypes.includes(file.type) || file.name.match(/\.(pdf|doc|docx)$/i)
+        : allowedImageTypes.includes(file.type) || file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+      
+      if (!isValidType) {
+        toast.error(`Invalid file type. ${uploadType === 'book' ? 'Please select a PDF or DOC file.' : 'Please select an image file (JPG, PNG, GIF, WEBP).'}`);
+        e.target.value = '';
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('File size must be less than 10MB');
+        e.target.value = '';
+        return;
+      }
+      
+      setSelectedFile(file);
     }
   };
 
@@ -79,19 +100,36 @@ export default function AdminContent() {
       if (!user) throw new Error('Not authenticated');
 
       const bucketName = uploadType === 'book' ? 'books' : 'pictures';
-      const fileExt = selectedFile.name.split('.').pop();
-      const fileName = `${Date.now()}_${selectedFile.name}`;
-      const filePath = `${fileName}`;
+      
+      // Clean filename - remove special characters
+      const cleanName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const fileName = `${Date.now()}_${cleanName}`;
+      const filePath = fileName;
 
-      const { error: uploadError } = await supabase.storage
+      console.log(`Uploading to bucket: ${bucketName}, path: ${filePath}`);
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(filePath, selectedFile, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
+          contentType: selectedFile.type
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error details:', uploadError);
+        
+        // Check for specific error types
+        if (uploadError.message?.includes('Bucket not found')) {
+          throw new Error(`Storage bucket "${bucketName}" not found. Please contact administrator.`);
+        }
+        if (uploadError.message?.includes('row-level security')) {
+          throw new Error('Upload permission denied. Please check storage bucket policies.');
+        }
+        throw uploadError;
+      }
 
+      console.log('Upload successful:', uploadData);
       toast.success(`${uploadType === 'book' ? 'Book' : 'Image'} uploaded successfully!`);
       setSelectedFile(null);
       
@@ -100,7 +138,7 @@ export default function AdminContent() {
       if (fileInput) fileInput.value = '';
     } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error(error.message || 'Failed to upload file');
+      toast.error(error.message || 'Failed to upload file. Please try again.');
     } finally {
       setUploading(false);
     }
