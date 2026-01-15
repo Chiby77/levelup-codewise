@@ -161,8 +161,22 @@ serve(async (req) => {
       case 'send_results_email': {
         const { submissionId, studentEmail, studentName, totalScore, maxScore, gradeDetails, examTitle } = data;
         
+        console.log('Sending results email to:', studentEmail, 'for submission:', submissionId);
+        
+        // Validate required fields
+        if (!studentEmail) {
+          throw new Error('Student email is required');
+        }
+        if (totalScore === undefined || totalScore === null) {
+          throw new Error('Total score is required');
+        }
+        if (!maxScore || maxScore === 0) {
+          throw new Error('Max score is required and must be greater than 0');
+        }
+        
         const resendApiKey = Deno.env.get('RESEND_API_KEY');
         if (!resendApiKey) {
+          console.error('RESEND_API_KEY not found in environment');
           throw new Error('RESEND_API_KEY not configured');
         }
 
@@ -171,10 +185,12 @@ serve(async (req) => {
 
         // Build grade breakdown HTML
         let breakdownHtml = '';
-        if (gradeDetails) {
+        if (gradeDetails && typeof gradeDetails === 'object') {
           breakdownHtml = '<h3 style="margin-top: 20px;">Grade Breakdown:</h3><ul>';
           for (const [questionId, detail] of Object.entries(gradeDetails as Record<string, any>)) {
-            breakdownHtml += `<li><strong>Question:</strong> ${detail.score}/${detail.maxScore} - ${detail.feedback}</li>`;
+            if (detail && typeof detail === 'object') {
+              breakdownHtml += `<li><strong>Question:</strong> ${detail.score || 0}/${detail.maxScore || 0} - ${detail.feedback || 'No feedback'}</li>`;
+            }
           }
           breakdownHtml += '</ul>';
         }
@@ -187,7 +203,7 @@ serve(async (req) => {
             </div>
             
             <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb;">
-              <p>Dear <strong>${studentName}</strong>,</p>
+              <p>Dear <strong>${studentName || 'Student'}</strong>,</p>
               
               <p>Your exam "<strong>${examTitle || 'Examination'}</strong>" has been graded. Here are your results:</p>
               
@@ -209,6 +225,8 @@ serve(async (req) => {
           </div>
         `;
 
+        console.log('Sending email via Resend API...');
+        
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -223,10 +241,13 @@ serve(async (req) => {
           }),
         });
 
+        const responseText = await emailResponse.text();
+        console.log('Resend API response status:', emailResponse.status);
+        console.log('Resend API response:', responseText);
+
         if (!emailResponse.ok) {
-          const errorText = await emailResponse.text();
-          console.error('Email send error:', errorText);
-          throw new Error('Failed to send email');
+          console.error('Email send error:', responseText);
+          throw new Error(`Failed to send email: ${responseText}`);
         }
 
         await supabaseClient.from('user_activity_logs').insert({

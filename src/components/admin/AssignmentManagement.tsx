@@ -167,32 +167,51 @@ export default function AssignmentManagement() {
     e.preventDefault();
     if (!gradingSubmission) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { error } = await supabase
-      .from('assignment_submissions')
-      .update({
-        marks: parseInt(gradeMarks),
-        feedback: gradeFeedback || null,
-        graded: true,
-        graded_at: new Date().toISOString(),
-        graded_by: user.id,
-      })
-      .eq('id', gradingSubmission.id);
-
-    if (error) {
-      toast.error('Failed to grade submission');
+    // Validate marks
+    const marks = parseFloat(gradeMarks);
+    if (isNaN(marks) || marks < 0) {
+      toast.error('Please enter a valid mark');
       return;
     }
 
-    toast.success('Submission graded');
-    setGradeDialogOpen(false);
-    setGradingSubmission(null);
-    setGradeMarks('');
-    setGradeFeedback('');
-    if (selectedAssignment) {
-      fetchSubmissions(selectedAssignment.id);
+    if (selectedAssignment && marks > selectedAssignment.max_marks) {
+      toast.error(`Marks cannot exceed ${selectedAssignment.max_marks}`);
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('assignment_submissions')
+        .update({
+          marks: marks,
+          feedback: gradeFeedback.trim() || null,
+          graded: true,
+          graded_at: new Date().toISOString(),
+          graded_by: user.id,
+        })
+        .eq('id', gradingSubmission.id);
+
+      if (error) {
+        console.error('Grading error:', error);
+        throw error;
+      }
+
+      toast.success(`Graded ${gradingSubmission.student_name}: ${marks}/${selectedAssignment?.max_marks}`);
+      setGradeDialogOpen(false);
+      setGradingSubmission(null);
+      setGradeMarks('');
+      setGradeFeedback('');
+      if (selectedAssignment) {
+        fetchSubmissions(selectedAssignment.id);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to grade submission');
     }
   };
 
