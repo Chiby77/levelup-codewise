@@ -53,7 +53,7 @@ export const QuestionBank = () => {
   const [formData, setFormData] = useState({
     question_text: "",
     question_type: "multiple_choice" as "multiple_choice" | "coding" | "short_answer" | "flowchart",
-    options: [] as string[],
+    options: ["", "", "", ""] as string[],
     correct_answer: "",
     sample_code: "",
     programming_language: "python" as "python" | "javascript" | "java" | "cpp" | "vb" | "c",
@@ -118,15 +118,48 @@ export const QuestionBank = () => {
   }, [filterSubject, filterType, filterDifficulty, searchTags]);
 
   const handleSave = async () => {
+    if (!formData.question_text.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Question text is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.subject.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Subject is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Filter out empty options for multiple choice
+      const filteredOptions = formData.question_type === "multiple_choice" 
+        ? formData.options.filter(opt => opt.trim() !== '')
+        : null;
+
       const questionData = {
-        ...formData,
-        options: formData.question_type === "multiple_choice" ? formData.options : null,
+        question_text: formData.question_text.trim(),
+        question_type: formData.question_type,
+        options: filteredOptions,
+        correct_answer: formData.correct_answer.trim() || null,
+        sample_code: formData.sample_code.trim() || null,
+        programming_language: formData.question_type === "coding" ? formData.programming_language : null,
+        marks: formData.marks || 10,
+        difficulty_level: formData.difficulty_level,
+        subject: formData.subject.trim(),
+        tags: formData.tags.length > 0 ? formData.tags : null,
+        category: formData.category.trim() || null,
         created_by: user.id,
+        is_active: true,
       };
 
       if (editingQuestion) {
@@ -135,14 +168,20 @@ export const QuestionBank = () => {
           .update(questionData)
           .eq("id", editingQuestion.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
         toast({ title: "Success", description: "Question updated successfully" });
       } else {
         const { error } = await supabase
           .from("question_bank")
           .insert([questionData]);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
         toast({ title: "Success", description: "Question added to bank" });
       }
 
@@ -150,9 +189,10 @@ export const QuestionBank = () => {
       resetForm();
       fetchQuestions();
     } catch (error: any) {
+      console.error('Save error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to save question",
         variant: "destructive",
       });
     } finally {
@@ -221,7 +261,7 @@ export const QuestionBank = () => {
     setFormData({
       question_text: "",
       question_type: "multiple_choice",
-      options: [],
+      options: ["", "", "", ""],
       correct_answer: "",
       sample_code: "",
       programming_language: "python",
@@ -260,26 +300,27 @@ export const QuestionBank = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Database className="h-5 w-5" />
+        <CardHeader className="pb-2 sm:pb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm sm:text-base text-foreground">
+              <Database className="h-4 w-4 sm:h-5 sm:w-5" />
               Question Bank
             </CardTitle>
-            <Button onClick={() => { resetForm(); setShowDialog(true); }}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Question
+            <Button size="sm" onClick={() => { resetForm(); setShowDialog(true); }}>
+              <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Add Question</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <CardContent className="p-2 sm:p-6 pt-0">
+          {/* Filters - Mobile optimized */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
             <Select value={filterSubject} onValueChange={setFilterSubject}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Subjects" />
+              <SelectTrigger className="text-xs sm:text-sm h-8 sm:h-10">
+                <SelectValue placeholder="Subject" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Subjects</SelectItem>
@@ -289,8 +330,8 @@ export const QuestionBank = () => {
             </Select>
 
             <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Types" />
+              <SelectTrigger className="text-xs sm:text-sm h-8 sm:h-10">
+                <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
@@ -302,11 +343,11 @@ export const QuestionBank = () => {
             </Select>
 
             <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Difficulties" />
+              <SelectTrigger className="text-xs sm:text-sm h-8 sm:h-10">
+                <SelectValue placeholder="Difficulty" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Difficulties</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="easy">Easy</SelectItem>
                 <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="hard">Hard</SelectItem>
@@ -314,46 +355,54 @@ export const QuestionBank = () => {
             </Select>
 
             <Input
-              placeholder="Search by tags (comma-separated)"
+              placeholder="Search tags..."
               value={searchTags}
               onChange={(e) => setSearchTags(e.target.value)}
+              className="text-xs sm:text-sm h-8 sm:h-10"
             />
           </div>
 
-          {/* Questions List */}
-          <div className="space-y-4">
+          {/* Questions List - Mobile optimized */}
+          <div className="space-y-2 sm:space-y-4">
+            {loading && <p className="text-center text-muted-foreground py-4">Loading...</p>}
+            {!loading && questions.length === 0 && (
+              <p className="text-center text-muted-foreground py-8">No questions found. Add your first question!</p>
+            )}
             {questions.map((question) => (
               <Card key={question.id} className="border-l-4 border-l-primary">
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline">{question.question_type}</Badge>
-                        <Badge variant="secondary">{question.difficulty_level}</Badge>
-                        <Badge>{question.marks} marks</Badge>
+                <CardContent className="p-2 sm:pt-6 sm:p-6">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2 flex-wrap">
+                        <Badge variant="outline" className="text-[10px] sm:text-xs">{question.question_type.replace('_', ' ')}</Badge>
+                        <Badge variant="secondary" className="text-[10px] sm:text-xs">{question.difficulty_level}</Badge>
+                        <Badge className="text-[10px] sm:text-xs">{question.marks} pts</Badge>
                       </div>
-                      <p className="font-medium mb-2">{question.question_text}</p>
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {question.tags?.map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            <Tag className="h-3 w-3 mr-1" />
+                      <p className="font-medium text-xs sm:text-sm text-foreground mb-1 sm:mb-2 line-clamp-2">{question.question_text}</p>
+                      <div className="flex flex-wrap gap-1 mb-1 sm:mb-2">
+                        {question.tags?.slice(0, 3).map((tag) => (
+                          <Badge key={tag} variant="outline" className="text-[10px]">
+                            <Tag className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5" />
                             {tag}
                           </Badge>
                         ))}
+                        {question.tags && question.tags.length > 3 && (
+                          <Badge variant="outline" className="text-[10px]">+{question.tags.length - 3}</Badge>
+                        )}
                       </div>
                       {question.category && (
-                        <p className="text-sm text-muted-foreground">Category: {question.category}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Category: {question.category}</p>
                       )}
                     </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => handleDuplicate(question)}>
-                        <Copy className="h-4 w-4" />
+                    <div className="flex gap-1 sm:gap-2 justify-end">
+                      <Button size="sm" variant="outline" className="h-7 w-7 sm:h-8 sm:w-8 p-0" onClick={() => handleDuplicate(question)} title="Duplicate">
+                        <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleEdit(question)}>
-                        <Edit className="h-4 w-4" />
+                      <Button size="sm" variant="outline" className="h-7 w-7 sm:h-8 sm:w-8 p-0" onClick={() => handleEdit(question)} title="Edit">
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(question.id)}>
-                        <Trash2 className="h-4 w-4" />
+                      <Button size="sm" variant="destructive" className="h-7 w-7 sm:h-8 sm:w-8 p-0" onClick={() => handleDelete(question.id)} title="Delete">
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                   </div>
