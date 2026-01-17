@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import bluewaveLogoUrl from '@/assets/bluewave-academy-logo.jpg';
 
 interface Question {
   id: string;
@@ -16,26 +17,48 @@ interface Submission {
   max_score: number;
   time_taken_minutes?: number;
   answers: Record<string, any>;
-  grade_details: Record<string, {
-    score: number;
-    maxScore: number;
-    feedback: string;
-    studentAnswer?: string;
-    correctAnswer?: string;
-    questionText?: string;
-  }>;
+  grade_details: Record<
+    string,
+    {
+      score: number;
+      maxScore: number;
+      feedback: string;
+      studentAnswer?: string;
+      correctAnswer?: string;
+      questionText?: string;
+    }
+  >;
 }
 
-// Helper function to add logo to PDF
-const addLogo = (pdf: jsPDF, x: number, y: number, size: number) => {
-  // Draw a stylized "BW" logo since we can't embed images easily
+const loadImageAsDataUrl = async (url: string): Promise<string> => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to load image: ${res.status}`);
+  const blob = await res.blob();
+
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Failed to read image blob'));
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(blob);
+  });
+};
+
+const addLogo = (pdf: jsPDF, imageDataUrl: string | null, x: number, y: number, size: number) => {
+  // NOTE: jsPDF coords are in mm. x/y are top-left.
+  if (imageDataUrl) {
+    // JPG data URLs come back as data:image/jpeg;base64,...
+    pdf.addImage(imageDataUrl, 'JPEG', x, y, size, size);
+    return;
+  }
+
+  // Fallback if image fails to load
   pdf.setFillColor(255, 255, 255);
-  pdf.roundedRect(x - 2, y - size + 4, size + 4, size + 4, 2, 2, 'F');
-  
-  pdf.setTextColor(10, 35, 81); // Navy blue
-  pdf.setFontSize(size * 0.6);
+  pdf.roundedRect(x, y, size, size, 2, 2, 'F');
+
+  pdf.setTextColor(10, 35, 81);
+  pdf.setFontSize(size * 0.55);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('BW', x + 2, y + 2);
+  pdf.text('BW', x + size * 0.18, y + size * 0.68);
 };
 
 // Helper function to generate AI feedback comment based on answer correctness
@@ -75,6 +98,9 @@ const wrapText = (pdf: jsPDF, text: string, maxWidth: number): string[] => {
 
 export const generatePDFReport = async (submission: Submission, questions?: Question[]) => {
   const pdf = new jsPDF();
+
+  // Embed the real Bluewave Academy logo in the header (fallback to text if it can't load)
+  const logoDataUrl = await loadImageAsDataUrl(bluewaveLogoUrl).catch(() => null);
   
   // Bluewave Academy color scheme
   const colors = {
@@ -97,10 +123,9 @@ export const generatePDFReport = async (submission: Submission, questions?: Ques
   // === HEADER SECTION ===
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, 55, 'F');
-  
-  // Logo area
-  addLogo(pdf, 20, 32, 24);
-  
+
+  // Logo area (top-left in the header)
+  addLogo(pdf, logoDataUrl, 16, 14, 24);
   // Header text
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(24);

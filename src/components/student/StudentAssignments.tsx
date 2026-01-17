@@ -64,6 +64,51 @@ export default function StudentAssignments() {
     }
   }, [enrolledClasses, selectedClass]);
 
+  // Realtime updates so marks/results show up without the student needing to refresh
+  useEffect(() => {
+    let channel: any;
+
+    const setup = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      channel = supabase
+        .channel('student-assignments-live')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'assignment_submissions',
+            filter: `student_id=eq.${user.id}`,
+          },
+          () => {
+            fetchSubmissions();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'assignments',
+          },
+          () => {
+            fetchAssignments();
+          }
+        )
+        .subscribe();
+    };
+
+    setup();
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [enrolledClasses, selectedClass]);
+
   const fetchEnrolledClasses = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
