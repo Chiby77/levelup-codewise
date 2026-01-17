@@ -68,13 +68,9 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
 
   const questionTypes = [
     { value: 'multiple_choice', label: 'Multiple Choice', icon: <FileText className="h-4 w-4" /> },
+    { value: 'short_answer', label: 'Short Answer', icon: <FileText className="h-4 w-4" /> },
     { value: 'coding', label: 'Programming/Coding', icon: <Code className="h-4 w-4" /> },
     { value: 'flowchart', label: 'Flowchart/Diagram', icon: <FileText className="h-4 w-4" /> },
-    { value: 'short_answer', label: 'Short Answer', icon: <FileText className="h-4 w-4" /> },
-    { value: 'essay', label: 'Essay/Long Answer', icon: <FileText className="h-4 w-4" /> },
-    { value: 'fill_blank', label: 'Fill in the Blanks', icon: <FileText className="h-4 w-4" /> },
-    { value: 'true_false', label: 'True/False', icon: <FileText className="h-4 w-4" /> },
-    { value: 'matching', label: 'Matching', icon: <FileText className="h-4 w-4" /> }
   ];
 
   const addQuestion = () => {
@@ -202,72 +198,80 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
 
     setLoading(true);
 
+    let createdExamId: string | null = null;
+
     try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const { data: userRes, error: userErr } = await supabase.auth.getUser();
+      if (userErr) throw userErr;
+      const user = userRes.user;
+
       if (!user) {
-        toast.error('You must be logged in to create an exam');
-        setLoading(false);
-        return;
+        throw new Error('You must be logged in to create an exam');
       }
 
-      // Check if user is admin
-      const { data: roleData } = await supabase
+      // Verify admin role (avoid .single() hard-failing when row not found)
+      const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
         .eq('role', 'admin')
-        .single();
+        .maybeSingle();
 
+      if (roleError) throw roleError;
       if (!roleData) {
-        toast.error('You must be an admin to create exams');
-        setLoading(false);
-        return;
+        throw new Error('You must be an admin to create exams');
       }
 
+      // IMPORTANT: set is_general so students can actually see the exam under RLS
       const { data: examResponse, error: examError } = await supabase
         .from('exams')
         .insert({
-          title: examData.title,
-          description: examData.description,
+          title: examData.title.trim(),
+          description: examData.description?.trim() || null,
           duration_minutes: examData.duration_minutes,
           total_marks: examData.total_marks,
           status: examData.status,
-          subject: examData.subject,
-          created_by: user.id
+          subject: examData.subject?.trim() || 'Computer Science',
+          created_by: user.id,
+          is_general: true,
+          start_time: null,
+          end_time: null,
+          auto_activate: false,
+          auto_deactivate: false,
         })
-        .select()
+        .select('id')
         .single();
 
-      if (examError) {
-        console.error('Exam creation error:', examError);
-        throw examError;
-      }
+      if (examError) throw examError;
+      if (!examResponse?.id) throw new Error('Exam creation failed: no ID returned');
+      createdExamId = examResponse.id;
 
-      const questionsToInsert = questions.map((q, index) => ({
-        exam_id: examResponse.id,
-        question_text: q.question_text,
-        question_type: q.question_type,
-        options: ['multiple_choice', 'true_false', 'matching'].includes(q.question_type) ? q.options : null,
-        correct_answer: q.correct_answer,
-        sample_code: q.sample_code,
-        programming_language: q.programming_language || 'python',
-        marks: q.marks,
-        order_number: index + 1
-      }));
+      const questionsToInsert = questions.map((q, index) => {
+        const options = q.question_type === 'multiple_choice'
+          ? (q.options || []).map(o => o.trim()).filter(Boolean)
+          : null;
+
+        return {
+          exam_id: createdExamId,
+          question_text: q.question_text,
+          question_type: q.question_type,
+          options,
+          correct_answer: q.correct_answer || null,
+          sample_code: q.sample_code || null,
+          programming_language: q.programming_language || null,
+          marks: q.marks,
+          order_number: index + 1,
+        };
+      });
 
       const { error: questionsError } = await supabase
         .from('questions')
         .insert(questionsToInsert);
 
-      if (questionsError) {
-        console.error('Questions creation error:', questionsError);
-        throw questionsError;
-      }
+      if (questionsError) throw questionsError;
 
       toast.success('Exam created successfully!');
-      
+
       // Reset form
       setExamData({
         title: '',
@@ -278,11 +282,16 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         subject: 'Computer Science'
       });
       setQuestions([]);
-      
+
       onExamCreated();
     } catch (error: any) {
+      // Cleanup orphaned exam if questions failed
+      if (createdExamId) {
+        await supabase.from('exams').delete().eq('id', createdExamId);
+      }
+
       console.error('Error creating exam:', error);
-      toast.error(error.message || 'Failed to create exam');
+      toast.error(error?.message || 'Failed to create exam');
     } finally {
       setLoading(false);
     }
