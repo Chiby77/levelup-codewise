@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Trash2, Save, Upload, Download, Copy, FileText, Code, Calculator, Database } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -31,6 +34,22 @@ interface Question {
   time_limit?: number;
 }
 
+interface ClassOption {
+  id: string;
+  name: string;
+  subject: string;
+  year_level: string;
+}
+
+const chunkArray = <T,>(arr: T[], chunkSize: number) => {
+  if (chunkSize <= 0) return [arr];
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    chunks.push(arr.slice(i, i + chunkSize));
+  }
+  return chunks;
+};
+
 export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExamCreated }) => {
   const [examData, setExamData] = useState({
     title: '',
@@ -39,6 +58,16 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
     total_marks: 100,
     status: 'draft' as 'draft' | 'active',
     subject: 'Computer Science'
+  });
+
+  const [audience, setAudience] = useState<'general' | 'classes'>('general');
+  const [classes, setClasses] = useState<ClassOption[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
+  const [schedule, setSchedule] = useState({
+    start: '',
+    end: '',
+    autoActivate: true,
+    autoDeactivate: true,
   });
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -57,6 +86,46 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
   const [loading, setLoading] = useState(false);
   const [bulkImport, setBulkImport] = useState('');
   const [showBankImporter, setShowBankImporter] = useState(false);
+
+  const scheduledActivationEnabled = useMemo(
+    () => Boolean(schedule.start) && schedule.autoActivate,
+    [schedule.start, schedule.autoActivate]
+  );
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchClasses = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('classes')
+          .select('id,name,subject,year_level')
+          .eq('is_active', true)
+          .order('subject', { ascending: true })
+          .order('name', { ascending: true });
+
+        if (error) throw error;
+        if (!mounted) return;
+
+        setClasses((data || []) as ClassOption[]);
+      } catch (e) {
+        console.error('Failed to load classes', e);
+        toast.error('Failed to load classes');
+      }
+    };
+
+    fetchClasses();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const toggleClassSelection = (classId: string) => {
+    setSelectedClasses((prev) =>
+      prev.includes(classId) ? prev.filter((id) => id !== classId) : [...prev, classId]
+    );
+  };
 
   const importFromBank = (importedQuestions: any[]) => {
     const updatedQuestions = importedQuestions.map((q, idx) => ({
@@ -196,6 +265,20 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
       return;
     }
 
+    if (audience === 'classes' && selectedClasses.length === 0) {
+      toast.error('Please select at least one class');
+      return;
+    }
+
+    if (schedule.start && schedule.end) {
+      const startTs = new Date(schedule.start).getTime();
+      const endTs = new Date(schedule.end).getTime();
+      if (!Number.isNaN(startTs) && !Number.isNaN(endTs) && endTs <= startTs) {
+        toast.error('End time must be after start time');
+        return;
+      }
+    }
+
     setLoading(true);
 
     let createdExamId: string | null = null;
@@ -222,7 +305,12 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         throw new Error('You must be an admin to create exams');
       }
 
-      // IMPORTANT: set is_general so students can actually see the exam under RLS
+      const startTime = schedule.start ? new Date(schedule.start).toISOString() : null;
+      const endTime = schedule.end ? new Date(schedule.end).toISOString() : null;
+
+      // If scheduling auto-activation for the future, keep status as draft so students don't see it early.
+      const effectiveStatus: 'draft' | 'active' = scheduledActivationEnabled ? 'draft' : examData.status;
+
       const { data: examResponse, error: examError } = await supabase
         .from('exams')
         .insert({
@@ -230,14 +318,14 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
           description: examData.description?.trim() || null,
           duration_minutes: examData.duration_minutes,
           total_marks: examData.total_marks,
-          status: examData.status,
+          status: effectiveStatus,
           subject: examData.subject?.trim() || 'Computer Science',
           created_by: user.id,
-          is_general: true,
-          start_time: null,
-          end_time: null,
-          auto_activate: false,
-          auto_deactivate: false,
+          is_general: audience === 'general',
+          start_time: startTime,
+          end_time: endTime,
+          auto_activate: !!startTime ? schedule.autoActivate : false,
+          auto_deactivate: !!endTime ? schedule.autoDeactivate : false,
         })
         .select('id')
         .single();
@@ -246,9 +334,24 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
       if (!examResponse?.id) throw new Error('Exam creation failed: no ID returned');
       createdExamId = examResponse.id;
 
+      if (audience === 'classes' && selectedClasses.length > 0) {
+        const assignments = selectedClasses.map((classId) => ({
+          exam_id: createdExamId,
+          class_id: classId,
+          assigned_by: user.id,
+        }));
+
+        for (const chunk of chunkArray(assignments, 500)) {
+          const { error: assignError } = await supabase
+            .from('exam_class_assignments')
+            .insert(chunk);
+          if (assignError) throw assignError;
+        }
+      }
+
       const questionsToInsert = questions.map((q, index) => {
         const options = q.question_type === 'multiple_choice'
-          ? (q.options || []).map(o => o.trim()).filter(Boolean)
+          ? (q.options || []).map((o) => o.trim()).filter(Boolean)
           : null;
 
         return {
@@ -264,15 +367,15 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         };
       });
 
-      const { error: questionsError } = await supabase
-        .from('questions')
-        .insert(questionsToInsert);
-
-      if (questionsError) throw questionsError;
+      for (const chunk of chunkArray(questionsToInsert, 500)) {
+        const { error: questionsError } = await supabase
+          .from('questions')
+          .insert(chunk);
+        if (questionsError) throw questionsError;
+      }
 
       toast.success('Exam created successfully!');
 
-      // Reset form
       setExamData({
         title: '',
         description: '',
@@ -281,11 +384,13 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         status: 'draft',
         subject: 'Computer Science'
       });
+      setAudience('general');
+      setSelectedClasses([]);
+      setSchedule({ start: '', end: '', autoActivate: true, autoDeactivate: true });
       setQuestions([]);
 
       onExamCreated();
     } catch (error: any) {
-      // Cleanup orphaned exam if questions failed
       if (createdExamId) {
         await supabase.from('exams').delete().eq('id', createdExamId);
       }
@@ -334,8 +439,8 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         </TabsList>
 
         <TabsContent value="details" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-1">
               <CardHeader>
                 <CardTitle>Basic Information</CardTitle>
               </CardHeader>
@@ -362,7 +467,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="lg:col-span-1">
               <CardHeader>
                 <CardTitle>Exam Settings</CardTitle>
               </CardHeader>
@@ -395,13 +500,17 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
                     type="text"
                     value={examData.subject}
                     onChange={(e) => setExamData({ ...examData, subject: e.target.value })}
-                    placeholder="e.g., Computer Science, Mathematics"
+                    placeholder="e.g., Computer Architecture"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
-                  <Select value={examData.status} onValueChange={(value: 'draft' | 'active') => setExamData({ ...examData, status: value })}>
+                  <Select
+                    value={examData.status}
+                    onValueChange={(value: 'draft' | 'active') => setExamData({ ...examData, status: value })}
+                    disabled={scheduledActivationEnabled}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -410,7 +519,104 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
                       <SelectItem value="active">Active</SelectItem>
                     </SelectContent>
                   </Select>
+                  {scheduledActivationEnabled && (
+                    <p className="text-xs text-muted-foreground">
+                      Status is locked to Draft because auto-activation is enabled.
+                    </p>
+                  )}
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="lg:col-span-1">
+              <CardHeader>
+                <CardTitle>Audience & Schedule</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Target Audience</Label>
+                  <Select value={audience} onValueChange={(v: 'general' | 'classes') => setAudience(v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="general">General (All Students)</SelectItem>
+                      <SelectItem value="classes">Specific Classes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {audience === 'classes' && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label>Pick Classes</Label>
+                      <Badge variant="secondary">{selectedClasses.length} selected</Badge>
+                    </div>
+                    <ScrollArea className="h-40 rounded-md border bg-muted/20 p-2">
+                      <div className="space-y-2">
+                        {classes.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">No active classes found.</p>
+                        ) : (
+                          classes.map((c) => (
+                            <label key={c.id} className="flex items-start gap-3 rounded-md p-2 hover:bg-muted/50">
+                              <Checkbox
+                                checked={selectedClasses.includes(c.id)}
+                                onCheckedChange={() => toggleClassSelection(c.id)}
+                              />
+                              <span className="min-w-0">
+                                <span className="block text-sm font-medium text-foreground truncate">{c.name}</span>
+                                <span className="block text-xs text-muted-foreground truncate">{c.subject} • {c.year_level}</span>
+                              </span>
+                            </label>
+                          ))
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="startTime">Start Time (optional)</Label>
+                  <Input
+                    id="startTime"
+                    type="datetime-local"
+                    value={schedule.start}
+                    onChange={(e) => setSchedule({ ...schedule, start: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="endTime">End Time (optional)</Label>
+                  <Input
+                    id="endTime"
+                    type="datetime-local"
+                    value={schedule.end}
+                    onChange={(e) => setSchedule({ ...schedule, end: e.target.value })}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="flex items-center justify-between gap-2 rounded-md border p-3">
+                    <span className="text-sm text-foreground">Auto activate</span>
+                    <Switch
+                      checked={schedule.autoActivate}
+                      onCheckedChange={(checked) => setSchedule({ ...schedule, autoActivate: checked })}
+                      disabled={!schedule.start}
+                    />
+                  </label>
+                  <label className="flex items-center justify-between gap-2 rounded-md border p-3">
+                    <span className="text-sm text-foreground">Auto deactivate</span>
+                    <Switch
+                      checked={schedule.autoDeactivate}
+                      onCheckedChange={(checked) => setSchedule({ ...schedule, autoDeactivate: checked })}
+                      disabled={!schedule.end}
+                    />
+                  </label>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Tip: For scheduled exams, set Status to Draft and provide a Start Time.
+                </p>
               </CardContent>
             </Card>
           </div>
