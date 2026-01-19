@@ -41,12 +41,49 @@ function calculateSentiment(text: string): number {
 
 function identifyTopics(text: string): string[] {
   const topicKeywords = {
-    'programming': ['code', 'programming', 'python', 'javascript', 'algorithm', 'function', 'variable', 'loop', 'array'],
-    'computer_science': ['computer', 'science', 'data', 'structure', 'binary', 'network', 'database', 'system'],
+    // Programming Languages
+    'programming': ['code', 'programming', 'python', 'javascript', 'algorithm', 'function', 'variable', 'loop', 'array', 'developer', 'software'],
+    'python': ['python', 'django', 'flask', 'pandas', 'numpy', 'pip', 'pytorch'],
+    'javascript': ['javascript', 'js', 'node', 'react', 'vue', 'angular', 'typescript', 'npm'],
+    'java': ['java', 'spring', 'maven', 'jvm', 'hibernate'],
+    'csharp': ['c#', 'csharp', '.net', 'asp.net', 'unity'],
+    'cpp': ['c++', 'cpp', 'pointer'],
+    'mobile': ['android', 'ios', 'swift', 'kotlin', 'flutter', 'react native', 'mobile app'],
+    
+    // Web Technologies
+    'web': ['html', 'css', 'web', 'website', 'frontend', 'backend', 'fullstack', 'api', 'rest', 'graphql'],
+    'database': ['sql', 'mysql', 'postgresql', 'mongodb', 'database', 'nosql', 'redis', 'query', 'table'],
+    
+    // DevOps & Cloud
+    'cloud': ['aws', 'azure', 'gcp', 'cloud', 'serverless', 'lambda', 's3', 'kubernetes', 'docker'],
+    'devops': ['devops', 'ci/cd', 'jenkins', 'github actions', 'terraform', 'deployment'],
+    'git': ['git', 'github', 'gitlab', 'version control', 'branch', 'merge', 'commit'],
+    
+    // AI & Machine Learning
+    'ai': ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'neural network', 'chatgpt', 'gpt', 'llm'],
+    'data_science': ['data science', 'data analysis', 'statistics', 'visualization', 'big data', 'analytics'],
+    
+    // Computer Science Fundamentals
+    'computer_science': ['computer', 'science', 'data', 'structure', 'binary', 'network', 'system'],
+    'algorithms': ['algorithm', 'sort', 'search', 'binary', 'linear', 'bubble', 'quick', 'merge', 'hash', 'tree', 'graph'],
+    'data_structures': ['array', 'linked list', 'stack', 'queue', 'tree', 'graph', 'hash table', 'heap'],
+    'networking': ['network', 'tcp', 'ip', 'http', 'router', 'switch', 'protocol', 'internet', 'dns', 'vpn'],
+    'security': ['security', 'encryption', 'hacking', 'cybersecurity', 'password', 'authentication', 'ssl'],
+    'os': ['operating system', 'linux', 'windows', 'ubuntu', 'kernel', 'process', 'thread'],
+    
+    // Hardware & Electronics
+    'hardware': ['hardware', 'cpu', 'gpu', 'ram', 'motherboard', 'processor', 'computer', 'laptop'],
+    'electronics': ['electronics', 'circuit', 'arduino', 'raspberry pi', 'iot', 'sensor'],
+    
+    // Emerging Tech
+    'blockchain': ['blockchain', 'crypto', 'bitcoin', 'ethereum', 'nft', 'web3'],
+    
+    // Education
     'education': ['learn', 'study', 'exam', 'test', 'question', 'answer', 'homework', 'assignment', 'course'],
-    'flowchart': ['flowchart', 'diagram', 'flow', 'chart', 'process', 'steps', 'decision', 'start', 'end'],
-    'algorithms': ['algorithm', 'sort', 'search', 'binary', 'linear', 'bubble', 'quick', 'merge'],
-    'networking': ['network', 'tcp', 'ip', 'http', 'router', 'switch', 'protocol', 'internet'],
+    'flowchart': ['flowchart', 'diagram', 'flow', 'chart', 'process', 'steps', 'decision'],
+    
+    // Career
+    'career': ['job', 'career', 'interview', 'resume', 'portfolio', 'freelance', 'salary'],
   };
   
   const text_lower = text.toLowerCase();
@@ -58,7 +95,7 @@ function identifyTopics(text: string): string[] {
     }
   });
   
-  return topics;
+  return topics.length > 0 ? topics : ['general_tech'];
 }
 
 async function generateResponseWithGroq(userInput: string, sessionId: string): Promise<string> {
@@ -83,8 +120,21 @@ async function generateResponseWithGroq(userInput: string, sessionId: string): P
   }
   
   // Build system prompt
-  const systemPrompt = `You are Mbuya Zivai, a wise and knowledgeable AI assistant specializing in Computer Science education. 
-You help students understand programming, algorithms, data structures, networking, and all aspects of computer science.
+  const systemPrompt = `You are Mbuya Zivai, a wise and knowledgeable AI assistant specializing in ALL technology-related topics. 
+You help students and professionals understand:
+- Programming in ANY language (Python, JavaScript, Java, C++, C#, Go, Rust, PHP, Ruby, Swift, Kotlin, etc.)
+- Web development (frontend, backend, full-stack, APIs)
+- Mobile app development (Android, iOS, cross-platform)
+- Database design, SQL, and NoSQL systems
+- Cloud computing (AWS, Azure, GCP, serverless)
+- DevOps, CI/CD, and infrastructure
+- Artificial Intelligence and Machine Learning
+- Cybersecurity and networking
+- Computer hardware and electronics
+- IT career advice and interview preparation
+- Blockchain and emerging technologies
+- General tech troubleshooting
+
 You are patient, encouraging, and provide clear explanations with examples when helpful.
 Current topics being discussed: ${topics.join(', ')}
 Key concepts: ${keywords.slice(0, 5).join(', ')}`;
