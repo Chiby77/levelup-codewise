@@ -10,6 +10,7 @@ import { LiveExamMonitoring } from './LiveExamMonitoring';
 import { ScoreAnalytics } from './ScoreAnalytics';
 import { StudentLeaderboard } from './StudentLeaderboard';
 import { ExamPreview } from './ExamPreview';
+import { ExamManagement } from './ExamManagement';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { FeedbackViewer } from '@/components/admin/FeedbackViewer';
 import { RegradeSubmissions } from "@/components/admin/RegradeSubmissions";
@@ -380,68 +381,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           </TabsContent>
 
           <TabsContent value="exams" className="space-y-3 sm:space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <h2 className="text-lg sm:text-xl font-bold text-foreground">Exam Management</h2>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                <Button size="sm" onClick={() => setActiveTab('create')}><Plus className="h-4 w-4 mr-1" />Create</Button>
-                <Button variant="outline" size="sm" onClick={sendBulkPaymentReminders} disabled={sendingReminders}>
-                  <Send className="h-4 w-4 sm:mr-1" />
-                  <span className="hidden sm:inline">{sendingReminders ? 'Sending...' : 'Reminders'}</span>
-                </Button>
-              </div>
-            </div>
-            
-            <div className="grid gap-2 sm:gap-4">
-              {exams.map((exam) => (
-                <Card key={exam.id}>
-                  <CardContent className="p-2 sm:p-4">
-                    <div className="flex flex-col gap-2 sm:gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
-                          <h3 className="font-semibold text-xs sm:text-base text-foreground truncate max-w-[150px] sm:max-w-none">{exam.title}</h3>
-                          <Badge variant={exam.status === 'active' ? 'default' : 'secondary'} className="text-[10px] sm:text-xs">{exam.status}</Badge>
-                          <Badge variant="outline" className="text-[10px] sm:text-xs">
-                            {exam.is_general !== false ? <><Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5" />Gen</> : <><Users className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5" />Class</>}
-                          </Badge>
-                        </div>
-                        <p className="text-[10px] sm:text-sm text-muted-foreground mb-1 sm:mb-2 line-clamp-1">{exam.description}</p>
-                        <div className="flex flex-wrap gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground">
-                          <span>⏱️ {exam.duration_minutes}m</span>
-                          <span>📝 {exam.total_marks}pts</span>
-                          {exam.start_time && <span className="hidden sm:inline">🗓️ {new Date(exam.start_time).toLocaleDateString()}</span>}
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap gap-1 items-center justify-end">
-                        <Button size="sm" variant="outline" className="h-7 w-7 sm:h-8 sm:w-8 p-0" onClick={() => {
-                          setPreviewExamId(exam.id);
-                          setShowPreviewDialog(true);
-                        }} title="Preview">
-                          <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 w-7 sm:h-8 sm:w-8 p-0" onClick={() => { 
-                          setSelectedExam(exam); 
-                          setScheduleData({
-                            startTime: exam.start_time || '',
-                            endTime: exam.end_time || '',
-                            autoActivate: exam.auto_activate || false,
-                            autoDeactivate: exam.auto_deactivate || false
-                          });
-                          setShowScheduleDialog(true);
-                        }} title="Schedule">
-                          <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 w-7 sm:h-8 sm:w-8 p-0" onClick={() => toggleExamStatus(exam.id, exam.status)} title={exam.status === 'active' ? 'Deactivate' : 'Activate'}>
-                          <Power className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                        <Button size="sm" variant="destructive" className="h-7 w-7 sm:h-8 sm:w-8 p-0" onClick={() => deleteExam(exam.id)} title="Delete">
-                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <ExamManagement exams={exams} onRefresh={fetchData} />
           </TabsContent>
 
           <TabsContent value="submissions" className="space-y-3 sm:space-y-4">
