@@ -82,68 +82,74 @@ const NextGenHero = () => {
             </div>
           </div>
           
-          {/* ZIMSEC 2025 Results Celebration Banner */}
+          {/* Thank You & Platform Migration Notice */}
           <div className="mb-8 animate-slideDown">
-            <div className="relative max-w-5xl mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/40 via-emerald-500/40 to-yellow-500/40 rounded-3xl blur-2xl animate-neonPulse" />
-              <div className="relative bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 rounded-3xl p-8 border-4 border-yellow-400/50 shadow-2xl">
-                {/* Trophy icons */}
-                <div className="flex justify-center gap-4 mb-4">
-                  <Trophy className="w-12 h-12 text-yellow-400 animate-bounce" />
-                  <Award className="w-12 h-12 text-yellow-300 animate-bounce" style={{ animationDelay: '0.2s' }} />
-                  <Trophy className="w-12 h-12 text-yellow-400 animate-bounce" style={{ animationDelay: '0.4s' }} />
-                </div>
-                
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4">
-                  <span className="text-white drop-shadow-lg">🎉 ZIMSEC 2025 </span>
-                  <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                    RESULTS ARE OUT!
-                  </span>
-                  <span className="text-white drop-shadow-lg"> 🎉</span>
-                </h1>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-yellow-400/30">
-                    <p className="text-5xl md:text-6xl font-black text-yellow-400 animate-pulse">300+</p>
-                    <p className="text-white font-semibold">A Grades Achieved</p>
+            <div className="relative max-w-5xl mx-auto space-y-6">
+              {/* Thank You Banner */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/40 via-teal-500/40 to-emerald-500/40 rounded-3xl blur-2xl animate-neonPulse" />
+                <div className="relative bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 rounded-3xl p-8 border-4 border-emerald-400/50 shadow-2xl">
+                  <div className="flex justify-center gap-4 mb-4">
+                    <Sparkles className="w-10 h-10 text-yellow-400 animate-pulse" />
+                    <Trophy className="w-12 h-12 text-yellow-400 animate-bounce" />
+                    <Sparkles className="w-10 h-10 text-yellow-400 animate-pulse" />
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-yellow-400/30">
-                    <p className="text-5xl md:text-6xl font-black text-yellow-300 animate-pulse">98.5%</p>
-                    <p className="text-white font-semibold">Pass Rate Record</p>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-yellow-400/30">
-                    <p className="text-5xl md:text-6xl font-black text-yellow-400 animate-pulse">#1</p>
-                    <p className="text-white font-semibold">In Computer Science</p>
+                  
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 text-white drop-shadow-lg">
+                    🙏 Thank You Zimbabwe! 🙏
+                  </h1>
+                  
+                  <p className="text-lg md:text-xl text-white/95 font-semibold mb-4 max-w-3xl mx-auto">
+                    To all the amazing <span className="text-yellow-300">teachers and students</span> across Zimbabwe who have used this platform — your dedication and hard work inspire us every day. Together, we've achieved incredible results!
+                  </p>
+                  
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-yellow-400/30 max-w-2xl mx-auto">
+                    <p className="text-white font-bold text-lg mb-2">📚 Private Lessons & Seminars Available</p>
+                    <p className="text-white/90">
+                      <span className="text-yellow-300 font-semibold">Tinodaishe M. Chibi</span> (CEO, Bluewave Technologies) is now available for private A Level Computer Science lessons and school seminars. Contact us to book!
+                    </p>
                   </div>
                 </div>
-                
-                <p className="text-xl md:text-2xl text-white font-bold flex items-center justify-center gap-2">
-                  <Sparkles className="w-6 h-6 text-yellow-400 animate-spin" />
-                  Congratulations to ALL our A Level Students!
-                  <Sparkles className="w-6 h-6 text-yellow-400 animate-spin" />
-                </p>
               </div>
-            </div>
-          </div>
 
-          {/* Join CompSci Group CTA */}
-          <div className="mb-8 animate-slideUp" style={{ animationDelay: '0.3s' }}>
-            <div className="relative max-w-3xl mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-2xl blur-xl animate-pulse" />
-              <div className="relative bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-6 border border-green-400/50">
-                <p className="text-lg md:text-xl text-white font-semibold mb-3">
-                  🚀 Form 5 & Form 6 Students - Your Journey Starts Here!
-                </p>
-                <button
-                  onClick={() => window.open('https://chat.whatsapp.com/Jqi8HmLBRbF3g5GAMXbClh?mode=hqrt2', '_blank')}
-                  className="bg-white text-green-700 font-bold px-8 py-4 rounded-full text-lg hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-green-500/50 flex items-center gap-3 mx-auto"
-                >
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                  </svg>
-                  Join CompSci Group Now
-                  <Star className="w-5 h-5 text-yellow-500 animate-spin" />
-                </button>
+              {/* Platform Migration Notice */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/30 to-red-500/30 rounded-2xl blur-xl animate-pulse" />
+                <div className="relative bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl p-6 border border-orange-400/50">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <Award className="w-6 h-6 text-yellow-300" />
+                    <p className="text-lg md:text-xl text-white font-bold">
+                      ⚠️ Important Platform Notice ⚠️
+                    </p>
+                    <Award className="w-6 h-6 text-yellow-300" />
+                  </div>
+                  <p className="text-white/95 mb-3 max-w-2xl mx-auto">
+                    This platform is <span className="text-yellow-300 font-bold">going offline soon</span> to be replaced with a more stable, fresh version of <span className="text-yellow-300 font-bold">Bluewave Academy</span>. All user accounts will be migrated to the new platform.
+                  </p>
+                  <p className="text-white/80 text-sm">
+                    Stay tuned for the launch announcement! 🚀
+                  </p>
+                </div>
+              </div>
+
+              {/* Join WhatsApp CTA */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-2xl blur-xl animate-pulse" />
+                <div className="relative bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-6 border border-green-400/50">
+                  <p className="text-lg md:text-xl text-white font-semibold mb-3">
+                    🚀 Stay Connected - Join Our WhatsApp Group!
+                  </p>
+                  <button
+                    onClick={() => window.open('https://chat.whatsapp.com/Jqi8HmLBRbF3g5GAMXbClh?mode=hqrt2', '_blank')}
+                    className="bg-white text-green-700 font-bold px-8 py-4 rounded-full text-lg hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-green-500/50 flex items-center gap-3 mx-auto"
+                  >
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                    </svg>
+                    Join CompSci Group Now
+                    <Star className="w-5 h-5 text-yellow-500 animate-spin" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
