@@ -162,27 +162,31 @@ export default function StudentDashboard() {
       </header>
 
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-6">
-        {/* Celebration Banner - Mobile Optimized */}
-        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 p-3 sm:p-6 border border-emerald-400/30">
+        {/* Platform Migration Notice Banner - Mobile Optimized */}
+        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 p-3 sm:p-6 border border-orange-400/30">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2220%22%20r%3D%223%22/%3E%3C/g%3E%3C/svg%3E')]" />
-          <div className="relative flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative flex flex-col gap-3 sm:gap-4">
             <div className="flex items-start sm:items-center gap-3">
               <div className="bg-yellow-400/20 p-2 sm:p-3 rounded-full flex-shrink-0">
-                <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
+                <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
               </div>
               <div className="min-w-0">
                 <h2 className="text-sm sm:text-xl font-bold text-white">
-                  🎉 2025 ZIMSEC: 98.5% Pass Rate!
+                  ⚠️ Platform Migration Notice
                 </h2>
-                <p className="text-xs sm:text-base text-emerald-100">300+ A grades in Computer Science!</p>
+                <p className="text-xs sm:text-base text-orange-100">This platform is going offline soon to be replaced with a fresh Bluewave Academy. Your account will be migrated automatically!</p>
               </div>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3 text-white/90 text-xs sm:text-sm">
+              <p className="font-semibold mb-1">🙏 Thank you to all teachers & students across Zimbabwe!</p>
+              <p><span className="text-yellow-300 font-bold">Tino Chibi</span> is available for private lessons & school seminars.</p>
             </div>
             <Button
               size="sm"
               onClick={() => window.open('https://chat.whatsapp.com/Jqi8HmLBRbF3g5GAMXbClh?mode=hqrt2', '_blank')}
-              className="bg-white text-emerald-700 hover:bg-yellow-300 font-semibold w-full sm:w-auto"
+              className="bg-white text-orange-700 hover:bg-yellow-300 font-semibold w-full sm:w-auto"
             >
-              Join Group
+              Stay Connected - Join WhatsApp
             </Button>
           </div>
         </div>
