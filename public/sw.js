@@ -1,6 +1,6 @@
-const CACHE_NAME = 'cs-experts-v1';
-const STATIC_CACHE = 'cs-experts-static-v1';
-const DYNAMIC_CACHE = 'cs-experts-dynamic-v1';
+const CACHE_NAME = 'cs-experts-v2';
+const STATIC_CACHE = 'cs-experts-static-v2';
+const DYNAMIC_CACHE = 'cs-experts-dynamic-v2';
 
 // Static assets to cache immediately
 const STATIC_ASSETS = [
@@ -53,23 +53,14 @@ self.addEventListener('fetch', (event) => {
   // Skip extension requests
   if (url.protocol === 'chrome-extension:') return;
 
-  // For navigation requests, try network first
+  // For navigation requests, always fetch from network (SPA routing)
+  // This prevents stale cache issues on Netlify and other hosts
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
-        .then((response) => {
-          // Cache the latest version
-          const responseClone = response.clone();
-          caches.open(DYNAMIC_CACHE).then((cache) => {
-            cache.put(request, responseClone);
-          });
-          return response;
-        })
         .catch(() => {
-          // Fallback to cache
-          return caches.match(request).then((response) => {
-            return response || caches.match('/index.html');
-          });
+          // Only fallback to cache if network fails (offline)
+          return caches.match('/index.html');
         })
     );
     return;
