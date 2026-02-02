@@ -1,11 +1,10 @@
-const CACHE_NAME = 'cs-experts-v2';
-const STATIC_CACHE = 'cs-experts-static-v2';
-const DYNAMIC_CACHE = 'cs-experts-dynamic-v2';
+// Cache version - increment on each deployment to bust cache
+const CACHE_VERSION = 'v3-' + Date.now();
+const STATIC_CACHE = 'cs-experts-static-' + CACHE_VERSION;
+const DYNAMIC_CACHE = 'cs-experts-dynamic-' + CACHE_VERSION;
 
-// Static assets to cache immediately
+// Static assets to cache immediately (minimal set)
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
   '/manifest.json',
 ];
 
