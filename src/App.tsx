@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import FloatingChatButton from "@/components/FloatingChatButton";
 import { registerServiceWorker } from "@/utils/serviceWorkerRegistration";
+import { useVersionCheck } from "@/hooks/useVersionCheck";
 
 // Eagerly loaded - critical path
 import Index from "./pages/Index";
@@ -51,6 +52,9 @@ const queryClient = new QueryClient({
 registerServiceWorker();
 
 const App = () => {
+  // Check for app updates and notify user
+  useVersionCheck();
+  
   console.log('App component is rendering...');
   try {
     return (
