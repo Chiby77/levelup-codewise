@@ -323,7 +323,8 @@ serve(async (req) => {
         const formData = await req.text();
         const params = new URLSearchParams(formData);
         body = params.get('Body') || '';
-        from = params.get('From') || '';
+        // Fix: Properly decode the From field - URLSearchParams decodes + as space
+        from = (params.get('From') || '').replace(/whatsapp:\s*\+?/, 'whatsapp:+');
         numMedia = parseInt(params.get('NumMedia') || '0', 10);
         
         if (numMedia > 0) {
