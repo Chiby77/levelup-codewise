@@ -76,9 +76,9 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       
       {/* Collapsible guidelines on mobile */}
       <details className="sm:open border-b">
-        <summary className="p-2 sm:hidden text-xs text-primary font-medium cursor-pointer">📝 Tap for coding tips</summary>
+        <summary className="p-2 sm:hidden text-xs text-primary font-medium cursor-pointer">Tap for coding tips</summary>
         <div className="p-2 sm:p-4 bg-blue-50/50 dark:bg-blue-950/20">
-          <p className="text-xs sm:text-sm text-primary font-medium mb-1 sm:mb-2 hidden sm:block">📝 Coding Guidelines:</p>
+          <p className="text-xs sm:text-sm text-primary font-medium mb-1 sm:mb-2 hidden sm:block">Coding Guidelines:</p>
           <ul className="text-[10px] sm:text-xs text-muted-foreground space-y-0.5 sm:space-y-1">
             <li>• Use proper variable declarations and data types</li>
             <li>• Include meaningful comments</li>
@@ -123,7 +123,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       {/* Compact evaluation criteria */}
       <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 px-3 sm:px-4 py-2 sm:py-3 border-t">
         <div className="flex items-center gap-2">
-          <span className="text-green-600 text-sm">✅</span>
+          <span className="text-primary text-sm">OK</span>
           <p className="text-[10px] sm:text-xs text-green-700 dark:text-green-300">
             Evaluated on: Syntax, Logic, Structure, Comments
           </p>

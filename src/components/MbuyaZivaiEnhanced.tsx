@@ -162,7 +162,7 @@ export const MbuyaZivaiEnhanced: React.FC = () => {
         const wisdom = shonaWisdom[Math.floor(Math.random() * shonaWisdom.length)];
         const wisdomMessage: Message = {
           id: `wisdom-${Date.now()}`,
-          text: `💫 ${wisdom}`,
+          text: wisdom,
           sender: 'mbuya',
           timestamp: new Date(),
           language: 'sn'

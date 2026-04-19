@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Sparkles, Settings } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -36,8 +36,8 @@ const motivationalQuotes: Quote[] = [
 ];
 
 const examQuotes: Quote[] = [
-  { text: "WISHING YOU ALL THE BEST IN YOUR FINAL EXAMS", language: 'en' },
-  { text: "USAKANGANWE PRAYER - LET'S MAKE OUR PARENTS HAPPY", language: 'en' },
+  { text: "Wishing you all the best in your final exams.", language: 'en' },
+  { text: "Usakanganwe prayer - let's make our parents happy.", language: 'en' },
   { text: "You've prepared well. Trust yourself and shine!", language: 'en' },
   { text: "Every question is an opportunity to show your knowledge.", language: 'en' },
   { text: "Stay calm, read carefully, and let your preparation guide you.", language: 'en' },
@@ -114,7 +114,7 @@ export const MotivationalQuotes: React.FC<MotivationalQuotesProps> = ({ showExam
         <div className="flex justify-between items-start gap-3">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg">💫</span>
+              <Sparkles className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium text-primary">
                 {currentQuote.language === 'sn' ? 'Mufaro' : 'Inspiration'}
               </span>
@@ -145,10 +145,10 @@ export const MotivationalQuotes: React.FC<MotivationalQuotesProps> = ({ showExam
               variant="ghost"
               size="sm"
               onClick={handleDisable}
-              className="h-6 w-6 p-0 hover:bg-gray-100 text-xs"
+              className="h-6 w-6 p-0 hover:bg-muted"
               title="Disable motivational quotes"
             >
-              ⚙️
+              <Settings className="h-3 w-3" />
             </Button>
           </div>
         </div>

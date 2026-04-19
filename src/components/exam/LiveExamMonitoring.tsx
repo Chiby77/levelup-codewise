@@ -160,9 +160,9 @@ export function LiveExamMonitoring() {
                   </div>
                   
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span>📧 {exam.student_email}</span>
-                    <span>⏱️ {exam.time_taken_minutes || 0} min</span>
-                    <span>🕒 {formatDistanceToNow(new Date(exam.submitted_at), { addSuffix: true })}</span>
+                    <span>{exam.student_email}</span>
+                    <span>{exam.time_taken_minutes || 0} min</span>
+                    <span>{formatDistanceToNow(new Date(exam.submitted_at), { addSuffix: true })}</span>
                   </div>
                 </div>
               </div>

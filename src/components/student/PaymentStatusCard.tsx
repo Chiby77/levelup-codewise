@@ -176,12 +176,12 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
                     </p>
                     {daysUntilDue !== null && daysUntilDue >= 0 && !isPaid && (
                       <p className={`text-[10px] sm:text-xs ${daysUntilDue <= 3 ? 'text-red-500 font-medium' : 'text-yellow-600'}`}>
-                        {daysUntilDue === 0 ? '⚠️ Due today!' : `${daysUntilDue}d left`}
+                        {daysUntilDue === 0 ? 'Due today!' : `${daysUntilDue}d left`}
                       </p>
                     )}
                     {daysUntilDue !== null && daysUntilDue < 0 && !isPaid && (
                       <p className="text-[10px] sm:text-xs text-red-500 font-bold">
-                        ⚠️ {Math.abs(daysUntilDue)}d overdue
+                        {Math.abs(daysUntilDue)}d overdue
                       </p>
                     )}
                   </div>

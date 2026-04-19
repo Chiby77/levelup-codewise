@@ -107,9 +107,9 @@ export const StudentLeaderboard = () => {
   };
 
   const getRankBadge = (rank: number) => {
-    if (rank === 1) return <Badge className="bg-yellow-500">🥇 1st</Badge>;
-    if (rank === 2) return <Badge className="bg-gray-400">🥈 2nd</Badge>;
-    if (rank === 3) return <Badge className="bg-amber-600">🥉 3rd</Badge>;
+    if (rank === 1) return <Badge className="bg-yellow-500">1st</Badge>;
+    if (rank === 2) return <Badge className="bg-gray-400">2nd</Badge>;
+    if (rank === 3) return <Badge className="bg-amber-600">3rd</Badge>;
     return <Badge variant="outline">#{rank}</Badge>;
   };
 

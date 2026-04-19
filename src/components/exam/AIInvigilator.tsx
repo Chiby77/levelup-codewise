@@ -277,7 +277,7 @@ export const AIInvigilator: React.FC<AIInvigilatorProps> = ({ isActive, onViolat
                   onClick={() => setShowUI(false)}
                   className="h-6 w-6 p-0"
                 >
-                  ✕
+                  ×
                 </Button>
               </CardTitle>
             </CardHeader>

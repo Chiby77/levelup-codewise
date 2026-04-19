@@ -374,7 +374,7 @@ export const ExamManagement: React.FC<ExamManagementProps> = ({ exams, onRefresh
                       <Clock className="h-3 w-3" />
                       {exam.duration_minutes} mins
                     </span>
-                    <span>📝 {exam.total_marks} marks</span>
+                    <span>{exam.total_marks} marks</span>
                     {exam.start_time && (
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />

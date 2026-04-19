@@ -308,7 +308,7 @@ export const FlowchartDrawer: React.FC<FlowchartDrawerProps> = ({ value, onChang
         {/* Instructions */}
         <div className="mt-4 p-3 bg-muted/50 rounded-lg">
           <p className="text-xs text-muted-foreground">
-            💡 <strong>Instructions:</strong> Use the tools above to create your flowchart. 
+            <strong>Instructions:</strong> Use the tools above to create your flowchart. 
             Click shapes to add them, use "Draw" for freehand drawing. 
             Select objects to move, resize, or delete them. Double-click text to edit.
           </p>

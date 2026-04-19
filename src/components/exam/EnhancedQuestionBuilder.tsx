@@ -42,10 +42,10 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
   });
 
   const questionTypes = [
-    { value: 'multiple_choice', label: 'Multiple Choice', icon: '📝' },
-    { value: 'coding', label: 'Coding', icon: '💻' },
-    { value: 'flowchart', label: 'Flowchart', icon: '📊' },
-    { value: 'short_answer', label: 'Short Answer', icon: '✍️' }
+    { value: 'multiple_choice', label: 'Multiple Choice' },
+    { value: 'coding', label: 'Coding' },
+    { value: 'flowchart', label: 'Flowchart' },
+    { value: 'short_answer', label: 'Short Answer' }
   ];
 
   const addQuestion = () => {
@@ -81,7 +81,7 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
       category: ''
     });
     
-    toast.success('Question added successfully! ✨');
+    toast.success('Question added successfully');
   };
 
   const updateOption = (index: number, value: string) => {
@@ -153,10 +153,7 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
                 <SelectContent>
                   {questionTypes.map(type => (
                     <SelectItem key={type.value} value={type.value}>
-                      <span className="flex items-center gap-2">
-                        <span>{type.icon}</span>
-                        {type.label}
-                      </span>
+                      {type.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
