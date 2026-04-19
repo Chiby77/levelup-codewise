@@ -171,7 +171,7 @@ export function FeedbackViewer() {
       }
 
       if (feedback.rating) {
-        doc.text(`Rating: ${'⭐'.repeat(feedback.rating)} (${feedback.rating}/5)`, margin + 5, yPos);
+        doc.text(`Rating: ${feedback.rating}/5`, margin + 5, yPos);
         yPos += 5;
       }
 
@@ -228,11 +228,11 @@ export function FeedbackViewer() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Ratings</SelectItem>
-                <SelectItem value="5">⭐⭐⭐⭐⭐ (5 stars)</SelectItem>
-                <SelectItem value="4">⭐⭐⭐⭐ (4 stars)</SelectItem>
-                <SelectItem value="3">⭐⭐⭐ (3 stars)</SelectItem>
-                <SelectItem value="2">⭐⭐ (2 stars)</SelectItem>
-                <SelectItem value="1">⭐ (1 star)</SelectItem>
+                <SelectItem value="5">5 stars</SelectItem>
+                <SelectItem value="4">4 stars</SelectItem>
+                <SelectItem value="3">3 stars</SelectItem>
+                <SelectItem value="2">2 stars</SelectItem>
+                <SelectItem value="1">1 star</SelectItem>
               </SelectContent>
             </Select>
           </div>

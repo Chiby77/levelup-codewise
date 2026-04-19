@@ -162,31 +162,26 @@ export default function StudentDashboard() {
       </header>
 
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-6">
-        {/* Platform Migration Notice Banner - Mobile Optimized */}
-        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 p-3 sm:p-6 border border-orange-400/30">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2220%22%20r%3D%223%22/%3E%3C/g%3E%3C/svg%3E')]" />
-          <div className="relative flex flex-col gap-3 sm:gap-4">
-            <div className="flex items-start sm:items-center gap-3">
-              <div className="bg-yellow-400/20 p-2 sm:p-3 rounded-full flex-shrink-0">
-                <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
-              </div>
-              <div className="min-w-0">
-                <h2 className="text-sm sm:text-xl font-bold text-white">
-                  ⚠️ Platform Migration Notice
-                </h2>
-                <p className="text-xs sm:text-base text-orange-100">This platform is going offline soon to be replaced with a fresh Bluewave Academy. Your account will be migrated automatically!</p>
-              </div>
+        {/* Welcome banner */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-hero p-5 sm:p-7 border border-primary/20 shadow-elegant">
+          <div className="relative flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="bg-white/15 p-3 rounded-xl flex-shrink-0">
+              <Sparkles className="w-7 h-7 text-white" />
             </div>
-            <div className="bg-white/10 rounded-lg p-3 text-white/90 text-xs sm:text-sm">
-              <p className="font-semibold mb-1">🙏 Thank you to all teachers & students across Zimbabwe!</p>
-              <p><span className="text-yellow-300 font-bold">Tino Chibi</span> is available for private lessons & school seminars.</p>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg sm:text-2xl font-bold text-white">
+                Welcome back to Bluewave Academy
+              </h2>
+              <p className="text-sm sm:text-base text-white/80 mt-1">
+                Track your progress, take exams and keep building your A Level CS journey.
+              </p>
             </div>
             <Button
               size="sm"
               onClick={() => window.open('https://chat.whatsapp.com/Jqi8HmLBRbF3g5GAMXbClh?mode=hqrt2', '_blank')}
-              className="bg-white text-orange-700 hover:bg-yellow-300 font-semibold w-full sm:w-auto"
+              className="bg-white text-primary hover:bg-sky-100 font-semibold flex-shrink-0"
             >
-              Stay Connected - Join WhatsApp
+              Join CompSci Group
             </Button>
           </div>
         </div>
@@ -280,26 +275,26 @@ export default function StudentDashboard() {
         <Tabs defaultValue="exams" className="space-y-3 sm:space-y-4">
           <div className="overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
             <TabsList className="inline-flex w-max sm:w-auto h-auto gap-1 bg-muted/50 p-1 rounded-xl">
-              <TabsTrigger value="exams" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg whitespace-nowrap">
-                📝 Exams
+              <TabsTrigger value="exams" className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg whitespace-nowrap">
+                Exams
               </TabsTrigger>
-              <TabsTrigger value="assignments" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-lg whitespace-nowrap">
-                📤 Assign
+              <TabsTrigger value="assignments" className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg whitespace-nowrap">
+                Assignments
               </TabsTrigger>
-              <TabsTrigger value="profile" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg whitespace-nowrap">
-                📊 Progress
+              <TabsTrigger value="profile" className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg whitespace-nowrap">
+                Progress
               </TabsTrigger>
-              <TabsTrigger value="recommendations" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 data-[state=active]:bg-yellow-500 data-[state=active]:text-white rounded-lg whitespace-nowrap">
-                💡 Study
+              <TabsTrigger value="recommendations" className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg whitespace-nowrap">
+                Study
               </TabsTrigger>
-              <TabsTrigger value="history" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg whitespace-nowrap">
-                📜 History
+              <TabsTrigger value="history" className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg whitespace-nowrap">
+                History
               </TabsTrigger>
-              <TabsTrigger value="announcements" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 data-[state=active]:bg-pink-500 data-[state=active]:text-white rounded-lg whitespace-nowrap">
-                📢 News
+              <TabsTrigger value="announcements" className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg whitespace-nowrap">
+                News
               </TabsTrigger>
-              <TabsTrigger value="resources" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg whitespace-nowrap">
-                📚 Books
+              <TabsTrigger value="resources" className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg whitespace-nowrap">
+                Books
               </TabsTrigger>
             </TabsList>
           </div>

@@ -95,7 +95,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, e
         <DialogHeader>
           <DialogTitle className="text-foreground">Share Your Feedback</DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Help us improve your experience at CS Experts. Your feedback is valuable to us!
+            Help us improve your experience at Bluewave Academy. Your feedback is valuable to us!
           </DialogDescription>
         </DialogHeader>
         

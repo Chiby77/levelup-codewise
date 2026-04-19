@@ -61,7 +61,7 @@ const About = () => {
                     <Building2 className="h-5 w-5 text-emerald-400 mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-semibold">Co-founder & CEO of Bluewave Technologies</p>
-                      <p className="text-sm text-gray-400">Powering CS Experts Zimbabwe</p>
+                      <p className="text-sm text-gray-400">Powering Bluewave Academy</p>
                     </div>
                   </div>
                   
@@ -113,9 +113,9 @@ const About = () => {
           <div className="bg-emerald-900/30 backdrop-blur rounded-lg p-8 shadow-lg border border-emerald-500/20 mb-12 animate-fadeIn">
             <h2 className="text-2xl font-semibold text-emerald-400 mb-4">Our Story</h2>
             <p className="text-gray-300 leading-relaxed">
-              What started as a vision has blossomed into Zimbabwe's premier destination for computer science 
-              education. Through the dedicated efforts of Tinodaishe M. Chibi, J Mapasure, and the entire team, 
-              CS Experts has evolved into a comprehensive platform serving students across the whole of Zimbabwe, 
+              What started as a vision has blossomed into Zimbabwe's premier destination for computer science
+              education. Through the dedicated efforts of Tinodaishe M. Chibi, J Mapasure, and the entire team,
+              Bluewave Academy has evolved into a comprehensive platform serving students across the whole of Zimbabwe,
               providing cutting-edge education, career guidance, and digital examination systems.
             </p>
           </div>
@@ -233,7 +233,7 @@ const About = () => {
                 allowFullScreen 
                 loading="lazy" 
                 referrerPolicy="no-referrer-when-downgrade"
-                title="CS Experts Location"
+                title="Bluewave Academy Location"
                 className="w-full h-full"
               ></iframe>
             </div>
