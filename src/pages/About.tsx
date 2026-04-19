@@ -31,18 +31,18 @@ const About = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${aboutBackground})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 via-background/95 to-teal-900/90" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-background/95 to-primary/80" />
       <div className="relative z-10">
         <Navbar />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-green-400 bg-clip-text text-transparent mb-8 animate-fadeIn text-center">About Us</h1>
-          
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-8 animate-fadeIn text-center">About Us</h1>
+
           {/* Powered by Bluewave Technologies */}
           <div className="text-center mb-8 animate-fadeIn">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-6 py-2">
-              <Building2 className="h-5 w-5 text-emerald-400" />
-              <span className="text-emerald-300">Powered by <strong>Bluewave Technologies</strong></span>
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-6 py-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              <span className="text-primary"><strong>Bluewave Academy</strong> · Powered by Bluewave Technologies</span>
             </div>
           </div>
           
