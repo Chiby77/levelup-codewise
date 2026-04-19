@@ -446,11 +446,11 @@ const Downloads = () => {
         <div className="mt-12 text-center space-y-4">
           <p className="text-gray-400">
             Having trouble downloading? Contact us at 
-            <a href="mailto:support@csexperts.co.zw" className="text-emerald-400 hover:underline ml-1">
-              support@csexperts.co.zw
+            <a href="mailto:tinodaishemchibi@gmail.com" className="text-primary hover:underline ml-1">
+              tinodaishemchibi@gmail.com
             </a>
           </p>
-          <p className="text-sm text-gray-500">© 2026 Bluewave Technologies. All rights reserved.</p>
+          <p className="text-sm text-gray-500">© 2026 Bluewave Academy · Powered by Bluewave Technologies.</p>
         </div>
       </div>
       </div>

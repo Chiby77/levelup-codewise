@@ -137,13 +137,13 @@ export default function Auth() {
               </div>
             </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-            CS Experts Zimbabwe
+          <h1 className="text-3xl font-bold text-gradient-primary">
+            Bluewave Academy
           </h1>
           <p className="text-muted-foreground">Digital Examination System</p>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Sparkles className="w-4 h-4 text-emerald-500" />
-            <span>Powered by <strong className="text-emerald-600">Bluewave Technologies</strong></span>
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span>Powered by <strong className="text-primary">Bluewave Technologies</strong></span>
           </div>
         </div>
 

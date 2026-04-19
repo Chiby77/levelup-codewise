@@ -288,7 +288,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Admin Dashboard</h1>
-              <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">CS Experts Zimbabwe - Examination System</p>
+              <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">Bluewave Academy — Examination System</p>
             </div>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <Button variant="outline" size="sm" onClick={toggleSound} title={soundEnabled ? 'Mute notifications' : 'Enable sound notifications'}>
