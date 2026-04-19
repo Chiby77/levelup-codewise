@@ -407,7 +407,7 @@ export default function AdminContent() {
                     <p className="text-sm text-muted-foreground">
                       Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                       {selectedFile.size > 10 * 1024 * 1024 && (
-                        <span className="text-destructive ml-2">⚠️ File too large! Max 10MB</span>
+                        <span className="text-destructive ml-2">File too large! Max 10MB</span>
                       )}
                     </p>
                   )}

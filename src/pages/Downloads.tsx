@@ -185,81 +185,41 @@ const Downloads = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${downloadsBackground})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 via-background/95 to-teal-900/90" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-background/95 to-primary/80" />
       <div className="relative z-10">
         <Navbar />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-12 space-y-6 sm:space-y-8">
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-green-400 bg-clip-text text-transparent mb-4 animate-fadeIn">Study Resources</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-4 animate-fadeIn">Study Resources</h1>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-xl sm:max-w-2xl mx-auto px-4">
             Access our comprehensive collection of learning materials to help you excel in your A Level Computer Science studies.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <div onClick={() => document.getElementById('programming-notes')?.scrollIntoView({behavior: 'smooth'})}
-            className="bg-gradient-to-br from-emerald-900/50 to-emerald-950/50 p-6 rounded-lg shadow-lg hover:shadow-emerald-500/10 transition-all cursor-pointer border border-emerald-500/20 hover:border-emerald-500/40 backdrop-blur">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center mr-4">
-                <Code className="h-6 w-6 text-emerald-400" />
+          {[
+            { id: 'programming-notes', title: 'Programming Notes', count: programming_notes.length, icon: Code, desc: 'Comprehensive programming guides covering all syllabus topics.' },
+            { id: 'special-resources', title: 'Special Resources', count: special_resources.length, icon: BookOpen, desc: 'Advanced topics and specialized learning materials for deeper understanding.' },
+            { id: 'past-papers', title: 'CS Past Papers', count: theory_papers.length + practical_papers.length, icon: FileText, desc: 'Computer Science exam papers with marking schemes.' },
+            { id: 'pure-maths-papers', title: 'Pure Maths Papers', count: pure_maths_papers.length, icon: FileText, desc: 'Pure Mathematics Paper 2 past papers for revision.' },
+          ].map(({ id, title, count, icon: Icon, desc }) => (
+            <div
+              key={id}
+              onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-card/60 backdrop-blur p-6 rounded-lg shadow-elegant hover:shadow-glow transition-all cursor-pointer border border-primary/20 hover:border-primary/40"
+            >
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mr-4">
+                  <Icon className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+                  <p className="text-sm text-muted-foreground">{count} resources</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">Programming Notes</h2>
-                <p className="text-sm text-gray-400">{programming_notes.length} resources</p>
-              </div>
+              <p className="text-muted-foreground">{desc}</p>
             </div>
-            <p className="text-gray-300 mb-4">
-              Comprehensive programming guides covering all syllabus topics.
-            </p>
-          </div>
-          
-          <div onClick={() => document.getElementById('special-resources')?.scrollIntoView({behavior: 'smooth'})}
-            className="bg-gradient-to-br from-teal-900/50 to-teal-950/50 p-6 rounded-lg shadow-lg hover:shadow-teal-500/10 transition-all cursor-pointer border border-teal-500/20 hover:border-teal-500/40 backdrop-blur">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center mr-4">
-                <BookOpen className="h-6 w-6 text-teal-400" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">Special Resources</h2>
-                <p className="text-sm text-gray-400">{special_resources.length} resources</p>
-              </div>
-            </div>
-            <p className="text-gray-300 mb-4">
-              Advanced topics and specialized learning materials for deeper understanding.
-            </p>
-          </div>
-          
-          <div onClick={() => document.getElementById('past-papers')?.scrollIntoView({behavior: 'smooth'})}
-            className="bg-gradient-to-br from-green-900/50 to-green-950/50 p-6 rounded-lg shadow-lg hover:shadow-green-500/10 transition-all cursor-pointer border border-green-500/20 hover:border-green-500/40 backdrop-blur">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mr-4">
-                <FileText className="h-6 w-6 text-green-400" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">CS Past Papers</h2>
-                <p className="text-sm text-gray-400">{theory_papers.length + practical_papers.length} papers</p>
-              </div>
-            </div>
-            <p className="text-gray-300 mb-4">
-              Computer Science exam papers with marking schemes.
-            </p>
-          </div>
-
-          <div onClick={() => document.getElementById('pure-maths-papers')?.scrollIntoView({behavior: 'smooth'})}
-            className="bg-gradient-to-br from-cyan-900/50 to-cyan-950/50 p-6 rounded-lg shadow-lg hover:shadow-cyan-500/10 transition-all cursor-pointer border border-cyan-500/20 hover:border-cyan-500/40 backdrop-blur">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center mr-4">
-                <FileText className="h-6 w-6 text-cyan-400" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">Pure Maths Papers</h2>
-                <p className="text-sm text-gray-400">{pure_maths_papers.length} papers</p>
-              </div>
-            </div>
-            <p className="text-gray-300 mb-4">
-              Pure Mathematics Paper 2 past papers for revision.
-            </p>
-          </div>
+          ))}
         </div>
 
         {/* Programming Notes Section */}

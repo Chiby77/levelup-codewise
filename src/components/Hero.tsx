@@ -37,14 +37,14 @@ const Hero = () => {
           {/* Motivational Message */}
           <div className="mb-6 text-center space-y-2 animate-fadeIn px-4" style={{ animationDelay: '1000ms' }}>
             <div className="bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <p className="text-lg sm:text-xl font-bold text-primary mb-2 animate-pulse">
-                ✨ WISHING YOU ALL THE BEST IN YOUR FINAL EXAMS ✨
+              <p className="text-lg sm:text-xl font-bold text-primary mb-2">
+                WISHING YOU ALL THE BEST IN YOUR FINAL EXAMS
               </p>
               <p className="text-base sm:text-lg font-semibold text-secondary">
-                🙏 USAKANGANWE PRAYER 🙏
+                USAKANGANWE PRAYER
               </p>
               <p className="text-sm sm:text-base font-medium text-white/90 mt-2">
-                💝 LET'S MAKE OUR PARENTS HAPPY 💝
+                LET'S MAKE OUR PARENTS HAPPY
               </p>
             </div>
           </div>

@@ -32,7 +32,7 @@ export const useRealtimeSubmissions = ({ onNewSubmission, enabled = true }: UseR
           
           // Show toast notification
           toast.success(
-            `🎓 New Submission!`,
+            `New Submission!`,
             {
               description: `${newSubmission.student_name} just submitted "${exam?.title || 'an exam'}"`,
               duration: 8000,

@@ -430,7 +430,7 @@ export default function MbuyaZivai() {
                   
                   <div className="space-y-4 max-w-2xl">
                     <h3 className="text-4xl font-bold bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent animate-pulse">
-                      Mbuya Zivai 🔮
+                      Mbuya Zivai
                     </h3>
                     <p className="text-muted-foreground text-lg leading-relaxed">
                       Your intelligent AI learning companion for Computer Science

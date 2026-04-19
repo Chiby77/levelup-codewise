@@ -120,7 +120,7 @@ export const AnimatedExamCard: React.FC<AnimatedExamCardProps> = ({
           {/* Subject Badge */}
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-xs">
-              📚 {exam.subject}
+              {exam.subject}
             </Badge>
           </div>
 

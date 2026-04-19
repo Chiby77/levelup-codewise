@@ -274,7 +274,7 @@ export const StudyRecommendations = ({ studentEmail }: { studentEmail: string })
         <CardContent>
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <p className="text-sm text-green-800">
-              💡 Continue practicing regularly to maintain your strong performance.
+              Continue practicing regularly to maintain your strong performance.
               Challenge yourself with harder exam difficulty levels!
             </p>
           </div>
@@ -384,7 +384,7 @@ export const StudyRecommendations = ({ studentEmail }: { studentEmail: string })
                   {/* Practice Suggestion */}
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
                     <p className="text-sm text-primary font-medium">
-                      💪 Practice Tip: Try taking practice exams focusing on {area.category} to build confidence
+                      Practice Tip: Try taking practice exams focusing on {area.category} to build confidence
                     </p>
                   </div>
                 </CardContent>
