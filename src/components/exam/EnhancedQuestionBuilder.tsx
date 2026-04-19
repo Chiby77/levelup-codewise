@@ -153,10 +153,7 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
                 <SelectContent>
                   {questionTypes.map(type => (
                     <SelectItem key={type.value} value={type.value}>
-                      <span className="flex items-center gap-2">
-                        <span>{type.icon}</span>
-                        {type.label}
-                      </span>
+                      {type.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
