@@ -160,14 +160,14 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   const fetchQuestions = async () => {
     try {
       // Use questions_public view — never exposes correct_answer to students
-      const { data, error } = await supabase
-        .from('questions_public' as any)
+      const { data, error } = await (supabase as any)
+        .from('questions_public')
         .select('*')
         .eq('exam_id', exam.id)
         .order('order_number');
 
       if (error) throw error;
-      setQuestions(data || []);
+      setQuestions((data || []) as Question[]);
     } catch (error) {
       console.error('Error fetching questions:', error);
       toast.error('Failed to load questions');
