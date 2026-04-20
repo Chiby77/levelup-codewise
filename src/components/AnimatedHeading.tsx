@@ -16,7 +16,7 @@ const AnimatedHeading = ({ text, className = "", delay = 0 }: AnimatedHeadingPro
     "linear-gradient(to right, #ffffff, #f97316, #ffffff)",
     "linear-gradient(to right, #ffffff, #3b82f6, #ffffff)",
     "linear-gradient(to right, #ffffff, #8b5cf6, #ffffff)",
-    "linear-gradient(to right, #ffffff, #10b981, #ffffff)",
+    "linear-gradient(to right, #ffffff, #3b82f6, #ffffff)",
     "linear-gradient(to right, #ffffff, #f43f5e, #ffffff)",
     "linear-gradient(to right, #ffffff, #f59e0b, #ffffff)",
     "linear-gradient(to right, #ffffff, #6366f1, #ffffff)",

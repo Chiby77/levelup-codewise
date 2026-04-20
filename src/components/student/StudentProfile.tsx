@@ -178,7 +178,7 @@ export const StudentProfile = ({ studentEmail }: { studentEmail: string }) => {
     return 'text-red-600 bg-red-50 border-red-200';
   };
 
-  const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
+  const COLORS = ['#3b82f6', '#3b82f6', '#f59e0b', '#ef4444'];
 
   if (loading) {
     return (
