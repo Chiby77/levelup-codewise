@@ -29,7 +29,7 @@ const AnimatedButton = ({
     "linear-gradient(135deg, #F97316 0%, #f97316dd 100%)",
     "linear-gradient(135deg, #3B82F6 0%, #3b82f6dd 100%)",
     "linear-gradient(135deg, #8B5CF6 0%, #8b5cf6dd 100%)",
-    "linear-gradient(135deg, #10B981 0%, #10b981dd 100%)",
+    "linear-gradient(135deg, #3B82F6 0%, #2563EBdd 100%)",
     "linear-gradient(135deg, #F43F5E 0%, #f43f5edd 100%)",
     "linear-gradient(135deg, #F59E0B 0%, #f59e0bdd 100%)",
     "linear-gradient(135deg, #6366F1 0%, #6366f1dd 100%)",
