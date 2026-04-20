@@ -110,19 +110,19 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-900/30 via-background to-teal-900/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 flex items-center justify-center p-4">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
       </div>
 
       <div className="w-full max-w-md space-y-6 relative z-10">
         <Button 
           variant="outline" 
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
+          className="flex items-center gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
@@ -131,9 +131,9 @@ export default function Auth() {
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full blur-lg animate-pulse" />
-              <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-full">
-                <GraduationCap className="h-12 w-12 text-white" />
+              <div className="absolute inset-0 bg-gradient-hero rounded-full blur-lg animate-pulse" />
+              <div className="relative bg-gradient-hero p-4 rounded-full">
+                <GraduationCap className="h-12 w-12 text-primary-foreground" />
               </div>
             </div>
           </div>
@@ -147,21 +147,21 @@ export default function Auth() {
           </div>
         </div>
 
-        <Card className="border-emerald-200/50 shadow-xl bg-background/80 backdrop-blur">
-          <CardHeader className="space-y-1 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 rounded-t-lg">
+        <Card className="border-primary/20 shadow-elegant bg-card/80 backdrop-blur">
+          <CardHeader className="space-y-1 bg-gradient-to-r from-primary/10 to-primary/5 rounded-t-lg">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-emerald-600" />
-              <CardTitle className="text-emerald-700">Student Portal</CardTitle>
+              <Users className="h-5 w-5 text-primary" />
+              <CardTitle className="text-primary">Student Portal</CardTitle>
             </div>
             <CardDescription>Sign in to access your exams and results</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <Tabs defaultValue="login">
-              <TabsList className="grid w-full grid-cols-2 bg-emerald-50">
-                <TabsTrigger value="login" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+              <TabsList className="grid w-full grid-cols-2 bg-primary/10">
+                <TabsTrigger value="login" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   Login
                 </TabsTrigger>
-                <TabsTrigger value="signup" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                <TabsTrigger value="signup" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   Sign Up
                 </TabsTrigger>
               </TabsList>
@@ -177,7 +177,7 @@ export default function Auth() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                      className="border-primary/30 focus:border-primary focus:ring-primary"
                     />
                   </div>
                   <div className="space-y-2">
@@ -189,12 +189,12 @@ export default function Auth() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                      className="border-primary/30 focus:border-primary focus:ring-primary"
                     />
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold" 
+                    className="w-full bg-gradient-hero hover:opacity-90 text-primary-foreground font-semibold" 
                     disabled={loading}
                   >
                     {loading ? 'Logging in...' : 'Login'}
@@ -204,8 +204,8 @@ export default function Auth() {
 
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-4 mt-4">
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-emerald-700">
+                  <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-primary">
                       <strong>Student Registration:</strong> Create your account to access exams and view your results.
                     </p>
                   </div>
@@ -218,7 +218,7 @@ export default function Auth() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       required
-                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                      className="border-primary/30 focus:border-primary focus:ring-primary"
                     />
                   </div>
                   <div className="space-y-2">
@@ -229,7 +229,7 @@ export default function Auth() {
                       placeholder="STU12345"
                       value={studentId}
                       onChange={(e) => setStudentId(e.target.value)}
-                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                      className="border-primary/30 focus:border-primary focus:ring-primary"
                     />
                   </div>
                   <div className="space-y-2">
@@ -241,7 +241,7 @@ export default function Auth() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                      className="border-primary/30 focus:border-primary focus:ring-primary"
                     />
                   </div>
                   <div className="space-y-2">
@@ -254,7 +254,7 @@ export default function Auth() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       minLength={6}
-                      className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                      className="border-primary/30 focus:border-primary focus:ring-primary"
                     />
                     <p className="text-xs text-muted-foreground">
                       Minimum 6 characters
@@ -262,7 +262,7 @@ export default function Auth() {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold" 
+                    className="w-full bg-gradient-hero hover:opacity-90 text-primary-foreground font-semibold" 
                     disabled={loading}
                   >
                     {loading ? 'Creating account...' : 'Sign Up as Student'}
@@ -276,7 +276,7 @@ export default function Auth() {
         {/* Footer */}
         <div className="text-center space-y-2">
           <p className="text-xs text-muted-foreground">
-            Co-founder & CEO: <strong className="text-emerald-600">Tinodaishe M. Chibi</strong>
+            Co-founder & CEO: <strong className="text-primary">Tinodaishe M. Chibi</strong>
           </p>
           <p className="text-xs text-muted-foreground">
             © 2026 Bluewave Technologies. All rights reserved.
