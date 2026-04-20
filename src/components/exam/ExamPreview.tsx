@@ -156,7 +156,7 @@ export const ExamPreview: React.FC<ExamPreviewProps> = ({ examId, onClose }) => 
               userAnswer.toLowerCase().trim() === (q.correct_answer || '').toLowerCase().trim();
             
             return (
-              <Card key={q.id} className={`${q.question_type === 'multiple_choice' ? (isCorrect ? 'border-green-300 bg-green-50/50' : 'border-red-300 bg-red-50/50') : ''}`}>
+              <Card key={q.id} className={`${q.question_type === 'multiple_choice' ? (isCorrect ? 'border-primary/40 bg-primary/10/50' : 'border-red-300 bg-red-50/50') : ''}`}>
                 <CardContent className="p-4">
                   <div className="flex items-start gap-2">
                     <span className="font-medium text-sm">Q{idx + 1}.</span>
@@ -165,7 +165,7 @@ export const ExamPreview: React.FC<ExamPreviewProps> = ({ examId, onClose }) => 
                       <div className="mt-2 text-xs space-y-1">
                         <p><span className="text-muted-foreground">Your answer:</span> {userAnswer}</p>
                         {q.question_type === 'multiple_choice' && q.correct_answer && (
-                          <p><span className="text-muted-foreground">Correct answer:</span> <span className="text-green-600 font-medium">{q.correct_answer}</span></p>
+                          <p><span className="text-muted-foreground">Correct answer:</span> <span className="text-primary font-medium">{q.correct_answer}</span></p>
                         )}
                       </div>
                     </div>
@@ -218,7 +218,7 @@ export const ExamPreview: React.FC<ExamPreviewProps> = ({ examId, onClose }) => 
               idx === currentIndex 
                 ? 'bg-primary text-primary-foreground' 
                 : answers[questions[idx].id] 
-                  ? 'bg-green-100 text-green-700 border border-green-300'
+                  ? 'bg-primary/15 text-primary border border-primary/40'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >

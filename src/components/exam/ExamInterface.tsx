@@ -400,14 +400,14 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
             </div>
             
             <div className="bg-muted/50 rounded p-1 sm:p-2">
-              <span className={`text-sm sm:text-lg font-semibold ${violations.length > 5 ? 'text-red-600' : violations.length > 2 ? 'text-yellow-600' : 'text-green-600'}`}>
+              <span className={`text-sm sm:text-lg font-semibold ${violations.length > 5 ? 'text-red-600' : violations.length > 2 ? 'text-yellow-600' : 'text-primary'}`}>
                 {violations.length}
               </span>
               <p className="text-[10px] sm:text-xs text-muted-foreground">Alerts</p>
             </div>
             
             <div className="bg-muted/50 rounded p-1 sm:p-2">
-              <span className={`text-sm sm:text-lg font-semibold ${tabSwitchCount >= 2 ? 'text-red-600' : tabSwitchCount >= 1 ? 'text-yellow-600' : 'text-green-600'}`}>
+              <span className={`text-sm sm:text-lg font-semibold ${tabSwitchCount >= 2 ? 'text-red-600' : tabSwitchCount >= 1 ? 'text-yellow-600' : 'text-primary'}`}>
                 {tabSwitchCount}/3
               </span>
               <p className="text-[10px] sm:text-xs text-muted-foreground">Tabs</p>

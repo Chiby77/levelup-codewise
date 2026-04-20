@@ -113,7 +113,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 
   const percentage = Math.round((submission.total_score / submission.max_score) * 100);
   const getGradeColor = (percent: number) => {
-    if (percent >= 80) return "text-green-600";
+    if (percent >= 80) return "text-primary";
     if (percent >= 60) return "text-blue-600";
     if (percent >= 40) return "text-yellow-600";
     return "text-red-600";
@@ -135,7 +135,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             {percentage >= 70 ? (
               <Award className="h-16 w-16 text-yellow-500" />
             ) : percentage >= 50 ? (
-              <CheckCircle className="h-16 w-16 text-green-500" />
+              <CheckCircle className="h-16 w-16 text-primary" />
             ) : (
               <FileText className="h-16 w-16 text-blue-500" />
             )}
@@ -192,7 +192,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         {details.score === details.maxScore ? (
-                          <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
                         ) : details.score > 0 ? (
                           <div className="h-5 w-5 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0">
                             <div className="h-2 w-2 rounded-full bg-white"></div>
@@ -217,8 +217,8 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                     
                     {/* Correct Answer */}
                     {details.correctAnswer && (
-                      <div className="mb-3 p-3 bg-green-50 dark:bg-green-950/30 rounded border-l-4 border-green-500">
-                        <p className="text-sm font-medium text-green-700 dark:text-green-400 mb-1">Correct Answer:</p>
+                      <div className="mb-3 p-3 bg-primary/10 dark:bg-primary/30 rounded border-l-4 border-primary/40">
+                        <p className="text-sm font-medium text-primary dark:text-primary mb-1">Correct Answer:</p>
                         <p className="text-sm whitespace-pre-wrap">{details.correctAnswer}</p>
                       </div>
                     )}
@@ -227,14 +227,14 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                     {details.studentAnswer && (
                       <div className={`mb-3 p-3 rounded border-l-4 ${
                         details.score === details.maxScore 
-                          ? 'bg-green-50 dark:bg-green-950/30 border-green-500' 
+                          ? 'bg-primary/10 dark:bg-primary/30 border-primary/40' 
                           : details.score > 0 
                             ? 'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-500'
                             : 'bg-red-50 dark:bg-red-950/30 border-red-500'
                       }`}>
                         <p className={`text-sm font-medium mb-1 ${
                           details.score === details.maxScore 
-                            ? 'text-green-700 dark:text-green-400' 
+                            ? 'text-primary dark:text-primary' 
                             : details.score > 0 
                               ? 'text-yellow-700 dark:text-yellow-400'
                               : 'text-red-700 dark:text-red-400'

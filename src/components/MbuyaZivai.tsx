@@ -328,7 +328,7 @@ export default function MbuyaZivai() {
       query: "What's the difference between dynamic and static data structures?"
     },
     { 
-      icon: <TreePine className="mr-2 h-4 w-4 text-emerald-500" />,
+      icon: <TreePine className="mr-2 h-4 w-4 text-primary" />,
       text: "Find study resources",
       query: "Where can I find programming notes and past papers?"
     },

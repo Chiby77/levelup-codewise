@@ -121,10 +121,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       </div>
       
       {/* Compact evaluation criteria */}
-      <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 px-3 sm:px-4 py-2 sm:py-3 border-t">
+      <div className="bg-gradient-to-r from-primary to-blue-50 dark:from-primary/20 dark:to-blue-950/20 px-3 sm:px-4 py-2 sm:py-3 border-t">
         <div className="flex items-center gap-2">
           <span className="text-primary text-sm">OK</span>
-          <p className="text-[10px] sm:text-xs text-green-700 dark:text-green-300">
+          <p className="text-[10px] sm:text-xs text-primary dark:text-primary">
             Evaluated on: Syntax, Logic, Structure, Comments
           </p>
         </div>

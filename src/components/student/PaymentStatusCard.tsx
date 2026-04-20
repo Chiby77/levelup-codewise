@@ -68,9 +68,9 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
         return {
           icon: CheckCircle,
           label: 'Paid',
-          color: 'text-emerald-600',
-          bgColor: 'bg-emerald-100',
-          borderColor: 'border-emerald-300',
+          color: 'text-primary',
+          bgColor: 'bg-primary/15',
+          borderColor: 'border-primary/30',
         };
       case 'overdue':
         return {
@@ -154,7 +154,7 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
                   <p className="text-muted-foreground text-[10px] sm:text-xs">
                     {isPaid ? 'Amount Paid' : 'Balance Due'}
                   </p>
-                  <p className={`font-bold text-sm sm:text-base ${isPaid ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <p className={`font-bold text-sm sm:text-base ${isPaid ? 'text-primary' : 'text-red-600'}`}>
                     {isPaid ? (
                       <span className="flex items-center gap-1">
                         <CheckCircle className="h-3 w-3" />
@@ -190,7 +190,7 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
                 {/* Current Balance */}
                 <div>
                   <p className="text-muted-foreground text-[10px] sm:text-xs">Current Balance</p>
-                  <p className={`font-bold text-sm sm:text-base ${isPaid ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <p className={`font-bold text-sm sm:text-base ${isPaid ? 'text-primary' : 'text-red-600'}`}>
                     {isPaid ? '$0.00' : `-$${amount.toFixed(2)}`}
                   </p>
                 </div>
@@ -199,7 +199,7 @@ export default function PaymentStatusCard({ userId }: PaymentStatusCardProps) {
                 {enrollment.last_payment_date && (
                   <div className="hidden sm:block">
                     <p className="text-muted-foreground text-xs">Last Payment</p>
-                    <p className="font-medium text-sm text-emerald-600">
+                    <p className="font-medium text-sm text-primary">
                       {format(new Date(enrollment.last_payment_date), 'MMM dd, yyyy')}
                     </p>
                   </div>

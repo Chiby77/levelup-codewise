@@ -16,7 +16,7 @@ export function QuizAccess({ onClose }: QuizAccessProps) {
 
   const quizCategories = [
     { id: 'algorithms', name: 'Algorithms', icon: <Code className="w-5 h-5 text-blue-500" /> },
-    { id: 'data-structures', name: 'Data Structures', icon: <Database className="w-5 h-5 text-green-500" /> },
+    { id: 'data-structures', name: 'Data Structures', icon: <Database className="w-5 h-5 text-primary" /> },
     { id: 'networking', name: 'Networking', icon: <Network className="w-5 h-5 text-purple-500" /> },
     { id: 'security', name: 'Security', icon: <Shield className="w-5 h-5 text-red-500" /> },
     { id: 'general', name: 'General Computer Science', icon: <Brain className="w-5 h-5 text-amber-500" /> }

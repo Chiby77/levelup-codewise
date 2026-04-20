@@ -118,7 +118,7 @@ export default function PaymentManagement({ enrollments, onRefresh, className }:
     const status = enrollment.payment_status || 'pending';
     switch (status) {
       case 'paid':
-        return <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 gap-1"><CheckCircle className="h-3 w-3" /> Paid</Badge>;
+        return <Badge className="bg-primary/15 text-primary border-primary/30 gap-1"><CheckCircle className="h-3 w-3" /> Paid</Badge>;
       case 'overdue':
         return <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" /> Overdue</Badge>;
       default:
@@ -131,7 +131,7 @@ export default function PaymentManagement({ enrollments, onRefresh, className }:
     const isPaid = enrollment.payment_status === 'paid';
     
     if (isPaid) {
-      return <span className="text-emerald-600 font-medium">$0.00</span>;
+      return <span className="text-primary font-medium">$0.00</span>;
     }
     
     return <span className="text-red-600 font-bold">-${amount.toFixed(2)}</span>;
@@ -182,7 +182,7 @@ export default function PaymentManagement({ enrollments, onRefresh, className }:
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-emerald-600 border-emerald-300 hover:bg-emerald-50"
+                        className="text-primary border-primary/30 hover:bg-primary/10"
                         onClick={() => handleReEnroll(enrollment)}
                       >
                         <RefreshCcw className="h-4 w-4" />
@@ -200,7 +200,7 @@ export default function PaymentManagement({ enrollments, onRefresh, className }:
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-emerald-600" />
+              <DollarSign className="h-5 w-5 text-primary" />
               Manage Payment - {selectedEnrollment?.student_email}
             </DialogTitle>
           </DialogHeader>

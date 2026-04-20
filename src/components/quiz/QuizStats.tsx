@@ -88,7 +88,7 @@ export function QuizStats({ stats }: QuizStatsProps) {
             </div>
             <Progress 
               value={overallPercentage} 
-              className={`h-2 mt-2 ${overallPercentage >= 80 ? "bg-green-500" : overallPercentage >= 60 ? "bg-blue-500" : "bg-red-500"}`} 
+              className={`h-2 mt-2 ${overallPercentage >= 80 ? "bg-primary" : overallPercentage >= 60 ? "bg-blue-500" : "bg-red-500"}`} 
             />
           </div>
         </div>

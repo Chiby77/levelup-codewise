@@ -32,8 +32,8 @@ export const EnhancedExamStats: React.FC<EnhancedExamStatsProps> = ({
       title: 'Active Exams',
       value: activeExams,
       icon: Clock,
-      gradient: 'from-green-500 to-emerald-500',
-      bgGradient: 'from-green-500/10 to-emerald-500/10'
+      gradient: 'from-primary to-primary/80',
+      bgGradient: 'from-primary/10 to-primary/80/10'
     },
     {
       title: 'Submissions',

@@ -100,9 +100,9 @@ export function ScoreAnalytics({ submissions }: ScoreAnalyticsProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Highest Score</p>
-                <p className="text-3xl font-bold text-green-600">{highestScore.toFixed(1)}%</p>
+                <p className="text-3xl font-bold text-primary">{highestScore.toFixed(1)}%</p>
               </div>
-              <Award className="h-8 w-8 text-green-600" />
+              <Award className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

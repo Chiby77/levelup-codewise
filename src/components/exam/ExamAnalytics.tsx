@@ -249,7 +249,7 @@ export const ExamAnalytics: React.FC<ExamAnalyticsProps> = ({ examId }) => {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center">
-              <Award className="h-8 w-8 text-green-600" />
+              <Award className="h-8 w-8 text-primary" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-muted-foreground">Average Score</p>
                 <p className="text-2xl font-bold">{analytics.averageScore.toFixed(1)}%</p>

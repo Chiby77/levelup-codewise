@@ -60,7 +60,7 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({ submissions,
 
   const getScoreColor = (score: number, maxScore: number) => {
     const percentage = (score / maxScore) * 100;
-    if (percentage >= 80) return 'text-green-600';
+    if (percentage >= 80) return 'text-primary';
     if (percentage >= 60) return 'text-yellow-600';
     return 'text-red-600';
   };

@@ -29,7 +29,7 @@ export function QuickActions({ onActionClick, suggestedTopics }: QuickActionProp
       icon: <Code className="h-5 w-5" />,
       text: "Python calculator",
       query: "Write a calculator program in Python",
-      gradient: "from-green-500 to-emerald-500"
+      gradient: "from-primary to-primary/80"
     },
     {
       icon: <Brain className="h-5 w-5" />,

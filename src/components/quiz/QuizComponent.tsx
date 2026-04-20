@@ -181,7 +181,7 @@ export function QuizComponent({ onFinish, category }: QuizComponentProps) {
               <p className="text-center text-muted-foreground">{feedback}</p>
               
               {percentage >= 70 ? (
-                <div className="flex items-center gap-2 text-green-500">
+                <div className="flex items-center gap-2 text-primary">
                   <CheckCircle2 />
                   <span>Congratulations on passing the quiz!</span>
                 </div>
@@ -259,7 +259,7 @@ export function QuizComponent({ onFinish, category }: QuizComponentProps) {
               : "outline"}
             className={`w-full justify-start text-left ${
               hasAnswered && index === currentQuestion.correctAnswer 
-                ? "border-green-500 bg-green-50 dark:bg-green-900/20" 
+                ? "border-primary/40 bg-primary/10 dark:bg-primary/20" 
                 : ""
             }`}
             onClick={() => handleOptionSelect(index)}
@@ -271,7 +271,7 @@ export function QuizComponent({ onFinish, category }: QuizComponentProps) {
                 <X className="mr-2 w-4 h-4 text-red-500" />
               )}
               {hasAnswered && index === currentQuestion.correctAnswer && (
-                <Check className="mr-2 w-4 h-4 text-green-500" />
+                <Check className="mr-2 w-4 h-4 text-primary" />
               )}
               
               <span>{option}</span>
