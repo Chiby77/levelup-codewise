@@ -330,7 +330,7 @@ export const ExamManagement: React.FC<ExamManagementProps> = ({ exams, onRefresh
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-500';
+      case 'active': return 'bg-primary';
       case 'draft': return 'bg-yellow-500';
       case 'completed': return 'bg-blue-500';
       default: return 'bg-gray-500';
@@ -382,7 +382,7 @@ export const ExamManagement: React.FC<ExamManagementProps> = ({ exams, onRefresh
                       </span>
                     )}
                     {exam.auto_activate && (
-                      <Badge variant="outline" className="text-[10px] bg-green-500/10">
+                      <Badge variant="outline" className="text-[10px] bg-primary/10">
                         <CheckCircle className="h-2 w-2 mr-1" /> Auto-activate
                       </Badge>
                     )}

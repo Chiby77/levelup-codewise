@@ -10,12 +10,12 @@ const AnimatedLogo = () => {
     { text: "text-white", accent: "text-[#F97316]" },
     { text: "text-blue-100", accent: "text-[#3B82F6]" },
     { text: "text-purple-100", accent: "text-[#8B5CF6]" },
-    { text: "text-green-100", accent: "text-[#10B981]" },
+    { text: "text-primary", accent: "text-primary" },
     { text: "text-rose-100", accent: "text-[#F43F5E]" },
     { text: "text-amber-100", accent: "text-[#F59E0B]" },
     { text: "text-indigo-100", accent: "text-[#6366F1]" },
     { text: "text-cyan-100", accent: "text-[#06B6D4]" },
-    { text: "text-emerald-100", accent: "text-[#10B981]" },
+    { text: "text-primary", accent: "text-primary" },
     { text: "text-pink-100", accent: "text-[#EC4899]" },
   ];
 

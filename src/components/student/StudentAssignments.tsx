@@ -320,7 +320,7 @@ export default function StudentAssignments() {
                     </div>
                     {submission ? (
                       submission.graded && assignment.results_released ? (
-                        <Badge variant="default" className="bg-green-600">
+                        <Badge variant="default" className="bg-primary">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Graded
                         </Badge>

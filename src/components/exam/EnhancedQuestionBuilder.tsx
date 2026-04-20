@@ -176,7 +176,7 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="easy">
-                    <Badge variant="outline" className="bg-green-500/10">Easy</Badge>
+                    <Badge variant="outline" className="bg-primary/10">Easy</Badge>
                   </SelectItem>
                   <SelectItem value="medium">
                     <Badge variant="outline" className="bg-yellow-500/10">Medium</Badge>

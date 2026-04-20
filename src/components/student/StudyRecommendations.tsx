@@ -240,7 +240,7 @@ export const StudyRecommendations = ({ studentEmail }: { studentEmail: string })
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 70) return 'text-green-600 bg-green-50';
+    if (score >= 70) return 'text-primary bg-primary/10';
     if (score >= 50) return 'text-yellow-600 bg-yellow-50';
     return 'text-red-600 bg-red-50';
   };
@@ -264,7 +264,7 @@ export const StudyRecommendations = ({ studentEmail }: { studentEmail: string })
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-6 w-6 text-green-500" />
+            <CheckCircle2 className="h-6 w-6 text-primary" />
             <CardTitle>Excellent Performance!</CardTitle>
           </div>
           <CardDescription>
@@ -272,8 +272,8 @@ export const StudyRecommendations = ({ studentEmail }: { studentEmail: string })
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <p className="text-sm text-green-800">
+          <div className="bg-primary/10 border border-primary/40 rounded-lg p-4">
+            <p className="text-sm text-primary">
               Continue practicing regularly to maintain your strong performance.
               Challenge yourself with harder exam difficulty levels!
             </p>

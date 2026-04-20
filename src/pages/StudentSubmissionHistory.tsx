@@ -70,7 +70,7 @@ export default function StudentSubmissionHistory() {
   };
 
   const getGradeColor = (percentage: number) => {
-    if (percentage >= 80) return 'text-green-600 bg-green-50';
+    if (percentage >= 80) return 'text-primary bg-primary/10';
     if (percentage >= 60) return 'text-blue-600 bg-blue-50';
     if (percentage >= 40) return 'text-yellow-600 bg-yellow-50';
     return 'text-red-600 bg-red-50';

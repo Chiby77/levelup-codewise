@@ -251,7 +251,7 @@ export const AIInvigilator: React.FC<AIInvigilatorProps> = ({ isActive, onViolat
           className="flex items-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full px-3 py-1 cursor-pointer hover:bg-background/90 transition-colors"
           onClick={() => setShowUI(!showUI)}
         >
-          <div className={`w-2 h-2 rounded-full ${isMonitoring ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+          <div className={`w-2 h-2 rounded-full ${isMonitoring ? 'bg-primary animate-pulse' : 'bg-red-500'}`} />
           <span className="text-xs font-medium">Secure Mode</span>
         </div>
       </div>
@@ -266,7 +266,7 @@ export const AIInvigilator: React.FC<AIInvigilatorProps> = ({ isActive, onViolat
                   <Eye className="h-4 w-4" />
                   AI Monitoring
                   {isMonitoring ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CheckCircle className="h-4 w-4 text-primary" />
                   ) : (
                     <XCircle className="h-4 w-4 text-red-600" />
                   )}
@@ -302,7 +302,7 @@ export const AIInvigilator: React.FC<AIInvigilatorProps> = ({ isActive, onViolat
               <Alert className={`py-2 ${
                 status === 'high-risk' ? 'border-destructive bg-destructive/10' :
                 status === 'medium-risk' ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20' :
-                'border-green-500 bg-green-50 dark:bg-green-950/20'
+                'border-primary/40 bg-primary/10 dark:bg-primary/20'
               }`}>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription className="text-xs">

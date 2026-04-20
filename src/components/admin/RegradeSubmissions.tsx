@@ -150,13 +150,13 @@ export const RegradeSubmissions = () => {
         {results && (
           <div className="space-y-2">
             <div className="grid grid-cols-3 gap-2">
-              <Card className="bg-green-50">
+              <Card className="bg-primary/10">
                 <CardContent className="pt-4">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CheckCircle className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="text-2xl font-bold text-green-600">{results.success}</p>
-                      <p className="text-xs text-green-700">Success</p>
+                      <p className="text-2xl font-bold text-primary">{results.success}</p>
+                      <p className="text-xs text-primary">Success</p>
                     </div>
                   </div>
                 </CardContent>

@@ -255,8 +255,8 @@ export const EnhancedStudentPortal: React.FC<StudentPortalProps> = ({ onStartExa
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-full bg-green-100 dark:bg-green-900/20">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
+                    <div className="p-2 rounded-full bg-primary/15 dark:bg-primary/20">
+                      <CheckCircle className="h-4 w-4 text-primary" />
                     </div>
                     <div>
                       <h4 className="font-medium">Auto-Grading</h4>
@@ -354,7 +354,7 @@ export const EnhancedStudentPortal: React.FC<StudentPortalProps> = ({ onStartExa
                 <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <p className="text-sm"><strong>Time Management:</strong> Keep track of remaining time and pace yourself accordingly</p>
                 </div>
-                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="p-3 bg-primary/10 dark:bg-primary/20 rounded-lg">
                   <p className="text-sm"><strong>Auto-Save:</strong> Your answers are automatically saved as you progress</p>
                 </div>
                 <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">

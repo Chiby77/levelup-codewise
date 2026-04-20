@@ -50,7 +50,7 @@ export function ScoreAnalytics({ submissions }: ScoreAnalyticsProps) {
     { grade: 'F', count: gradeDistribution.filter(g => g === 'F').length }
   ].filter(g => g.count > 0);
 
-  const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#6b7280'];
+  const COLORS = ['#3b82f6', '#3b82f6', '#f59e0b', '#ef4444', '#6b7280'];
 
   const averageScore = gradedSubmissions.length > 0
     ? gradedSubmissions.reduce((acc, s) => acc + (s.total_score / s.max_score) * 100, 0) / gradedSubmissions.length
@@ -100,9 +100,9 @@ export function ScoreAnalytics({ submissions }: ScoreAnalyticsProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Highest Score</p>
-                <p className="text-3xl font-bold text-green-600">{highestScore.toFixed(1)}%</p>
+                <p className="text-3xl font-bold text-primary">{highestScore.toFixed(1)}%</p>
               </div>
-              <Award className="h-8 w-8 text-green-600" />
+              <Award className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

@@ -14,15 +14,15 @@ const FloatingChatButton = () => {
   // Enhanced color palette with 10 different colors
   const haloGradients = [
     "linear-gradient(135deg, #F97316 0%, #8B5CF6 50%, #D946EF 100%)",
-    "linear-gradient(135deg, #3B82F6 0%, #10B981 50%, #F59E0B 100%)",
+    "linear-gradient(135deg, #3B82F6 0%, #3B82F6 50%, #F59E0B 100%)",
     "linear-gradient(135deg, #EF4444 0%, #EC4899 50%, #8B5CF6 100%)",
-    "linear-gradient(135deg, #10B981 0%, #3B82F6 50%, #6366F1 100%)",
+    "linear-gradient(135deg, #3B82F6 0%, #3B82F6 50%, #6366F1 100%)",
     "linear-gradient(135deg, #F59E0B 0%, #EF4444 50%, #EC4899 100%)",
     "linear-gradient(135deg, #06B6D4 0%, #8B5CF6 50%, #F43F5E 100%)",
     "linear-gradient(135deg, #D946EF 0%, #F97316 50%, #3B82F6 100%)",
-    "linear-gradient(135deg, #6366F1 0%, #10B981 50%, #F43F5E 100%)",
+    "linear-gradient(135deg, #6366F1 0%, #3B82F6 50%, #F43F5E 100%)",
     "linear-gradient(135deg, #F43F5E 0%, #F59E0B 50%, #06B6D4 100%)",
-    "linear-gradient(135deg, #8B5CF6 0%, #EF4444 50%, #10B981 100%)"
+    "linear-gradient(135deg, #8B5CF6 0%, #EF4444 50%, #3B82F6 100%)"
   ];
 
   // Change halo color every 5 seconds

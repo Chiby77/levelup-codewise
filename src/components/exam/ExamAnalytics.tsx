@@ -85,7 +85,7 @@ export const ExamAnalytics: React.FC<ExamAnalyticsProps> = ({ examId }) => {
       { range: '21-40%', count: 0, color: '#f97316' },
       { range: '41-60%', count: 0, color: '#eab308' },
       { range: '61-80%', count: 0, color: '#22c55e' },
-      { range: '81-100%', count: 0, color: '#10b981' }
+      { range: '81-100%', count: 0, color: '#3b82f6' }
     ];
 
     completedSubmissions.forEach(submission => {
@@ -249,7 +249,7 @@ export const ExamAnalytics: React.FC<ExamAnalyticsProps> = ({ examId }) => {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center">
-              <Award className="h-8 w-8 text-green-600" />
+              <Award className="h-8 w-8 text-primary" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-muted-foreground">Average Score</p>
                 <p className="text-2xl font-bold">{analytics.averageScore.toFixed(1)}%</p>
@@ -329,7 +329,7 @@ export const ExamAnalytics: React.FC<ExamAnalyticsProps> = ({ examId }) => {
                     dataKey="count"
                   >
                     {analytics.difficultyAnalysis.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={['#10b981', '#f59e0b', '#ef4444', '#7c2d12'][index % 4]} />
+                      <Cell key={`cell-${index}`} fill={['#3b82f6', '#f59e0b', '#ef4444', '#7c2d12'][index % 4]} />
                     ))}
                   </Pie>
                   <Tooltip />

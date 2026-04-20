@@ -868,7 +868,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
                         </div>
                       )}
                       {question.correct_answer && (
-                        <div className="text-xs text-green-600 mt-1">
+                        <div className="text-xs text-primary mt-1">
                           Answer: {question.correct_answer.substring(0, 100)}
                           {question.correct_answer.length > 100 ? '...' : ''}
                         </div>
