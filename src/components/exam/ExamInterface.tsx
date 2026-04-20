@@ -159,8 +159,9 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
 
   const fetchQuestions = async () => {
     try {
+      // Use questions_public view — never exposes correct_answer to students
       const { data, error } = await supabase
-        .from('questions')
+        .from('questions_public' as any)
         .select('*')
         .eq('exam_id', exam.id)
         .order('order_number');

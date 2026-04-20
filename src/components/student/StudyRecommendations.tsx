@@ -78,9 +78,9 @@ export const StudyRecommendations = ({ studentEmail }: { studentEmail: string })
         if (submission.grade_details) {
           const gradeDetails = submission.grade_details as Record<string, any>;
           
-          // Fetch questions to get their types
+          // Fetch question types via the public view (no correct_answer exposure)
           const { data: questions } = await supabase
-            .from('questions')
+            .from('questions_public' as any)
             .select('id, question_type')
             .eq('exam_id', submission.exam_id);
 
