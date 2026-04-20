@@ -774,6 +774,7 @@ export type Database = {
           session_id: string | null
           timestamp: string
           topics: string[] | null
+          user_id: string | null
           user_input: string
         }
         Insert: {
@@ -785,6 +786,7 @@ export type Database = {
           session_id?: string | null
           timestamp?: string
           topics?: string[] | null
+          user_id?: string | null
           user_input: string
         }
         Update: {
@@ -796,6 +798,7 @@ export type Database = {
           session_id?: string | null
           timestamp?: string
           topics?: string[] | null
+          user_id?: string | null
           user_input?: string
         }
         Relationships: []
@@ -847,6 +850,59 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      questions_public: {
+        Row: {
+          created_at: string | null
+          exam_id: string | null
+          id: string | null
+          marks: number | null
+          options: Json | null
+          order_number: number | null
+          programming_language:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
+          question_text: string | null
+          question_type: Database["public"]["Enums"]["question_type"] | null
+          sample_code: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          exam_id?: string | null
+          id?: string | null
+          marks?: number | null
+          options?: Json | null
+          order_number?: number | null
+          programming_language?:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
+          question_text?: string | null
+          question_type?: Database["public"]["Enums"]["question_type"] | null
+          sample_code?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          exam_id?: string | null
+          id?: string | null
+          marks?: number | null
+          options?: Json | null
+          order_number?: number | null
+          programming_language?:
+            | Database["public"]["Enums"]["programming_language"]
+            | null
+          question_text?: string | null
+          question_type?: Database["public"]["Enums"]["question_type"] | null
+          sample_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
             referencedColumns: ["id"]
           },
         ]
