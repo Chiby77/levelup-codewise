@@ -9,14 +9,15 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "64x64",
-      "type": "image/x-icon"
+      "src": "/bluewave-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
-      "src": "/og-image.png",
+      "src": "/bluewave-logo-512.svg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
