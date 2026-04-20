@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Waves } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { BluewaveLogo } from "@/components/BluewaveLogo";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,10 +21,8 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2 z-50 relative group">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-primary rounded-lg blur opacity-60 group-hover:opacity-100 transition-opacity" />
-              <div className="relative bg-gradient-primary p-2 rounded-lg">
-                <Waves className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
-              </div>
+              <div className="absolute inset-0 bg-primary/40 rounded-lg blur opacity-60 group-hover:opacity-100 transition-opacity" />
+              <BluewaveLogo className="relative h-9 w-9 rounded-lg" />
             </div>
             <div className="flex flex-col leading-none">
               <span className="text-foreground text-lg font-extrabold tracking-tight">Bluewave</span>
