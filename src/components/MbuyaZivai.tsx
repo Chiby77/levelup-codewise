@@ -1,309 +1,216 @@
-
 import { useState, useEffect, useRef } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { generateResponse, generateGreeting } from "@/utils/ai/index";
-import { 
-  BookOpenCheck, 
-  Bot, 
-  ChevronDown, 
-  Database, 
+import {
+  BookOpenCheck,
+  ChevronDown,
+  Database,
   Loader2,
   ShieldCheck,
   TreePine,
   BookCheck,
   Sparkles,
-  Lock,
   Brain,
-  Zap
+  Zap,
+  ImagePlus,
+  X,
 } from "lucide-react";
-import { Card, CardContent, CardHeader } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessage } from "./chat/ChatMessage";
 import { MessageInput } from "./chat/MessageInput";
 import { QuickActions } from "./chat/QuickActions";
 import { QuizComponent } from "./quiz/QuizComponent";
 import { QuizAccess } from "./quiz/QuizAccess";
-import MotivationalQuotes from "./MotivationalQuotes";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { BluewaveLogo } from "./BluewaveLogo";
 
 interface Message {
   role: "assistant" | "user";
   content: string;
   id: string;
   animate?: boolean;
+  imageUrl?: string;
+}
+
+function getOrCreateSessionId(): string {
+  const existing = localStorage.getItem("mbuya-session-id");
+  if (existing) return existing;
+  const fresh = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  localStorage.setItem("mbuya-session-id", fresh);
+  return fresh;
+}
+
+async function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 export default function MbuyaZivai() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [showDropdownHint, setShowDropdownHint] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [showQuizAccess, setShowQuizAccess] = useState(false);
   const [quizCategory, setQuizCategory] = useState<string | undefined>(undefined);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [tokensRemaining, setTokensRemaining] = useState(10);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Animation states
-  const [messageAnimationComplete, setMessageAnimationComplete] = useState<Record<string, boolean>>({});
   const [showQuickActions, setShowQuickActions] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        setIsAuthenticated(false);
-        return;
-      }
-
-      setIsAuthenticated(true);
-
-      // Check if user is admin
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
-
-      const userIsAdmin = !!roleData;
-      setIsAdmin(userIsAdmin);
-
-      // Load token count for non-admins
-      if (!userIsAdmin) {
-        const { data: tokenData } = await supabase
-          .from('chat_tokens')
-          .select('tokens_used, tokens_limit')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (tokenData) {
-          const remaining = Math.max(0, tokenData.tokens_limit - tokenData.tokens_used);
-          setTokensRemaining(remaining);
-          console.log('Tokens loaded:', { used: tokenData.tokens_used, limit: tokenData.tokens_limit, remaining });
-        } else {
-          // No record exists yet, user has full limit
-          setTokensRemaining(10);
-        }
-      }
-
-      // Generate or get session ID
-      if (!sessionStorage.getItem('sessionId')) {
-        sessionStorage.setItem('sessionId', Date.now().toString());
-      }
-
-      const timer = setTimeout(() => {
-        const initialGreeting = generateGreeting();
-        setMessages([{
+    getOrCreateSessionId();
+    const timer = setTimeout(() => {
+      const initialGreeting = generateGreeting();
+      setMessages([
+        {
           role: "assistant",
-          content: `${initialGreeting} I'm Mbuya Zivai, your enhanced AI assistant! I learn from our conversations to provide better, more personalized help. Ask me anything about Computer Science!`,
+          content: `${initialGreeting} I'm Mbuya Zivai, your AI tutor for Bluewave Academy. Ask me anything about Computer Science — programming, algorithms, exam prep — or send a photo of your work and I'll help.`,
           id: "greeting-" + Date.now(),
-          animate: true
-        }]);
-      }, 800);
-
-      return () => clearTimeout(timer);
-    };
-
-    checkAuth();
+          animate: true,
+        },
+      ]);
+    }, 600);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    // Scroll to bottom with smooth animation
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
-    // Show dropdown hint after a few messages
     if (messages.length === 3) {
       setShowDropdownHint(true);
       setTimeout(() => setShowDropdownHint(false), 4000);
     }
   }, [messages]);
 
-  const handleSubmit = async (query: string) => {
-    // Check authentication
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to use Mbuya Zivai",
-        variant: "destructive",
-      });
+  const handleImagePick = async (file: File | null) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Unsupported file", description: "Please choose an image.", variant: "destructive" });
       return;
     }
+    if (file.size > 8 * 1024 * 1024) {
+      toast({ title: "Image too large", description: "Maximum size is 8 MB.", variant: "destructive" });
+      return;
+    }
+    const dataUrl = await fileToDataUrl(file);
+    setPendingImage(dataUrl);
+  };
 
-    // Check token limit for non-admins
-    if (!isAdmin && tokensRemaining <= 0) {
-      toast({
-        title: "Message Limit Reached",
-        description: "You have used all 10 messages. Contact admin for more.",
-        variant: "destructive",
-      });
-      return;
-    }
+  const handleSubmit = async (query: string) => {
+    if (!query.trim() && !pendingImage) return;
 
     setShowWelcome(false);
     setShowQuickActions(false);
-    
-    // Handle navigation to digital exam section
-    if (query.toLowerCase().includes('exam') || query.toLowerCase().includes('digital exam') || query.toLowerCase().includes('take exam')) {
-      const assistantMessage = {
-        role: "assistant" as const,
-        content: "I can help you access our digital exam system! Click the button below to go to the exam portal where you can take practice exams or official assessments.",
-        id: "assistant-exam-" + Date.now(),
-        animate: true
-      };
-      setMessages((prev) => [
-        ...prev, 
-        { role: "user" as const, content: query, id: "user-" + Date.now() },
-        assistantMessage
-      ]);
-      
-      setTimeout(() => {
-        navigate('/student-exam');
-      }, 2000);
-      return;
+
+    // Quick navigation shortcuts (text only)
+    const lower = query.toLowerCase();
+    if (!pendingImage) {
+      if (lower.includes("digital exam") || lower.includes("take exam")) {
+        const id = "assistant-exam-" + Date.now();
+        setMessages((p) => [
+          ...p,
+          { role: "user", content: query, id: "user-" + Date.now() },
+          {
+            role: "assistant",
+            content: "Opening the digital exam portal for you...",
+            id,
+            animate: true,
+          },
+        ]);
+        setTimeout(() => navigate("/student-exam"), 1500);
+        return;
+      }
+      const resourceKeywords = ["download", "resource", "paper", "notes", "book", "material", "past paper"];
+      if (resourceKeywords.some((k) => lower.includes(k))) {
+        const id = "assistant-resource-" + Date.now();
+        setMessages((p) => [
+          ...p,
+          { role: "user", content: query, id: "user-" + Date.now() },
+          {
+            role: "assistant",
+            content: "Heading to the downloads page where you can grab notes, past papers and textbooks.",
+            id,
+            animate: true,
+          },
+        ]);
+        setTimeout(() => navigate("/downloads"), 1500);
+        return;
+      }
+      if (lower.includes("quiz") || lower.includes("test my knowledge")) {
+        setShowQuizAccess(true);
+        return;
+      }
+      if (lower.includes("start quiz") || lower.includes("take quiz")) {
+        const cm = query.match(/quiz\s+on\s+(\w+)/i) || query.match(/(\w+)\s+quiz/i);
+        setQuizCategory(cm ? cm[1] : undefined);
+        setShowQuiz(true);
+        return;
+      }
     }
 
-    // Handle resource location
-    const resourceKeywords = ['download', 'resource', 'paper', 'notes', 'book', 'material', 'past paper'];
-    const hasResourceQuery = resourceKeywords.some(keyword => query.toLowerCase().includes(keyword));
-    
-    if (hasResourceQuery) {
-      const assistantMessage = {
-        role: "assistant" as const,
-        content: "I can help you find study resources! We have programming notes, past papers, textbooks, and more. Click the button below to browse our downloads page, or tell me specifically what you're looking for.",
-        id: "assistant-resource-" + Date.now(),
-        animate: true
-      };
-      setMessages((prev) => [
-        ...prev,
-        { role: "user" as const, content: query, id: "user-" + Date.now() },
-        assistantMessage
-      ]);
-      
-      setTimeout(() => {
-        navigate('/downloads');
-      }, 2000);
-      return;
-    }
-    
-    // Handle quiz commands
-    if (query.toLowerCase().includes('quiz') || query.toLowerCase().includes('test my knowledge')) {
-      setShowQuizAccess(true);
-      return;
-    }
-    
-    if (query.toLowerCase().includes('start quiz') || query.toLowerCase().includes('take quiz')) {
-      const categoryMatch = query.match(/quiz\s+on\s+(\w+)/i) || 
-                            query.match(/(\w+)\s+quiz/i);
-      
-      if (categoryMatch) {
-        setQuizCategory(categoryMatch[1]);
-      } else {
-        setQuizCategory(undefined);
-      }
-      
-      setShowQuiz(true);
-      return;
-    }
-    
-    const userMessage = { 
-      role: "user" as const, 
-      content: query,
-      id: "user-" + Date.now()
+    const imageForThisMessage = pendingImage;
+    const userMessage: Message = {
+      role: "user",
+      content: query || (imageForThisMessage ? "(image only)" : ""),
+      id: "user-" + Date.now(),
+      imageUrl: imageForThisMessage || undefined,
     };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((p) => [...p, userMessage]);
+    setPendingImage(null);
     setIsLoading(true);
 
     try {
-      console.log('Attempting to call enhanced-ai function...');
-      
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      const sessionId = getOrCreateSessionId();
+      const recent = [...messages, userMessage].slice(-6).map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
 
-      // Increment token usage for non-admins
-      if (!isAdmin) {
-        const { error: incrementError } = await supabase.rpc('increment_chat_tokens', {
-          _user_id: user.id
-        });
-
-        if (incrementError) {
-          console.error("Error incrementing tokens:", incrementError);
-        } else {
-          setTokensRemaining(prev => Math.max(0, prev - 1));
-        }
-      }
-      
-      // Use enhanced AI with learning capabilities
-      const { data, error } = await supabase.functions.invoke('enhanced-ai', {
-        body: { 
+      const { data, error } = await supabase.functions.invoke("enhanced-ai", {
+        body: {
           message: query,
-          sessionId: user.id
-        }
+          sessionId,
+          history: recent.slice(0, -1),
+          imageUrl: imageForThisMessage,
+        },
       });
 
-      console.log('Enhanced-AI response:', { data, error });
-
       if (error) throw error;
+      if (data?.error && !data?.response) throw new Error(data.error);
 
       const response = data?.response || generateResponse(query);
-      const assistantMessageId = "assistant-" + Date.now();
-      
-      const assistantMessage = {
-        role: "assistant" as const,
-        content: response,
-        id: assistantMessageId,
-        animate: true
-      };
-      
-      setMessages((prev) => [...prev, assistantMessage]);
-      
-      // Mark message as animated after it appears
-      setTimeout(() => {
-        setMessageAnimationComplete(prev => ({
-          ...prev,
-          [assistantMessageId]: true
-        }));
-      }, 100);
-
-    } catch (error) {
-      console.error("Error with enhanced AI:", error);
-      // Fallback to local AI
+      const assistantId = "assistant-" + Date.now();
+      setMessages((p) => [
+        ...p,
+        { role: "assistant", content: response, id: assistantId, animate: true },
+      ]);
+    } catch (error: any) {
+      console.error("Mbuya Zivai error:", error);
       try {
-        const response = generateResponse(query);
-        const assistantMessageId = "assistant-" + Date.now();
-        
-        const assistantMessage = {
-          role: "assistant" as const,
-          content: response,
-          id: assistantMessageId,
-          animate: true
-        };
-        
-        setMessages((prev) => [...prev, assistantMessage]);
-        
-        setTimeout(() => {
-          setMessageAnimationComplete(prev => ({
-            ...prev,
-            [assistantMessageId]: true
-          }));
-        }, 100);
-      } catch (fallbackError) {
+        const fallback = generateResponse(query);
+        setMessages((p) => [
+          ...p,
+          { role: "assistant", content: fallback, id: "assistant-" + Date.now(), animate: true },
+        ]);
+      } catch {
         toast({
           title: "Error",
-          description: "Failed to get response from Mbuya Zivai. Please try again.",
+          description: error?.message || "Failed to get a reply. Please try again.",
           variant: "destructive",
         });
       }
@@ -317,97 +224,35 @@ export default function MbuyaZivai() {
     handleSubmit(query);
   };
 
-  // Determine if we're in the initial empty state
   const isEmptyState = messages.length === 0;
 
-  // Suggested topics based on added knowledge
   const suggestedTopics = [
-    { 
-      icon: <Database className="mr-2 h-4 w-4 text-indigo-500" />,
+    {
+      icon: <Database className="mr-2 h-4 w-4 text-primary" />,
       text: "Explain dynamic vs static data structures",
-      query: "What's the difference between dynamic and static data structures?"
+      query: "What's the difference between dynamic and static data structures?",
     },
-    { 
+    {
       icon: <TreePine className="mr-2 h-4 w-4 text-primary" />,
       text: "Find study resources",
-      query: "Where can I find programming notes and past papers?"
+      query: "Where can I find programming notes and past papers?",
     },
-    { 
-      icon: <ShieldCheck className="mr-2 h-4 w-4 text-red-500" />,
+    {
+      icon: <ShieldCheck className="mr-2 h-4 w-4 text-primary" />,
       text: "Take digital exam",
-      query: "I want to take a digital exam"
+      query: "I want to take a digital exam",
     },
-    { 
-      icon: <BookCheck className="mr-2 h-4 w-4 text-amber-500" />,
+    {
+      icon: <BookCheck className="mr-2 h-4 w-4 text-primary" />,
       text: "Take a quiz",
-      query: "I want to take a quiz"
-    }
+      query: "I want to take a quiz",
+    },
   ];
-
-  // Show auth prompt if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-border/50 overflow-hidden">
-        <ChatHeader />
-        <CardContent className="flex items-center justify-center h-[calc(80vh-7rem)]">
-          <div className="text-center space-y-6 max-w-md p-6">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-              <Lock className="w-10 h-10 text-primary" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-2xl font-bold">Authentication Required</h3>
-              <p className="text-muted-foreground">
-                Please log in to access Mbuya Zivai and get help with your studies
-              </p>
-            </div>
-            <Button 
-              onClick={() => navigate('/auth')}
-              className="bg-primary hover:bg-primary/90"
-            >
-              Log In
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-accent/20 overflow-hidden bg-gradient-to-br from-background via-background to-accent/5">
-      {/* Enhanced Header */}
-      <div className="relative border-b border-accent/20 bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 backdrop-blur-sm">
-        <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5 animate-pulse"></div>
-        <div className="relative px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent to-primary rounded-full blur-md opacity-60 animate-pulse"></div>
-                <div className="relative bg-gradient-to-br from-accent to-primary p-2 rounded-full">
-                  <Brain className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div>
-                <h2 className="text-xl font-bold bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
-                  Mbuya Zivai
-                </h2>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Zap className="w-3 h-3 text-accent animate-pulse" />
-                  <span>AI-Powered Learning Assistant</span>
-                </div>
-              </div>
-            </div>
-            {!isAdmin && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/50 border border-accent/20">
-                <span className="text-xs text-muted-foreground">Messages:</span>
-                <span className={`text-sm font-bold ${tokensRemaining <= 3 ? 'text-destructive' : 'text-accent'}`}>
-                  {tokensRemaining}/10
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      
+      <ChatHeader />
+
       <CardContent className="p-0 flex flex-col h-[calc(80vh-7rem)]">
         {showQuiz ? (
           <QuizComponent onFinish={() => setShowQuiz(false)} category={quizCategory} />
@@ -416,132 +261,133 @@ export default function MbuyaZivai() {
         ) : (
           <>
             <ScrollArea className="flex-1 px-6 py-4 bg-gradient-to-b from-background via-primary/5 to-background" ref={scrollRef}>
-              {/* Empty state with enhanced animations */}
               {isEmptyState && showWelcome && (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fadeIn p-6">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent via-primary to-accent rounded-full blur-3xl opacity-40 animate-pulse"></div>
-                    <div className="relative w-40 h-40 bg-gradient-to-br from-accent via-primary to-accent rounded-full p-10 shadow-2xl">
-                      <Brain className="w-full h-full text-white animate-pulse" />
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent via-primary to-accent rounded-full blur-3xl opacity-40 animate-pulse" />
+                    <BluewaveLogo className="relative w-32 h-32 rounded-3xl shadow-2xl" />
                     <Sparkles className="absolute -top-2 -right-2 w-10 h-10 text-yellow-400 animate-pulse" />
                     <Zap className="absolute -bottom-2 -left-2 w-8 h-8 text-accent animate-bounce" />
                   </div>
-                  
+
                   <div className="space-y-4 max-w-2xl">
-                    <h3 className="text-4xl font-bold bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent animate-pulse">
+                    <h3 className="text-4xl font-bold bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
                       Mbuya Zivai
                     </h3>
                     <p className="text-muted-foreground text-lg leading-relaxed">
-                      Your intelligent AI learning companion for Computer Science
+                      Your AI tutor for A Level Computer Science. Free for everyone — no sign-in needed.
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6 text-sm">
                       <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
                         <Brain className="w-5 h-5 text-accent mx-auto mb-2" />
-                        <p className="font-semibold text-accent">Smart Learning</p>
-                        <p className="text-xs text-muted-foreground">Get instant answers</p>
+                        <p className="font-semibold text-accent">Smart Tutoring</p>
+                        <p className="text-xs text-muted-foreground">Instant answers</p>
                       </div>
                       <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
-                        <Database className="w-5 h-5 text-primary mx-auto mb-2" />
-                        <p className="font-semibold text-primary">Find Resources</p>
-                        <p className="text-xs text-muted-foreground">Locate study materials</p>
+                        <ImagePlus className="w-5 h-5 text-primary mx-auto mb-2" />
+                        <p className="font-semibold text-primary">Image Recognition</p>
+                        <p className="text-xs text-muted-foreground">Send a photo of your work</p>
                       </div>
                       <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
-                        <ShieldCheck className="w-5 h-5 text-accent mx-auto mb-2" />
-                        <p className="font-semibold text-accent">Take Exams</p>
-                        <p className="text-xs text-muted-foreground">Access digital tests</p>
+                        <BookOpenCheck className="w-5 h-5 text-accent mx-auto mb-2" />
+                        <p className="font-semibold text-accent">Exam Ready</p>
+                        <p className="text-xs text-muted-foreground">Past papers & quizzes</p>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
-              
-              {/* Quick actions */}
+
               {showQuickActions && (
-                <QuickActions 
-                  onActionClick={handleQuickActionClick} 
-                  suggestedTopics={suggestedTopics} 
-                />
+                <QuickActions onActionClick={handleQuickActionClick} suggestedTopics={suggestedTopics} />
               )}
 
-              {/* Messages */}
               {messages.map((message) => (
-                <ChatMessage 
+                <ChatMessage
                   key={message.id}
                   role={message.role}
                   content={message.content}
                   animate={message.animate}
                   id={message.id}
+                  imageUrl={message.imageUrl}
                 />
               ))}
 
-              {/* Loading indicator */}
               {isLoading && (
                 <div className="flex items-start gap-3 mb-6 animate-fadeIn">
                   <div className="flex-shrink-0 mt-1">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full blur-sm opacity-60 animate-pulse"></div>
-                      <div className="relative bg-gradient-to-br from-primary to-accent p-2 rounded-full">
-                        <Bot className="w-4 h-4 text-white animate-pulse" />
-                      </div>
-                    </div>
+                    <BluewaveLogo className="w-9 h-9 rounded-xl" />
                   </div>
-                  
                   <div className="max-w-[75%] bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl rounded-tl-sm p-4 shadow-lg backdrop-blur-sm border border-border/50">
                     <div className="flex items-center gap-2 mb-3">
                       <Loader2 className="h-4 w-4 animate-spin text-accent" />
                       <span className="text-sm text-muted-foreground">Mbuya Zivai is thinking...</span>
                     </div>
-                    
                     <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce"></span>
-                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></span>
-                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></span>
+                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" />
+                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
+                      <span className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
                     </div>
                   </div>
                 </div>
               )}
-              
-              {/* Dropdown hint animation */}
+
               {showDropdownHint && (
                 <div className="flex justify-center my-4 animate-pulse">
                   <div className="flex flex-col items-center text-muted-foreground text-sm">
                     <ChevronDown className="h-5 w-5 animate-bounce" />
-                    <p>Try asking about advanced topics like binary trees or hacking</p>
+                    <p>Try asking about binary trees, cybersecurity, or VB.NET coding</p>
                   </div>
                 </div>
               )}
-              
-              {/* Bottom space for better scrolling */}
-              <div className="h-2" ref={messageEndRef}></div>
+
+              <div className="h-2" ref={messageEndRef} />
             </ScrollArea>
 
+            {/* Pending image preview */}
+            {pendingImage && (
+              <div className="px-4 py-2 border-t border-border/50 bg-muted/30 flex items-center gap-3">
+                <img src={pendingImage} alt="attached" className="h-16 w-16 object-cover rounded-md" />
+                <span className="text-sm text-muted-foreground flex-1">Image attached — add a question or just send.</span>
+                <Button size="icon" variant="ghost" onClick={() => setPendingImage(null)} aria-label="Remove image">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
             {/* Input area */}
-            <MessageInput onSendMessage={handleSubmit} isLoading={isLoading} />
+            <div className="flex items-end gap-2 px-4 py-3 border-t border-border/50">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleImagePick(e.target.files?.[0] || null)}
+              />
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="Attach an image"
+                title="Attach an image"
+              >
+                <ImagePlus className="h-4 w-4" />
+              </Button>
+              <div className="flex-1">
+                <MessageInput onSendMessage={handleSubmit} isLoading={isLoading} />
+              </div>
+            </div>
           </>
         )}
       </CardContent>
 
       <style>{`
-        @keyframes heartbeat {
-          0% { transform: scale(1); }
-          25% { transform: scale(1.1); }
-          50% { transform: scale(1); }
-          100% { transform: scale(1); }
-        }
-        
-        .animate-heartbeat {
-          animation: heartbeat 1.5s ease-in-out infinite;
-        }
-        
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
       `}</style>
     </Card>
   );

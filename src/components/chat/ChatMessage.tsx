@@ -5,9 +5,10 @@ interface ChatMessageProps {
   content: string;
   animate?: boolean;
   id: string;
+  imageUrl?: string;
 }
 
-export function ChatMessage({ role, content, animate, id }: ChatMessageProps) {
+export function ChatMessage({ role, content, animate, id, imageUrl }: ChatMessageProps) {
   return (
     <div
       key={id}
@@ -49,6 +50,13 @@ export function ChatMessage({ role, content, animate, id }: ChatMessageProps) {
           )}
         </div>
         
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt="attached"
+            className="mb-2 max-h-60 w-auto rounded-lg border border-border/50"
+          />
+        )}
         <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
           {content}
         </div>
