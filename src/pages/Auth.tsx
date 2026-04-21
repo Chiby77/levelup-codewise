@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, GraduationCap, Sparkles, Users } from 'lucide-react';
+import { ArrowLeft, Sparkles, Users } from 'lucide-react';
+import { BluewaveLogo } from '@/components/BluewaveLogo';
 import { toast } from '@/hooks/use-toast';
 
 export default function Auth() {
@@ -131,10 +132,8 @@ export default function Auth() {
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-hero rounded-full blur-lg animate-pulse" />
-              <div className="relative bg-gradient-hero p-4 rounded-full">
-                <GraduationCap className="h-12 w-12 text-primary-foreground" />
-              </div>
+              <div className="absolute inset-0 bg-gradient-hero rounded-2xl blur-lg animate-pulse" />
+              <BluewaveLogo className="relative h-20 w-20 rounded-2xl shadow-xl" />
             </div>
           </div>
           <h1 className="text-3xl font-bold text-gradient-primary">
