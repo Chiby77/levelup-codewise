@@ -1,5 +1,6 @@
-import { Bot, GraduationCap, Sparkles, Brain } from "lucide-react";
+import { GraduationCap, Sparkles, Brain } from "lucide-react";
 import { CardDescription, CardTitle } from "../ui/card";
+import { BluewaveLogo } from "../BluewaveLogo";
 
 export function ChatHeader() {
   return (
@@ -11,10 +12,8 @@ export function ChatHeader() {
       <div className="relative z-10">
         <CardTitle className="flex items-center gap-3 text-2xl mb-2">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full blur-md opacity-60 animate-pulse"></div>
-            <div className="relative bg-gradient-to-br from-primary to-accent p-2 rounded-full">
-              <Bot className="w-6 h-6 text-white" />
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-xl blur-md opacity-60 animate-pulse"></div>
+            <BluewaveLogo className="relative w-10 h-10 rounded-xl" />
             <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-pulse" />
           </div>
           <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent font-bold">

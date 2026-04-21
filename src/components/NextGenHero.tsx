@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Code2, Cpu, Database, Globe, Zap, ArrowRight, Sparkles, Waves, ShieldCheck } from "lucide-react";
+import { Code2, Cpu, Database, Globe, Zap, ArrowRight, Sparkles, ShieldCheck } from "lucide-react";
+import { BluewaveLogo } from "@/components/BluewaveLogo";
 
 const NextGenHero = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const NextGenHero = () => {
         <div className="max-w-4xl mx-auto text-center">
           {/* Brand chip */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-8 animate-fadeIn">
-            <Waves className="h-4 w-4" />
+            <BluewaveLogo className="h-4 w-4 rounded-sm" />
             <span className="font-medium">Bluewave Academy</span>
             <span className="text-white/40">•</span>
             <span className="text-white/70">A Level Computer Science</span>

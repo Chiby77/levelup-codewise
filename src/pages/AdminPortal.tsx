@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
+import { BluewaveLogo } from '@/components/BluewaveLogo';
 import { toast } from '@/hooks/use-toast';
 
 export default function AdminPortal() {
@@ -80,9 +81,7 @@ export default function AdminPortal() {
       <div className="w-full max-w-md space-y-4">
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center">
-            <div className="bg-gradient-to-br from-red-600 to-red-800 p-4 rounded-full">
-              <Shield className="h-12 w-12 text-white" />
-            </div>
+            <BluewaveLogo className="h-20 w-20 rounded-2xl shadow-xl" />
           </div>
           <h1 className="text-3xl font-bold text-white">Secure Access</h1>
           <p className="text-slate-400">Administrative Portal</p>
