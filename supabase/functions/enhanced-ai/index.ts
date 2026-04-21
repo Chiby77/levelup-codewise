@@ -1,209 +1,37 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.51.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const groqApiKey = Deno.env.get('GROQ_API_KEY')!;
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Simple NLP functions for learning
-function extractKeywords(text: string): string[] {
-  const words = text.toLowerCase()
-    .replace(/[^\w\s]/g, '')
-    .split(/\s+/)
-    .filter(word => word.length > 3);
-  
-  const stopWords = ['with', 'what', 'when', 'where', 'which', 'this', 'that', 'they', 'them', 'their', 'there', 'then', 'than', 'from', 'have', 'been', 'were', 'was', 'will', 'would', 'could', 'should'];
-  return words.filter(word => !stopWords.includes(word));
-}
+const SYSTEM_PROMPT = `You are Mbuya Zivai, a warm, encouraging AI tutor for Bluewave Academy — a Zimbabwean A Level Computer Science platform.
 
-function calculateSentiment(text: string): number {
-  const positiveWords = ['good', 'great', 'excellent', 'amazing', 'wonderful', 'best', 'perfect', 'love', 'like', 'happy', 'pleased', 'thanks', 'thank'];
-  const negativeWords = ['bad', 'terrible', 'awful', 'hate', 'worst', 'horrible', 'angry', 'sad', 'confused', 'problem', 'issue', 'wrong', 'error'];
-  
-  const words = text.toLowerCase().split(/\s+/);
-  let score = 0;
-  
-  words.forEach(word => {
-    if (positiveWords.includes(word)) score += 1;
-    if (negativeWords.includes(word)) score -= 1;
-  });
-  
-  return Math.max(-1, Math.min(1, score / words.length));
-}
+You help students and curious visitors with:
+- Programming in any language (Python, Java, VB.NET, C, C++, JavaScript, etc.)
+- Algorithms, data structures, computer architecture, networking, databases
+- A Level CS exam preparation, past papers, marking schemes
+- Career guidance for tech in Zimbabwe and beyond
+- General study motivation
 
-function identifyTopics(text: string): string[] {
-  const topicKeywords = {
-    // Programming Languages
-    'programming': ['code', 'programming', 'python', 'javascript', 'algorithm', 'function', 'variable', 'loop', 'array', 'developer', 'software'],
-    'python': ['python', 'django', 'flask', 'pandas', 'numpy', 'pip', 'pytorch'],
-    'javascript': ['javascript', 'js', 'node', 'react', 'vue', 'angular', 'typescript', 'npm'],
-    'java': ['java', 'spring', 'maven', 'jvm', 'hibernate'],
-    'csharp': ['c#', 'csharp', '.net', 'asp.net', 'unity'],
-    'cpp': ['c++', 'cpp', 'pointer'],
-    'mobile': ['android', 'ios', 'swift', 'kotlin', 'flutter', 'react native', 'mobile app'],
-    
-    // Web Technologies
-    'web': ['html', 'css', 'web', 'website', 'frontend', 'backend', 'fullstack', 'api', 'rest', 'graphql'],
-    'database': ['sql', 'mysql', 'postgresql', 'mongodb', 'database', 'nosql', 'redis', 'query', 'table'],
-    
-    // DevOps & Cloud
-    'cloud': ['aws', 'azure', 'gcp', 'cloud', 'serverless', 'lambda', 's3', 'kubernetes', 'docker'],
-    'devops': ['devops', 'ci/cd', 'jenkins', 'github actions', 'terraform', 'deployment'],
-    'git': ['git', 'github', 'gitlab', 'version control', 'branch', 'merge', 'commit'],
-    
-    // AI & Machine Learning
-    'ai': ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'neural network', 'chatgpt', 'gpt', 'llm'],
-    'data_science': ['data science', 'data analysis', 'statistics', 'visualization', 'big data', 'analytics'],
-    
-    // Computer Science Fundamentals
-    'computer_science': ['computer', 'science', 'data', 'structure', 'binary', 'network', 'system'],
-    'algorithms': ['algorithm', 'sort', 'search', 'binary', 'linear', 'bubble', 'quick', 'merge', 'hash', 'tree', 'graph'],
-    'data_structures': ['array', 'linked list', 'stack', 'queue', 'tree', 'graph', 'hash table', 'heap'],
-    'networking': ['network', 'tcp', 'ip', 'http', 'router', 'switch', 'protocol', 'internet', 'dns', 'vpn'],
-    'security': ['security', 'encryption', 'hacking', 'cybersecurity', 'password', 'authentication', 'ssl'],
-    'os': ['operating system', 'linux', 'windows', 'ubuntu', 'kernel', 'process', 'thread'],
-    
-    // Hardware & Electronics
-    'hardware': ['hardware', 'cpu', 'gpu', 'ram', 'motherboard', 'processor', 'computer', 'laptop'],
-    'electronics': ['electronics', 'circuit', 'arduino', 'raspberry pi', 'iot', 'sensor'],
-    
-    // Emerging Tech
-    'blockchain': ['blockchain', 'crypto', 'bitcoin', 'ethereum', 'nft', 'web3'],
-    
-    // Education
-    'education': ['learn', 'study', 'exam', 'test', 'question', 'answer', 'homework', 'assignment', 'course'],
-    'flowchart': ['flowchart', 'diagram', 'flow', 'chart', 'process', 'steps', 'decision'],
-    
-    // Career
-    'career': ['job', 'career', 'interview', 'resume', 'portfolio', 'freelance', 'salary'],
-  };
-  
-  const text_lower = text.toLowerCase();
-  const topics: string[] = [];
-  
-  Object.entries(topicKeywords).forEach(([topic, keywords]) => {
-    if (keywords.some(keyword => text_lower.includes(keyword))) {
-      topics.push(topic);
-    }
-  });
-  
-  return topics.length > 0 ? topics : ['general_tech'];
-}
+Style:
+- Be concise but thorough. Prefer clear examples over long prose.
+- Use markdown: code blocks with language hints, bullet lists, **bold** for emphasis.
+- If a student asks about an exam question, walk them through the reasoning — never just dump the answer.
+- If you're shown an image, describe what you see and answer based on it (handwritten notes, diagrams, code screenshots all welcome).
+- Be encouraging. Students are learning.`;
 
-async function generateResponseWithGroq(userInput: string, sessionId: string): Promise<string> {
-  const keywords = extractKeywords(userInput);
-  const topics = identifyTopics(userInput);
-  
-  // Get recent interactions for context
-  const { data: recentInteractions } = await supabase
-    .from('user_interactions')
-    .select('*')
-    .eq('session_id', sessionId)
-    .order('timestamp', { ascending: false })
-    .limit(5);
-  
-  // Build context from recent interactions
-  let conversationContext = '';
-  if (recentInteractions && recentInteractions.length > 0) {
-    conversationContext = recentInteractions
-      .reverse()
-      .map(interaction => `User: ${interaction.user_input}\nAssistant: ${interaction.ai_response}`)
-      .join('\n');
-  }
-  
-  // Build system prompt
-  const systemPrompt = `You are Mbuya Zivai, a wise and knowledgeable AI assistant specializing in ALL technology-related topics. 
-You help students and professionals understand:
-- Programming in ANY language (Python, JavaScript, Java, C++, C#, Go, Rust, PHP, Ruby, Swift, Kotlin, etc.)
-- Web development (frontend, backend, full-stack, APIs)
-- Mobile app development (Android, iOS, cross-platform)
-- Database design, SQL, and NoSQL systems
-- Cloud computing (AWS, Azure, GCP, serverless)
-- DevOps, CI/CD, and infrastructure
-- Artificial Intelligence and Machine Learning
-- Cybersecurity and networking
-- Computer hardware and electronics
-- IT career advice and interview preparation
-- Blockchain and emerging technologies
-- General tech troubleshooting
-
-You are patient, encouraging, and provide clear explanations with examples when helpful.
-Current topics being discussed: ${topics.join(', ')}
-Key concepts: ${keywords.slice(0, 5).join(', ')}`;
-
-  try {
-    // Call Groq API with llama model
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${groqApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...(conversationContext ? [{ role: 'system', content: `Previous conversation:\n${conversationContext}` }] : []),
-          { role: 'user', content: userInput }
-        ],
-        temperature: 0.7,
-        max_tokens: 1024,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Groq API error:', response.status, errorText);
-      throw new Error(`Groq API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
-    
-    // Learn from this interaction by storing patterns
-    if (keywords.length > 2) {
-      const triggerPhrase = keywords.slice(0, 3).join(' ');
-      
-      const { data: existing } = await supabase
-        .from('learned_responses')
-        .select('id, usage_count')
-        .eq('trigger_phrase', triggerPhrase)
-        .single();
-      
-      if (existing) {
-        await supabase
-          .from('learned_responses')
-          .update({ 
-            usage_count: existing.usage_count + 1,
-            confidence_score: Math.min(0.9, 0.4 + (existing.usage_count * 0.05))
-          })
-          .eq('id', existing.id);
-      } else {
-        await supabase
-          .from('learned_responses')
-          .insert({
-            trigger_phrase: triggerPhrase,
-            response_text: aiResponse.substring(0, 500),
-            confidence_score: 0.4,
-            usage_count: 1
-          });
-      }
-    }
-    
-    return aiResponse;
-  } catch (error) {
-    console.error('Error calling Groq API:', error);
-    // Fallback to basic response
-    return `I understand you're asking about ${keywords.slice(0, 3).join(', ')}. This is an important topic in computer science! Could you please rephrase your question? I'm having a bit of trouble processing it right now.`;
-  }
+interface IncomingMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  imageUrl?: string; // optional data URL or https URL
 }
 
 serve(async (req) => {
@@ -212,61 +40,93 @@ serve(async (req) => {
   }
 
   try {
-    const { message, sessionId } = await req.json();
-    
-    console.log('Enhanced AI processing:', { message, sessionId });
-    
-    const sentiment = calculateSentiment(message);
-    const keywords = extractKeywords(message);
-    const topics = identifyTopics(message);
-    
-    // Generate intelligent response using Groq AI
-    const aiResponse = await generateResponseWithGroq(message, sessionId || 'anonymous');
-    
-    // Store the interaction
-    await supabase
-      .from('user_interactions')
-      .insert({
-        user_input: message,
-        ai_response: aiResponse,
-        context_keywords: keywords,
-        session_id: sessionId || 'anonymous',
-        sentiment: sentiment,
-        topics: topics,
-        interaction_type: 'chat'
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not configured');
+    }
+
+    const body = await req.json();
+    const userMessage: string = body.message ?? '';
+    const sessionId: string = body.sessionId ?? 'anonymous';
+    const history: IncomingMessage[] = Array.isArray(body.history) ? body.history : [];
+    const imageUrl: string | undefined = body.imageUrl; // base64 data URL or public https URL
+    const model: string = body.model || 'google/gemini-3-flash-preview';
+
+    if (!userMessage && !imageUrl) {
+      return new Response(JSON.stringify({ error: 'message or imageUrl is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
-    
-    console.log('Interaction stored successfully');
-    
-    return new Response(
-      JSON.stringify({ 
-        response: aiResponse,
-        keywords,
-        topics,
-        sentiment
+    }
+
+    // Build the multimodal user content
+    const userContent: any[] = [];
+    if (userMessage) userContent.push({ type: 'text', text: userMessage });
+    if (imageUrl) userContent.push({ type: 'image_url', image_url: { url: imageUrl } });
+
+    const messages: any[] = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
+      { role: 'user', content: userContent.length === 1 && userContent[0].type === 'text' ? userMessage : userContent },
+    ];
+
+    const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: imageUrl ? 'google/gemini-2.5-pro' : model,
+        messages,
+        temperature: 0.7,
+        max_tokens: 1500,
       }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+    });
+
+    if (!aiRes.ok) {
+      if (aiRes.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'Mbuya Zivai is busy right now. Please try again in a minute.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
       }
-    );
-    
+      if (aiRes.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'AI credits exhausted. Please contact the admin.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+      const t = await aiRes.text();
+      console.error('Lovable AI error:', aiRes.status, t);
+      throw new Error(`AI gateway error ${aiRes.status}`);
+    }
+
+    const data = await aiRes.json();
+    const aiResponse: string = data.choices?.[0]?.message?.content ?? '';
+
+    // Best-effort logging — never block the user response
+    try {
+      await supabase.from('user_interactions').insert({
+        user_input: userMessage || '[image]',
+        ai_response: aiResponse,
+        session_id: sessionId,
+        interaction_type: imageUrl ? 'chat_image' : 'chat',
+      });
+    } catch (logErr) {
+      console.warn('Interaction log skipped:', logErr);
+    }
+
+    return new Response(JSON.stringify({ response: aiResponse }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
-    console.error('Error in enhanced-ai function:', error);
+    console.error('enhanced-ai error:', error);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Failed to process request',
-        response: "I apologize, but I'm having trouble processing your request right now. Could you please try again?"
+        response: "I'm having trouble responding right now. Please try again in a moment.",
       }),
-      { 
-        status: 500, 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
-      }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   }
 });
