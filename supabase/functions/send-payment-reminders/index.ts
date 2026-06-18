@@ -101,7 +101,7 @@ const handler = async (req: Request): Promise<Response> => {
 
         try {
           await resend.emails.send({
-            from: "CS Experts Zimbabwe <onboarding@resend.dev>",
+            from: "Bluewave Academy <onboarding@resend.dev>",
             to: [enrollment.student_email],
             subject: isOverdue 
               ? `⚠️ URGENT: Payment Overdue for ${className}` 
@@ -169,7 +169,7 @@ const handler = async (req: Request): Promise<Response> => {
                   <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 25px 0;">
                   
                   <p style="font-size: 12px; color: #9ca3af; text-align: center; margin: 0;">
-                    This is an automated message from CS Experts Zimbabwe.<br>
+                    This is an automated message from Bluewave Academy.<br>
                     Please do not reply to this email.
                   </p>
                 </div>

@@ -120,7 +120,7 @@ export const EnhancedStudentPortal: React.FC<StudentPortalProps> = ({ onStartExa
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
       <div className="container mx-auto p-4 sm:p-6">
         <div className="text-center mb-8">
-          <h1 className="text-2xl sm:text-4xl font-bold mb-2">CS Experts Zimbabwe</h1>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">Bluewave Academy</h1>
           <p className="text-muted-foreground text-sm sm:text-lg">Digital Examination Portal</p>
           <div className="mt-4 flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <Input

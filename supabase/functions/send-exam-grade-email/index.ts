@@ -144,9 +144,9 @@ const handler = async (req: Request): Promise<Response> => {
     ` : '';
 
     const emailResponse = await resend.emails.send({
-      from: "CS Experts Zimbabwe <onboarding@resend.dev>",
+      from: "Bluewave Academy <onboarding@resend.dev>",
       to: [studentEmail],
-      subject: `📊 Your Exam Results: ${examTitle} - Grade ${gradeLetter} (${percentage.toFixed(0)}%)`,
+      subject: `[Bluewave Academy] Your results: ${examTitle} · Grade ${gradeLetter} (${percentage.toFixed(0)}%)`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -154,61 +154,61 @@ const handler = async (req: Request): Promise<Response> => {
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #f1f5f9;">
           <div style="max-width: 650px; margin: 0 auto; background-color: #ffffff;">
-            
+
             <!-- Header -->
-            <div style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); padding: 30px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">CS EXPERTS ZIMBABWE</h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">A Level Computer Science Excellence</p>
+            <div style="background: linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 100%); padding: 32px 24px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 0.5px;">BLUEWAVE ACADEMY</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 13px;">A Level Computer Science · Zimbabwe</p>
             </div>
-            
+
             <!-- Greeting -->
-            <div style="padding: 30px;">
-              <h2 style="color: #333; margin: 0 0 10px 0; font-size: 22px;">Hello ${studentName}! 🎓</h2>
-              <p style="color: #666; margin: 0; font-size: 16px;">Your examination results for <strong>${examTitle}</strong> are ready.</p>
+            <div style="padding: 28px 30px 8px 30px;">
+              <h2 style="color: #0f172a; margin: 0 0 8px 0; font-size: 22px;">Hello ${studentName} 🎓</h2>
+              <p style="color: #475569; margin: 0; font-size: 16px;">Your results for <strong>${examTitle}</strong> are ready.</p>
             </div>
-            
+
             <!-- Score Card -->
-            <div style="margin: 0 30px 30px 30px; background: linear-gradient(135deg, ${gradeColor} 0%, ${gradeColor}dd 100%); border-radius: 16px; padding: 30px; text-align: center; color: white;">
-              <p style="margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Your Final Score</p>
-              <div style="font-size: 64px; font-weight: bold; margin: 10px 0;">${percentage.toFixed(0)}%</div>
-              <div style="font-size: 20px; margin-bottom: 15px;">${totalScore} / ${maxScore} marks</div>
-              <div style="display: inline-block; background: white; color: ${gradeColor}; padding: 10px 30px; border-radius: 25px; font-size: 24px; font-weight: bold;">
-                Grade: ${gradeLetter}
+            <div style="margin: 24px 30px 30px 30px; background: linear-gradient(135deg, ${gradeColor} 0%, ${gradeColor}dd 100%); border-radius: 16px; padding: 28px; text-align: center; color: #ffffff;">
+              <p style="margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">Your final score</p>
+              <div style="font-size: 60px; font-weight: bold; margin: 6px 0; line-height: 1;">${percentage.toFixed(0)}%</div>
+              <div style="font-size: 18px; margin-bottom: 14px;">${totalScore} / ${maxScore} marks</div>
+              <div style="display: inline-block; background: #ffffff; color: ${gradeColor}; padding: 8px 26px; border-radius: 25px; font-size: 20px; font-weight: bold;">
+                Grade ${gradeLetter}
               </div>
-              <p style="margin: 15px 0 0 0; font-size: 16px;">${gradeMessage}</p>
+              <p style="margin: 14px 0 0 0; font-size: 15px;">${gradeMessage}</p>
             </div>
-            
+
             <!-- Detailed Breakdown -->
-            <div style="padding: 0 30px 30px 30px;">
-              <h3 style="color: #333; margin: 0 0 20px 0; font-size: 18px; border-bottom: 2px solid #1976d2; padding-bottom: 10px;">
-                📋 Detailed Question Analysis
+            <div style="padding: 0 30px 24px 30px;">
+              <h3 style="color: #0f172a; margin: 0 0 18px 0; font-size: 17px; border-bottom: 2px solid #1d4ed8; padding-bottom: 10px;">
+                📋 Question-by-question feedback
               </h3>
               ${questionsHtml}
             </div>
-            
+
             ${weakAreasHtml ? `<div style="padding: 0 30px;">${weakAreasHtml}</div>` : ''}
             ${recommendationsHtml ? `<div style="padding: 0 30px;">${recommendationsHtml}</div>` : ''}
-            
+
             <!-- Encouragement -->
-            <div style="margin: 20px 30px 30px 30px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 12px; text-align: center;">
-              <p style="color: #1565c0; margin: 0; font-size: 16px; font-weight: 500;">
-                💪 Keep pushing forward! Every question you review is a step toward excellence.
+            <div style="margin: 16px 30px 24px 30px; background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); padding: 22px; border-radius: 12px; text-align: center;">
+              <p style="color: #075985; margin: 0; font-size: 15px; font-weight: 500;">
+                💪 Mbuya Zivai says: keep going! Every question you review is a step closer to mastery.
               </p>
             </div>
-            
+
             <!-- Footer -->
-            <div style="background: #f5f5f5; padding: 25px; text-align: center; border-top: 1px solid #e0e0e0;">
-              <p style="color: #666; font-size: 14px; margin: 0 0 10px 0;">
-                <strong>CS Experts Zimbabwe</strong><br>
-                Founded by Tinodaishe M Chibi | Powered by Intellix Inc
+            <div style="background: #f8fafc; padding: 22px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="color: #475569; font-size: 14px; margin: 0 0 8px 0;">
+                <strong>Bluewave Academy</strong><br>
+                Powered by Bluewave Technologies · CEO Tinodaishe M. Chibi
               </p>
-              <p style="color: #888; font-size: 12px; margin: 0;">
-                Questions? Contact us: tinodaishemchibi@gmail.com | +263 78 108 1816
+              <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                Questions? tinodaishemchibi@gmail.com · +263 78 108 1816
               </p>
             </div>
-            
+
           </div>
         </body>
         </html>

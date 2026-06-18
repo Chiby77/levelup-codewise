@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
-import { UserRound, Sparkles, MessageSquare, Bot } from "lucide-react";
 import { Dialog, DialogContent } from "./ui/dialog";
 import MbuyaZivai from "./MbuyaZivai";
+import { BluewaveLogo } from "./BluewaveLogo";
 import { cn } from "@/lib/utils";
 
 const FloatingChatButton = () => {
@@ -78,11 +77,11 @@ const FloatingChatButton = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div 
-          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center animate-spin"
-          style={{...iconContainerStyle, animationDuration: "10s"}}
+        <div
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center bg-background/20"
+          style={iconContainerStyle}
         >
-          {isHovered ? <Bot className="w-5 h-5 sm:w-6 sm:h-6" /> : <UserRound className="w-5 h-5 sm:w-6 sm:h-6" />}
+          <BluewaveLogo className="w-7 h-7 sm:w-9 sm:h-9 rounded-full" />
         </div>
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-linear font-bold text-sm sm:text-lg pr-0 group-hover:pr-2 hidden sm:inline">
           Chat with Mbuya Zivai

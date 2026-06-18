@@ -281,7 +281,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
         {/* Footer */}
         <div className="mt-12 text-center text-sm text-muted-foreground">
           <p>Bluewave Academy Digital Examination System</p>
-          <p>Powered by Intellix Inc | Founded by Tinodaishe M Chibi</p>
+          <p>Bluewave Academy · Powered by Bluewave Technologies</p>
           <p className="text-xs mt-1">BTech Software Engineering Student at HIT</p>
         </div>
       </div>
