@@ -30,53 +30,51 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to the user
     const userEmailResponse = await resend.emails.send({
-      from: "A Level CS Experts <onboarding@resend.dev>",
+      from: "Bluewave Academy <onboarding@resend.dev>",
       to: [email],
-      subject: "We received your message!",
+      subject: "[Bluewave Academy] We received your message",
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #333; text-align: center;">Thank you for contacting us!</h1>
-          <p>Dear ${name},</p>
-          <p>We have received your message and will get back to you as soon as possible.</p>
-          
-          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #555; margin-top: 0;">Your Message:</h3>
-            <p style="color: #666; font-style: italic;">"${message}"</p>
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; max-width: 600px; margin: 0 auto; background:#ffffff;">
+          <div style="background: linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 100%); padding:28px 24px; text-align:center;">
+            <h1 style="color:#ffffff; margin:0; font-size:22px; letter-spacing:0.4px;">BLUEWAVE ACADEMY</h1>
+            <p style="color:rgba(255,255,255,0.9); margin:6px 0 0; font-size:13px;">A Level Computer Science · Zimbabwe</p>
           </div>
-          
-          <p>Our team typically responds within 24 hours. If you have any urgent questions, feel free to call us at +263 78 108 1816.</p>
-          
-          <p style="color: #888; font-size: 14px;">
-            Best regards,<br>
-            The A Level Computer Science Experts Team
-          </p>
+          <div style="padding:28px 24px;">
+            <h2 style="color:#0f172a; margin:0 0 8px; font-size:20px;">Thanks for reaching out, ${name}!</h2>
+            <p style="color:#475569; margin:0 0 16px;">We've received your message and a member of the Bluewave team will be in touch within 24 hours.</p>
+
+            <div style="background:#f1f5f9; padding:18px; border-radius:10px; border-left:4px solid #1d4ed8;">
+              <h3 style="color:#334155; margin:0 0 8px; font-size:14px; text-transform:uppercase; letter-spacing:0.6px;">Your message</h3>
+              <p style="color:#475569; margin:0; font-style:italic;">"${message}"</p>
+            </div>
+
+            <p style="color:#64748b; font-size:14px; margin:20px 0 0;">For anything urgent, call <strong>+263 78 108 1816</strong> or reply to this email.</p>
+          </div>
+          <div style="background:#f8fafc; padding:18px 24px; text-align:center; border-top:1px solid #e2e8f0;">
+            <p style="color:#64748b; font-size:12px; margin:0;">Bluewave Academy · Powered by Bluewave Technologies</p>
+          </div>
         </div>
       `,
     });
 
     // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
-      from: "A Level CS Experts <onboarding@resend.dev>",
+      from: "Bluewave Academy <onboarding@resend.dev>",
       to: ["tinodaishemchibi@gmail.com"],
-      subject: `New Contact Form Message from ${name}`,
+      subject: `[Bluewave Academy] New contact message from ${name}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #333;">New Contact Form Submission</h1>
-          
-          <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #555; margin-top: 0;">Contact Details:</h3>
+        <div style="font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color:#0f172a;">New contact form submission</h1>
+
+          <div style="background-color:#f1f5f9; padding:18px; border-radius:8px; margin:16px 0;">
             <p><strong>Name:</strong> ${name}</p>
             <p><strong>Email:</strong> ${email}</p>
           </div>
-          
-          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #555; margin-top: 0;">Message:</h3>
-            <p style="color: #666;">${message}</p>
+
+          <div style="background-color:#f8fafc; padding:18px; border-radius:8px; border-left:4px solid #1d4ed8;">
+            <h3 style="color:#334155; margin-top:0;">Message</h3>
+            <p style="color:#475569;">${message}</p>
           </div>
-          
-          <p style="color: #888; font-size: 14px;">
-            Please respond to this inquiry at your earliest convenience.
-          </p>
         </div>
       `,
     });
