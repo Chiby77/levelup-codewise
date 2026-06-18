@@ -22,6 +22,7 @@ import {
   Target,
   Sparkles
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { toast } from '@/hooks/use-toast';
 import { WhatsAppPromo } from '@/components/WhatsAppPromo';
 import { FeedbackModal } from '@/components/FeedbackModal';
@@ -154,10 +155,13 @@ export default function StudentDashboard() {
               </p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={handleLogout} className="border-red-200 hover:bg-red-50 hover:text-red-600 hover:border-red-300 flex-shrink-0">
-            <LogOut className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Logout</span>
-          </Button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <ThemeToggle variant="outline" />
+            <Button variant="outline" size="sm" onClick={handleLogout} className="border-destructive/30 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50">
+              <LogOut className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
+          </div>
         </div>
       </header>
 

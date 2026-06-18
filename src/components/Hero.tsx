@@ -36,20 +36,20 @@ const Hero = () => {
           
           {/* Motivational Message */}
           <div className="mb-6 text-center space-y-2 animate-fadeIn px-4" style={{ animationDelay: '1000ms' }}>
-            <div className="bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div className="bg-background/40 dark:bg-background/30 backdrop-blur-md rounded-lg p-4 border border-border/40 shadow-lg">
               <p className="text-lg sm:text-xl font-bold text-primary mb-2">
                 WISHING YOU ALL THE BEST IN YOUR FINAL EXAMS
               </p>
               <p className="text-base sm:text-lg font-semibold text-secondary">
                 USAKANGANWE PRAYER
               </p>
-              <p className="text-sm sm:text-base font-medium text-white/90 mt-2">
+              <p className="text-sm sm:text-base font-medium text-foreground/90 mt-2">
                 LET'S MAKE OUR PARENTS HAPPY
               </p>
             </div>
           </div>
-          
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-xs sm:max-w-lg md:max-w-2xl mx-auto animate-fadeIn px-4" style={{ animationDelay: "1.2s" }}>
+
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-foreground/90 dark:text-foreground/80 mb-6 sm:mb-8 max-w-xs sm:max-w-lg md:max-w-2xl mx-auto animate-fadeIn px-4 font-medium" style={{ animationDelay: "1.2s" }}>
             Expert guidance, comprehensive resources, and a supportive community to help you excel in your studies.
           </p>
           
@@ -117,7 +117,7 @@ const Hero = () => {
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold mb-4">Why Choose Computer Science?</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 text-gray-700">
+            <div className="space-y-4 text-foreground/90">
               <p>
                 Computer Science is more than just programming – it's about solving real-world problems 
                 through computational thinking and innovative solutions. In today's digital age, 
