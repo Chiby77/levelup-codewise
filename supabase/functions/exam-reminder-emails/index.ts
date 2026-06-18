@@ -208,7 +208,7 @@ const handler = async (req: Request): Promise<Response> => {
               <!-- Footer -->
               <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
                 <p style="color: #6b7280; font-size: 14px; margin: 0;">
-                  CS Experts Zimbabwe - Empowering A Level Computer Science Students
+                  Bluewave Academy - Empowering A Level Computer Science Students
                 </p>
                 <p style="color: #9ca3af; font-size: 12px; margin: 10px 0 0 0;">
                   Join Bluewave Academy WhatsApp Group for more resources!
