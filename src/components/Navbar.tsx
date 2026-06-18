@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { BluewaveLogo } from "@/components/BluewaveLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,13 +31,16 @@ const Navbar = () => {
             </div>
           </Link>
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-foreground p-2 rounded-md hover:bg-muted transition-colors"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          <div className="flex items-center gap-1 md:hidden">
+            <ThemeToggle />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-foreground p-2 rounded-md hover:bg-muted transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
 
           <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
@@ -55,6 +59,7 @@ const Navbar = () => {
                 </Link>
               );
             })}
+            <ThemeToggle className="ml-2" />
           </div>
         </div>
 

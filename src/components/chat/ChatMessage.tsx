@@ -1,4 +1,5 @@
-import { Bot, Sparkles, User } from "lucide-react";
+import { Sparkles, User } from "lucide-react";
+import { BluewaveLogo } from "@/components/BluewaveLogo";
 
 interface ChatMessageProps {
   role: "assistant" | "user";
@@ -20,9 +21,7 @@ export function ChatMessage({ role, content, animate, id, imageUrl }: ChatMessag
         <div className="flex-shrink-0 mt-1">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full blur-sm opacity-60"></div>
-            <div className="relative bg-gradient-to-br from-primary to-accent p-2 rounded-full">
-              <Bot className="w-4 h-4 text-white" />
-            </div>
+            <BluewaveLogo className="relative w-9 h-9 rounded-full" />
             <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-yellow-400 animate-pulse" />
           </div>
         </div>
@@ -65,7 +64,7 @@ export function ChatMessage({ role, content, animate, id, imageUrl }: ChatMessag
       {role === "user" && (
         <div className="flex-shrink-0 mt-1">
           <div className="bg-gradient-to-br from-primary to-secondary p-2 rounded-full">
-            <User className="w-4 h-4 text-white" />
+            <User className="w-4 h-4 text-primary-foreground" />
           </div>
         </div>
       )}
