@@ -1,5 +1,6 @@
 
-import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from "react";
 import { 
   Card, 
   CardContent, 
@@ -95,21 +96,38 @@ export function QuizComponent({ onFinish, category }: QuizComponentProps) {
       setSelectedOption(null);
       setHasAnswered(false);
     } else {
-      // Calculate time spent in seconds
       const timeSpent = Math.round((Date.now() - startTime) / 1000);
-      
-      // Update quiz stats
-      updateQuizStats(
-        category || questions[0].category,
-        questions,
-        score,
-        timeSpent
-      );
-      
-      // Update the formatted stats for display
+      const finalCategory = category || questions[0].category;
+
+      updateQuizStats(finalCategory, questions, score, timeSpent);
       setQuizStats(getFormattedQuizStats());
-      
       setQuizComplete(true);
+
+      // Best-effort: email result to logged-in students
+      (async () => {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user?.email) return;
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', user.id)
+            .maybeSingle();
+          await supabase.functions.invoke('send-quiz-result-email', {
+            body: {
+              studentName: profile?.full_name || user.email.split('@')[0],
+              studentEmail: user.email,
+              category: finalCategory,
+              score,
+              totalQuestions: questions.length,
+              percentage: Math.round((score / questions.length) * 100),
+              timeSpentSeconds: timeSpent,
+            },
+          });
+        } catch (err) {
+          console.warn('Quiz email skipped:', err);
+        }
+      })();
     }
   };
 

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock } from 'lucide-react';
 import { BluewaveLogo } from '@/components/BluewaveLogo';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { toast } from '@/hooks/use-toast';
 
 export default function AdminPortal() {
@@ -77,7 +78,8 @@ export default function AdminPortal() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 relative">
+      <div className="absolute top-4 right-4"><ThemeToggle variant="outline" className="text-slate-200 border-slate-700 bg-slate-800/60 hover:bg-slate-700/60" /></div>
       <div className="w-full max-w-md space-y-4">
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center">

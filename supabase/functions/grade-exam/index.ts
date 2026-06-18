@@ -344,6 +344,35 @@ serve(async (req) => {
       short_answer: 'Read more on the topic and practise written explanations.',
       data_representation: 'Practise number-base conversions and binary arithmetic.',
     };
+    const studyRecommendations = uniqueWeak.map((a) => recsMap[a] || 'Keep practising!');
+
+    // Best-effort: auto-send branded result email to the student
+    try {
+      const { data: sub } = await supabase
+        .from('student_submissions')
+        .select('student_name, student_email, exams(title)')
+        .eq('id', submissionId)
+        .single();
+
+      if (sub?.student_email) {
+        const percentage = Math.round((totalScore / maxScore) * 100);
+        await supabase.functions.invoke('send-exam-grade-email', {
+          body: {
+            studentName: sub.student_name || 'Student',
+            studentEmail: sub.student_email,
+            examTitle: (sub as any).exams?.title || 'Your exam',
+            totalScore: Math.round(totalScore * 10) / 10,
+            maxScore,
+            percentage,
+            gradeDetails: Object.values(gradeDetails),
+            weakAreas: uniqueWeak,
+            studyRecommendations,
+          },
+        });
+      }
+    } catch (emailErr) {
+      console.warn('Result email skipped:', emailErr);
+    }
 
     return new Response(
       JSON.stringify({
@@ -352,7 +381,7 @@ serve(async (req) => {
         maxScore,
         percentage: Math.round((totalScore / maxScore) * 100),
         weakAreas: uniqueWeak,
-        studyRecommendations: uniqueWeak.map((a) => recsMap[a] || 'Keep practising!'),
+        studyRecommendations,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
