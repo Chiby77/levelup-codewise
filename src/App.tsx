@@ -77,6 +77,8 @@ const App = () => {
                   <Route path="/exams" element={<ExamSystem />} />
                   <Route path="/admin-content" element={<AdminContent />} />
                   <Route path="/submission-history" element={<StudentSubmissionHistory />} />
+                  <Route path="/exam-results/:submissionId" element={<ExamResultsPage />} />
+
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </Suspense>
