@@ -43,9 +43,46 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    fetchSubmissionResults();
-    // Show feedback modal after 2 seconds
-    setTimeout(() => setShowFeedback(true), 2000);
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 20; // ~40s of polling
+
+    const poll = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('student_submissions')
+          .select('*')
+          .eq('id', submissionId)
+          .single();
+
+        if (error) throw error;
+        if (cancelled) return;
+
+        setSubmission(data);
+
+        const status = (data as any).grading_status;
+        const isFinal = data.graded || status === 'completed' || status === 'failed';
+        if (!isFinal && attempts < maxAttempts) {
+          attempts += 1;
+          setTimeout(poll, 2000);
+        } else {
+          setLoading(false);
+          // Show feedback modal once results are visible
+          setTimeout(() => setShowFeedback(true), 2000);
+        }
+      } catch (error) {
+        console.error('Error fetching results:', error);
+        if (!cancelled) {
+          toast.error('Failed to load exam results');
+          setLoading(false);
+        }
+      }
+    };
+
+    poll();
+    return () => {
+      cancelled = true;
+    };
   }, [submissionId]);
 
   const fetchSubmissionResults = async () => {
@@ -65,6 +102,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
       setLoading(false);
     }
   };
+
 
   const handleDownloadReport = async () => {
     if (!submission) return;
