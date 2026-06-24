@@ -23,9 +23,10 @@ export function ChatHeader() {
         </CardTitle>
         
         <CardDescription className="text-sm flex items-center gap-2 ml-11">
-          <span className="text-muted-foreground">AI-Powered Computer Science Assistant</span>
+          <span className="text-muted-foreground">Bluewave Academy · Free AI tutor — no sign-in needed</span>
           <GraduationCap className="w-4 h-4 text-accent" />
         </CardDescription>
+
         
         {/* Status indicator */}
         <div className="flex items-center gap-2 mt-3 ml-11">
