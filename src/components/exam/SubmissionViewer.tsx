@@ -9,6 +9,8 @@ import { generatePDFReport } from '@/utils/reportGenerator';
 import { toast } from 'sonner';
 import { usePagination } from '@/hooks/usePagination';
 import { PaginationControls } from '@/components/PaginationControls';
+import { SubmissionGradingReview } from '@/components/admin/SubmissionGradingReview';
+
 
 interface Submission {
   id: string;
