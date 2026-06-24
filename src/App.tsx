@@ -23,7 +23,9 @@ const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 const StudentExam = lazy(() => import("./pages/StudentExam"));
 const AdminContent = lazy(() => import("./pages/AdminContent"));
 const StudentSubmissionHistory = lazy(() => import("./pages/StudentSubmissionHistory"));
+const ExamResultsPage = lazy(() => import("./pages/ExamResultsPage"));
 const ExamSystem = lazy(() => import("./pages/ExamSystem").then(m => ({ default: m.ExamSystem })));
+
 
 // Loading fallback component
 const PageLoader = () => (
