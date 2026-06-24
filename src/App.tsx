@@ -23,7 +23,9 @@ const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 const StudentExam = lazy(() => import("./pages/StudentExam"));
 const AdminContent = lazy(() => import("./pages/AdminContent"));
 const StudentSubmissionHistory = lazy(() => import("./pages/StudentSubmissionHistory"));
+const ExamResultsPage = lazy(() => import("./pages/ExamResultsPage"));
 const ExamSystem = lazy(() => import("./pages/ExamSystem").then(m => ({ default: m.ExamSystem })));
+
 
 // Loading fallback component
 const PageLoader = () => (
@@ -75,6 +77,8 @@ const App = () => {
                   <Route path="/exams" element={<ExamSystem />} />
                   <Route path="/admin-content" element={<AdminContent />} />
                   <Route path="/submission-history" element={<StudentSubmissionHistory />} />
+                  <Route path="/exam-results/:submissionId" element={<ExamResultsPage />} />
+
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </Suspense>

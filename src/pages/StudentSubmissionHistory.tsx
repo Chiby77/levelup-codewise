@@ -5,9 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Calendar, Clock, FileCheck, TrendingUp, Award } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, FileCheck, TrendingUp, Award, Eye, Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import { generatePDFReport } from '@/utils/reportGenerator';
+
 
 interface Submission {
   id: string;
@@ -18,12 +20,15 @@ interface Submission {
   max_score: number;
   time_taken_minutes: number;
   graded: boolean;
+  grading_status?: string;
   grade_details: any;
+  answers?: any;
   exams: {
     title: string;
     subject: string;
   };
 }
+
 
 export default function StudentSubmissionHistory() {
   const navigate = useNavigate();
@@ -222,12 +227,43 @@ export default function StudentSubmissionHistory() {
                                   </div>
                                 </>
                               ) : (
-                                <div className="text-muted-foreground">
-                                  Grading in progress...
+                                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  {submission.grading_status === 'failed'
+                                    ? 'Grading failed — please contact admin'
+                                    : 'Grading in progress…'}
                                 </div>
                               )}
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate(`/exam-results/${submission.id}`)}
+                                >
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  View
+                                </Button>
+                                {submission.graded && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={async () => {
+                                      try {
+                                        await generatePDFReport(submission as any);
+                                        toast.success('PDF downloaded');
+                                      } catch {
+                                        toast.error('Failed to generate PDF');
+                                      }
+                                    }}
+                                  >
+                                    <Download className="h-4 w-4 mr-1" />
+                                    PDF
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </div>
+
 
                           {/* Detailed Feedback */}
                           {submission.graded && submission.grade_details && (

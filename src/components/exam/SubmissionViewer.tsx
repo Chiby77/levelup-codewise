@@ -9,6 +9,8 @@ import { generatePDFReport } from '@/utils/reportGenerator';
 import { toast } from 'sonner';
 import { usePagination } from '@/hooks/usePagination';
 import { PaginationControls } from '@/components/PaginationControls';
+import { SubmissionGradingReview } from '@/components/admin/SubmissionGradingReview';
+
 
 interface Submission {
   id: string;
@@ -132,15 +134,16 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({ submissions,
                             View Details
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle>
-                              Submission Details - {submission.student_name}
+                              Review & Override · {submission.student_name}
                             </DialogTitle>
                           </DialogHeader>
-                          <SubmissionDetails submission={submission} />
+                          <SubmissionGradingReview submission={submission as any} />
                         </DialogContent>
                       </Dialog>
+
                       
                       {!submission.graded && onGradeRequest && (
                         <Button 
