@@ -227,12 +227,43 @@ export default function StudentSubmissionHistory() {
                                   </div>
                                 </>
                               ) : (
-                                <div className="text-muted-foreground">
-                                  Grading in progress...
+                                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  {submission.grading_status === 'failed'
+                                    ? 'Grading failed — please contact admin'
+                                    : 'Grading in progress…'}
                                 </div>
                               )}
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate(`/exam-results/${submission.id}`)}
+                                >
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  View
+                                </Button>
+                                {submission.graded && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={async () => {
+                                      try {
+                                        await generatePDFReport(submission as any);
+                                        toast.success('PDF downloaded');
+                                      } catch {
+                                        toast.error('Failed to generate PDF');
+                                      }
+                                    }}
+                                  >
+                                    <Download className="h-4 w-4 mr-1" />
+                                    PDF
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </div>
+
 
                           {/* Detailed Feedback */}
                           {submission.graded && submission.grade_details && (
