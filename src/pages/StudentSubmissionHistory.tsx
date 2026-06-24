@@ -20,12 +20,15 @@ interface Submission {
   max_score: number;
   time_taken_minutes: number;
   graded: boolean;
+  grading_status?: string;
   grade_details: any;
+  answers?: any;
   exams: {
     title: string;
     subject: string;
   };
 }
+
 
 export default function StudentSubmissionHistory() {
   const navigate = useNavigate();
