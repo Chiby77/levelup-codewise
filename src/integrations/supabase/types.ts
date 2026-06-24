@@ -431,6 +431,56 @@ export type Database = {
         }
         Relationships: []
       }
+      grading_audit_log: {
+        Row: {
+          action: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_feedback: string | null
+          new_score: number | null
+          notes: string | null
+          previous_feedback: string | null
+          previous_score: number | null
+          question_id: string | null
+          submission_id: string
+        }
+        Insert: {
+          action: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_feedback?: string | null
+          new_score?: number | null
+          notes?: string | null
+          previous_feedback?: string | null
+          previous_score?: number | null
+          question_id?: string | null
+          submission_id: string
+        }
+        Update: {
+          action?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_feedback?: string | null
+          new_score?: number | null
+          notes?: string | null
+          previous_feedback?: string | null
+          previous_score?: number | null
+          question_id?: string | null
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grading_audit_log_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "student_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learned_responses: {
         Row: {
           confidence_score: number | null
