@@ -66,45 +66,44 @@ const FloatingChatButton = () => {
 
   return (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className={cn(
-          "fixed bottom-4 right-4 sm:bottom-6 sm:right-6 p-2 sm:p-4 text-white rounded-full shadow-lg transition-all transform z-50 flex items-center gap-2 group border-2 border-white/40",
-          isHovered ? "scale-110" : "animate-float",
-          hasUnreadMessages && "animate-bounce"
-        )}
-        style={buttonStyle}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div
-          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center bg-background/20"
-          style={iconContainerStyle}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className={cn(
+            "fixed bottom-4 right-4 sm:bottom-6 sm:right-6 p-2 sm:p-4 text-white rounded-full shadow-lg transition-all transform z-40 flex items-center gap-2 group border-2 border-white/40",
+            isHovered ? "scale-110" : "animate-float",
+            hasUnreadMessages && "animate-bounce"
+          )}
+          style={buttonStyle}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <BluewaveLogo className="w-7 h-7 sm:w-9 sm:h-9 rounded-full" />
-        </div>
-        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-linear font-bold text-sm sm:text-lg pr-0 group-hover:pr-2 hidden sm:inline">
-          Chat with Mbuya Zivai
-        </span>
-        {hasUnreadMessages && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 sm:h-5 sm:w-5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-4 w-4 sm:h-5 sm:w-5 bg-red-500 items-center justify-center text-xs font-bold">
-              1
-            </span>
+          <div
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center bg-background/20"
+            style={iconContainerStyle}
+          >
+            <BluewaveLogo className="w-7 h-7 sm:w-9 sm:h-9 rounded-full" />
+          </div>
+          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-linear font-bold text-sm sm:text-lg pr-0 group-hover:pr-2 hidden sm:inline">
+            Chat with Mbuya Zivai
           </span>
-        )}
-      </button>
+          {hasUnreadMessages && (
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 sm:h-5 sm:w-5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-4 w-4 sm:h-5 sm:w-5 bg-red-500 items-center justify-center text-xs font-bold">
+                1
+              </span>
+            </span>
+          )}
+        </button>
+      )}
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl h-[80vh] p-0 gap-0 border-accent/20 overflow-hidden"
-                      style={{
-                        background: "linear-gradient(to bottom right, #111 0%, #222 100%)",
-                        boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.25)"
-                      }}>
+        <DialogContent className="max-w-4xl w-[95vw] h-[85vh] p-0 gap-0 border-border bg-background overflow-hidden">
           <MbuyaZivai />
         </DialogContent>
       </Dialog>
+
 
       <style>{`
         @keyframes gradientShift {
