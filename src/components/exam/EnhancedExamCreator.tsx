@@ -85,7 +85,9 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
   });
   const [loading, setLoading] = useState(false);
   const [bulkImport, setBulkImport] = useState('');
+  const [jsonImport, setJsonImport] = useState('');
   const [showBankImporter, setShowBankImporter] = useState(false);
+
 
   const scheduledActivationEnabled = useMemo(
     () => Boolean(schedule.start) && schedule.autoActivate,
