@@ -73,11 +73,12 @@ export default function MbuyaZivai() {
   useEffect(() => {
     getOrCreateSessionId();
     const timer = setTimeout(() => {
-      const initialGreeting = generateGreeting();
+      const hour = new Date().getHours();
+      const tod = hour < 12 ? "Mangwanani" : hour < 18 ? "Masikati" : "Manheru";
       setMessages([
         {
           role: "assistant",
-          content: `${initialGreeting} I'm Mbuya Zivai, your AI tutor for Bluewave Academy. Ask me anything about Computer Science — programming, algorithms, exam prep — or send a photo of your work and I'll help.`,
+          content: `${tod}! I'm **Mbuya Zivai**, your free AI tutor for Bluewave Academy. Ask me anything about A Level Computer Science — programming, algorithms, exam prep — or send a photo of your work and I'll help.`,
           id: "greeting-" + Date.now(),
           animate: true,
         },
