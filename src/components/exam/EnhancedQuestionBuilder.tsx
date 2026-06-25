@@ -56,18 +56,30 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
       return;
     }
 
+    const qt = currentQuestion.question_type || 'multiple_choice';
+    if (qt === 'multiple_choice' && !currentQuestion.correct_answer?.trim()) {
+      toast.error('Please enter the correct answer so autograding works.');
+      return;
+    }
+    if ((qt === 'short_answer' || qt === 'flowchart') && !currentQuestion.correct_answer?.trim()) {
+      toast.error('Please add a marking scheme / model answer so the AI can grade reliably.');
+      return;
+    }
+
     const newQuestion: Question = {
       id: Date.now().toString(),
       question_text: currentQuestion.question_text,
-      question_type: currentQuestion.question_type || 'multiple_choice',
+      question_type: qt,
       options: currentQuestion.options || [],
       correct_answer: currentQuestion.correct_answer || '',
       sample_code: currentQuestion.sample_code || '',
+      programming_language: currentQuestion.programming_language || (qt === 'coding' ? 'python' : undefined),
       marks: currentQuestion.marks || 10,
       difficulty: currentQuestion.difficulty || 'medium',
       category: currentQuestion.category || '',
       order_number: 0
     };
+
 
     onQuestionAdd(newQuestion);
     
