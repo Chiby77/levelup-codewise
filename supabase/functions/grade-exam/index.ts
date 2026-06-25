@@ -167,8 +167,45 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Auth: grading must be tied to a real authenticated student (admins also allowed)
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsErr } = await supabase.auth.getClaims(token);
+    const callerId = claimsData?.claims?.sub as string | undefined;
+    if (claimsErr || !callerId) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Verify the submission belongs to caller (or caller is admin)
+    if (submissionId) {
+      const { data: subRow } = await supabase
+        .from('student_submissions')
+        .select('student_id')
+        .eq('id', submissionId)
+        .maybeSingle();
+      if (subRow?.student_id && subRow.student_id !== callerId) {
+        const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: callerId, _role: 'admin' });
+        if (!isAdmin) {
+          return new Response(JSON.stringify({ error: 'Forbidden' }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+      }
+    }
+
     const lovableKey = Deno.env.get('LOVABLE_API_KEY');
     if (!lovableKey) throw new Error('LOVABLE_API_KEY missing');
+
 
     console.log('Grading submission:', submissionId, 'for exam:', examId);
 
