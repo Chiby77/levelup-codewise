@@ -251,10 +251,11 @@ export default function MbuyaZivai() {
   ];
 
   return (
-    <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-accent/20 overflow-hidden bg-gradient-to-br from-background via-background to-accent/5">
+    <Card className="w-full h-full max-w-4xl mx-auto border-0 shadow-none overflow-hidden bg-background flex flex-col">
       <ChatHeader />
 
-      <CardContent className="p-0 flex flex-col h-[calc(80vh-7rem)]">
+      <CardContent className="p-0 flex flex-col flex-1 min-h-0">
+
         {showQuiz ? (
           <QuizComponent onFinish={() => setShowQuiz(false)} category={quizCategory} />
         ) : showQuizAccess ? (
