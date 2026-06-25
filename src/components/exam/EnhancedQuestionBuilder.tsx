@@ -17,11 +17,13 @@ interface Question {
   options: string[];
   correct_answer: string;
   sample_code: string;
+  programming_language?: string;
   marks: number;
   difficulty: 'easy' | 'medium' | 'hard';
   category: string;
   order_number: number;
 }
+
 
 interface EnhancedQuestionBuilderProps {
   onQuestionAdd: (question: Question) => void;
