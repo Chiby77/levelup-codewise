@@ -238,6 +238,132 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
     toast.success('Questions exported');
   };
 
+  const jsonTemplate = {
+    title: "Sample A-Level CS Exam",
+    description: "Mixed paper covering theory and programming",
+    duration_minutes: 60,
+    total_marks: 30,
+    subject: "Computer Science",
+    questions: [
+      {
+        question_text: "Which data structure uses LIFO?",
+        question_type: "multiple_choice",
+        options: ["Queue", "Stack", "Tree", "Graph"],
+        correct_answer: "Stack",
+        marks: 5,
+        difficulty: "easy",
+        category: "Data Structures"
+      },
+      {
+        question_text: "Write a Python function that returns the factorial of n.",
+        question_type: "coding",
+        programming_language: "python",
+        sample_code: "def factorial(n):\n    if n <= 1: return 1\n    return n * factorial(n-1)",
+        correct_answer: "Recursive or iterative factorial implementation",
+        marks: 15,
+        difficulty: "medium",
+        category: "Programming"
+      },
+      {
+        question_text: "Define abstraction in computer science.",
+        question_type: "short_answer",
+        correct_answer: "Hiding implementation details and exposing only essential features. Key points: simplification, modelling, layering.",
+        marks: 10,
+        difficulty: "medium",
+        category: "Theory"
+      }
+    ]
+  };
+
+  const downloadJsonTemplate = () => {
+    const blob = new Blob([JSON.stringify(jsonTemplate, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bluewave-exam-template.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const applyExamJson = (raw: string) => {
+    let parsed: any;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      toast.error('Invalid JSON — please check syntax.');
+      return;
+    }
+
+    const qArray: any[] = Array.isArray(parsed) ? parsed : parsed.questions;
+    if (!Array.isArray(qArray) || qArray.length === 0) {
+      toast.error('JSON must include a non-empty "questions" array.');
+      return;
+    }
+
+    if (!Array.isArray(parsed) && typeof parsed === 'object') {
+      setExamData(prev => ({
+        ...prev,
+        title: parsed.title ?? prev.title,
+        description: parsed.description ?? prev.description,
+        duration_minutes: Number(parsed.duration_minutes) || prev.duration_minutes,
+        total_marks: Number(parsed.total_marks) || prev.total_marks,
+        subject: parsed.subject ?? prev.subject,
+      }));
+    }
+
+    const allowedTypes = ['multiple_choice', 'coding', 'flowchart', 'short_answer'];
+    const allowedDiff = ['easy', 'medium', 'hard'];
+    const skipped: string[] = [];
+
+    const mapped: Question[] = qArray.map((q, idx) => {
+      const type = allowedTypes.includes(q.question_type) ? q.question_type : 'multiple_choice';
+      const opts = Array.isArray(q.options) ? q.options.map((o: any) => String(o)) : [];
+      const correct = q.correct_answer != null ? String(q.correct_answer) : '';
+
+      if (!q.question_text || typeof q.question_text !== 'string') {
+        skipped.push(`Q${idx + 1}: missing question_text`);
+      }
+      if ((type === 'short_answer' || type === 'flowchart') && !correct.trim()) {
+        skipped.push(`Q${idx + 1}: missing marking scheme / correct_answer`);
+      }
+      if (type === 'multiple_choice' && (!opts.length || !correct.trim())) {
+        skipped.push(`Q${idx + 1}: MCQ needs options + correct_answer`);
+      }
+
+      return {
+        id: `${Date.now()}-${idx}`,
+        question_text: String(q.question_text || ''),
+        question_type: type,
+        options: opts,
+        correct_answer: correct,
+        sample_code: q.sample_code ? String(q.sample_code) : '',
+        programming_language: q.programming_language || (type === 'coding' ? 'python' : undefined),
+        marks: Number(q.marks) || 10,
+        difficulty: allowedDiff.includes(q.difficulty) ? q.difficulty : 'medium',
+        category: q.category ? String(q.category) : '',
+        time_limit: Number(q.time_limit) || 0,
+        order_number: questions.length + idx + 1,
+      } as Question;
+    }).filter(q => q.question_text.trim());
+
+    setQuestions(prev => [...prev, ...mapped]);
+    toast.success(`Imported ${mapped.length} question${mapped.length === 1 ? '' : 's'} from JSON`);
+    if (skipped.length) {
+      toast.warning(`${skipped.length} warning${skipped.length === 1 ? '' : 's'}: ${skipped.slice(0, 3).join(' • ')}${skipped.length > 3 ? '…' : ''}`);
+    }
+  };
+
+  const handleJsonFile = async (file: File | null) => {
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('JSON file too large (max 2 MB)');
+      return;
+    }
+    const text = await file.text();
+    applyExamJson(text);
+  };
+
+
   const updateOption = (index: number, value: string) => {
     const newOptions = [...(currentQuestion.options || ['', '', '', ''])];
     newOptions[index] = value;
