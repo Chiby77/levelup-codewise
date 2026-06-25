@@ -941,9 +941,64 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         </TabsContent>
 
         <TabsContent value="bulk" className="space-y-4">
+          <Card className="border-primary/30">
+            <CardHeader>
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    Create Exam from JSON
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Upload a <code className="text-xs">.json</code> file or paste JSON to instantly populate the exam details and all questions (MCQ, coding, short answer, flowchart).
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" onClick={downloadJsonTemplate}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download template
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <Label
+                  htmlFor="exam-json-file"
+                  className="inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90 transition"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload JSON file
+                </Label>
+                <input
+                  id="exam-json-file"
+                  type="file"
+                  accept="application/json,.json"
+                  className="hidden"
+                  onChange={(e) => {
+                    handleJsonFile(e.target.files?.[0] ?? null);
+                    e.target.value = '';
+                  }}
+                />
+                <span className="text-xs text-muted-foreground">…or paste the JSON below.</span>
+              </div>
+              <Textarea
+                value={jsonImport}
+                onChange={(e) => setJsonImport(e.target.value)}
+                placeholder={`{\n  "title": "...",\n  "duration_minutes": 60,\n  "questions": [ { "question_text": "...", "question_type": "multiple_choice", "options": ["A","B"], "correct_answer": "A", "marks": 5 } ]\n}`}
+                className="min-h-[220px] font-mono text-xs"
+              />
+              <Button onClick={() => { applyExamJson(jsonImport); setJsonImport(''); }} disabled={!jsonImport.trim()}>
+                <Upload className="h-4 w-4 mr-2" />
+                Build exam from JSON
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                After importing, switch to <strong>Exam Details</strong> to review and click <strong>Save Exam</strong> to publish.
+              </p>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
-              <CardTitle>Bulk Import Questions</CardTitle>
+              <CardTitle>Bulk Import (pipe format)</CardTitle>
               <p className="text-sm text-muted-foreground">
                 Format: Question|Type|Options|Correct Answer|Sample Code|Marks|Difficulty|Category|Time Limit
               </p>
@@ -962,6 +1017,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
             </CardContent>
           </Card>
         </TabsContent>
+
 
         <TabsContent value="preview" className="space-y-4">
           {questions.length > 0 ? (
