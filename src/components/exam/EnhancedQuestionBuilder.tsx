@@ -90,6 +90,7 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
       options: ['', '', '', ''],
       correct_answer: '',
       sample_code: '',
+      programming_language: 'python',
       marks: 10,
       difficulty: 'medium',
       category: ''
