@@ -73,11 +73,12 @@ export default function MbuyaZivai() {
   useEffect(() => {
     getOrCreateSessionId();
     const timer = setTimeout(() => {
-      const initialGreeting = generateGreeting();
+      const hour = new Date().getHours();
+      const tod = hour < 12 ? "Mangwanani" : hour < 18 ? "Masikati" : "Manheru";
       setMessages([
         {
           role: "assistant",
-          content: `${initialGreeting} I'm Mbuya Zivai, your AI tutor for Bluewave Academy. Ask me anything about Computer Science — programming, algorithms, exam prep — or send a photo of your work and I'll help.`,
+          content: `${tod}! I'm **Mbuya Zivai**, your free AI tutor for Bluewave Academy. Ask me anything about A Level Computer Science — programming, algorithms, exam prep — or send a photo of your work and I'll help.`,
           id: "greeting-" + Date.now(),
           animate: true,
         },
@@ -250,10 +251,11 @@ export default function MbuyaZivai() {
   ];
 
   return (
-    <Card className="w-full h-full max-w-4xl mx-auto shadow-2xl border-accent/20 overflow-hidden bg-gradient-to-br from-background via-background to-accent/5">
+    <Card className="w-full h-full max-w-4xl mx-auto border-0 shadow-none overflow-hidden bg-background flex flex-col">
       <ChatHeader />
 
-      <CardContent className="p-0 flex flex-col h-[calc(80vh-7rem)]">
+      <CardContent className="p-0 flex flex-col flex-1 min-h-0">
+
         {showQuiz ? (
           <QuizComponent onFinish={() => setShowQuiz(false)} category={quizCategory} />
         ) : showQuizAccess ? (

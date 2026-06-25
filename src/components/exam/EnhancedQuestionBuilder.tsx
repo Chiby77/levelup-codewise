@@ -17,11 +17,13 @@ interface Question {
   options: string[];
   correct_answer: string;
   sample_code: string;
+  programming_language?: string;
   marks: number;
   difficulty: 'easy' | 'medium' | 'hard';
   category: string;
   order_number: number;
 }
+
 
 interface EnhancedQuestionBuilderProps {
   onQuestionAdd: (question: Question) => void;
@@ -54,18 +56,30 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
       return;
     }
 
+    const qt = currentQuestion.question_type || 'multiple_choice';
+    if (qt === 'multiple_choice' && !currentQuestion.correct_answer?.trim()) {
+      toast.error('Please enter the correct answer so autograding works.');
+      return;
+    }
+    if ((qt === 'short_answer' || qt === 'flowchart') && !currentQuestion.correct_answer?.trim()) {
+      toast.error('Please add a marking scheme / model answer so the AI can grade reliably.');
+      return;
+    }
+
     const newQuestion: Question = {
       id: Date.now().toString(),
       question_text: currentQuestion.question_text,
-      question_type: currentQuestion.question_type || 'multiple_choice',
+      question_type: qt,
       options: currentQuestion.options || [],
       correct_answer: currentQuestion.correct_answer || '',
       sample_code: currentQuestion.sample_code || '',
+      programming_language: currentQuestion.programming_language || (qt === 'coding' ? 'python' : undefined),
       marks: currentQuestion.marks || 10,
       difficulty: currentQuestion.difficulty || 'medium',
       category: currentQuestion.category || '',
       order_number: 0
     };
+
 
     onQuestionAdd(newQuestion);
     
@@ -76,6 +90,7 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
       options: ['', '', '', ''],
       correct_answer: '',
       sample_code: '',
+      programming_language: 'python',
       marks: 10,
       difficulty: 'medium',
       category: ''
@@ -292,22 +307,66 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="space-y-2"
+                className="space-y-3"
               >
+                <div className="space-y-2">
+                  <Label>Programming Language</Label>
+                  <Select
+                    value={currentQuestion.programming_language || 'python'}
+                    onValueChange={(value) => setCurrentQuestion({ ...currentQuestion, programming_language: value })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="python">Python</SelectItem>
+                      <SelectItem value="vbnet">VB.NET</SelectItem>
+                      <SelectItem value="java">Java</SelectItem>
+                      <SelectItem value="javascript">JavaScript</SelectItem>
+                      <SelectItem value="c">C</SelectItem>
+                      <SelectItem value="cpp">C++</SelectItem>
+                      <SelectItem value="pseudocode">Pseudocode</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Label htmlFor="sampleCode" className="flex items-center gap-2">
                   <Code className="h-4 w-4" />
-                  Sample Code / Expected Solution
+                  Sample Code / Marking Scheme
                 </Label>
                 <Textarea
                   id="sampleCode"
                   value={currentQuestion.sample_code}
                   onChange={(e) => setCurrentQuestion({ ...currentQuestion, sample_code: e.target.value })}
-                  placeholder="Enter sample code template or expected solution..."
+                  placeholder="Paste the expected solution or key points the AI should check for..."
                   className="font-mono min-h-[200px] bg-muted/50"
                 />
               </motion.div>
             )}
+
+            {(currentQuestion.question_type === 'short_answer' || currentQuestion.question_type === 'flowchart') && (
+              <motion.div
+                key="short"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-2"
+              >
+                <Label htmlFor="markingScheme" className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Marking Scheme / Model Answer
+                </Label>
+                <Textarea
+                  id="markingScheme"
+                  value={currentQuestion.correct_answer}
+                  onChange={(e) => setCurrentQuestion({ ...currentQuestion, correct_answer: e.target.value })}
+                  placeholder="List the key points, accepted answers, or model response. The AI uses this to grade fairly."
+                  className="min-h-[140px] border-primary/30"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Tip: bullet the key marking points. Students get partial credit for matching any of them.
+                </p>
+              </motion.div>
+            )}
           </AnimatePresence>
+
 
           {/* Add Question Button */}
           <motion.div

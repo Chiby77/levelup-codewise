@@ -4,7 +4,7 @@ import ModernStatsSection from "@/components/ModernStatsSection";
 import EnhancedFeatureSection from "@/components/EnhancedFeatureSection";
 import { BluewaveAcademyPromo } from "@/components/BluewaveAcademyPromo";
 import { MbuyaZivaiPromo } from "@/components/MbuyaZivaiPromo";
-import FloatingChatButton from "@/components/FloatingChatButton";
+// FloatingChatButton is mounted globally in App.tsx — do not duplicate here
 import { BluewaveLogo } from "@/components/BluewaveLogo";
 
 const Index = () => {
@@ -35,7 +35,7 @@ const Index = () => {
         </div>
       </footer>
 
-      <FloatingChatButton />
+      
     </div>
   );
 };

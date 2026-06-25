@@ -224,9 +224,9 @@ const Downloads = () => {
 
         {/* Programming Notes Section */}
         <div id="programming-notes" className="scroll-mt-24">
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card border-accent/20">
             <CardHeader className="bg-gradient-to-r from-accent/20 to-transparent">
-              <CardTitle className="flex items-center gap-2 text-2xl text-white">
+              <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
                 <Code className="h-6 w-6 text-accent" />
                 Programming Notes
               </CardTitle>
@@ -236,7 +236,7 @@ const Downloads = () => {
                 <Button
                   key={note.part}
                   variant="outline"
-                  className={`w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors ${
+                  className={`w-full border-accent/20 bg-muted/40 text-foreground hover:bg-accent/20 transition-colors ${
                     downloadInProgress === `Programming Notes Part-${note.part}` ? 'opacity-70 cursor-wait' : ''
                   }`}
                   onClick={() => handleDownload("Programming Notes Part", note.part, note.link)}
@@ -256,9 +256,9 @@ const Downloads = () => {
 
         {/* Special Resources Section */}
         <div id="special-resources" className="scroll-mt-24">
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card border-accent/20">
             <CardHeader className="bg-gradient-to-r from-accent/20 to-transparent">
-              <CardTitle className="flex items-center gap-2 text-2xl text-white">
+              <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
                 <BookOpen className="h-6 w-6 text-accent" />
                 Special Topics & Advanced Resources
               </CardTitle>
@@ -267,14 +267,14 @@ const Downloads = () => {
               {special_resources.map((resource, index) => (
                 <div 
                   key={index} 
-                  className="bg-[#1a1a1a] rounded-lg p-4 border border-accent/10 hover:border-accent/30 transition-all cursor-pointer"
+                  className="bg-muted/40 rounded-lg p-4 border border-accent/10 hover:border-accent/30 transition-all cursor-pointer"
                   onClick={() => handleDownload(resource.title, "", resource.link)}
                 >
                   <div className="flex items-center gap-3">
                     <resource.icon className="h-8 w-8 text-accent" />
                     <div>
-                      <h3 className="font-medium text-white">{resource.title}</h3>
-                      <p className="text-sm text-gray-400">{resource.category}</p>
+                      <h3 className="font-medium text-foreground">{resource.title}</h3>
+                      <p className="text-sm text-muted-foreground">{resource.category}</p>
                     </div>
                   </div>
                   <Button 
@@ -304,9 +304,9 @@ const Downloads = () => {
 
         {/* Past Papers Section */}
         <div id="past-papers" className="scroll-mt-24">
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card border-accent/20">
             <CardHeader className="bg-gradient-to-r from-accent/20 to-transparent">
-              <CardTitle className="flex items-center gap-2 text-2xl text-white">
+              <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
                 <FileText className="h-6 w-6 text-accent" />
                 Past Papers
               </CardTitle>
@@ -319,7 +319,7 @@ const Downloads = () => {
                     <Button
                       key={paper.year}
                       variant="outline"
-                      className={`w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors ${
+                      className={`w-full border-accent/20 bg-muted/40 text-foreground hover:bg-accent/20 transition-colors ${
                         downloadInProgress === `Theory Paper-${paper.year}` ? 'opacity-70 cursor-wait' : ''
                       }`}
                       onClick={() => handleDownload("Theory Paper", paper.year, paper.link)}
@@ -343,7 +343,7 @@ const Downloads = () => {
                     <Button
                       key={paper.year}
                       variant="outline"
-                      className={`w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors ${
+                      className={`w-full border-accent/20 bg-muted/40 text-foreground hover:bg-accent/20 transition-colors ${
                         downloadInProgress === `Practical Paper-${paper.year}` ? 'opacity-70 cursor-wait' : ''
                       }`}
                       onClick={() => handleDownload("Practical Paper", paper.year, paper.link)}
@@ -371,9 +371,9 @@ const Downloads = () => {
 
         {/* Pure Mathematics Papers Section */}
         <div id="pure-maths-papers" className="scroll-mt-24">
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-[#111] border-accent/20">
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card border-accent/20">
             <CardHeader className="bg-gradient-to-r from-accent/20 to-transparent">
-              <CardTitle className="flex items-center gap-2 text-2xl text-white">
+              <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
                 <FileText className="h-6 w-6 text-accent" />
                 Pure Mathematics Papers (Paper 2)
               </CardTitle>
@@ -384,7 +384,7 @@ const Downloads = () => {
                   <Button
                     key={paper.year}
                     variant="outline"
-                    className={`w-full border-accent/20 bg-[#1a1a1a] text-white hover:bg-accent/20 transition-colors ${
+                    className={`w-full border-accent/20 bg-muted/40 text-foreground hover:bg-accent/20 transition-colors ${
                       downloadInProgress === `Pure Maths Paper-${paper.year}` ? 'opacity-70 cursor-wait' : ''
                     }`}
                     onClick={() => handleDownload("Pure Maths Paper", paper.year, paper.link)}
@@ -404,7 +404,7 @@ const Downloads = () => {
         </div>
 
         <div className="mt-12 text-center space-y-4">
-          <p className="text-gray-400">
+          <p className="text-muted-foreground">
             Having trouble downloading? Contact us at 
             <a href="mailto:tinodaishemchibi@gmail.com" className="text-primary hover:underline ml-1">
               tinodaishemchibi@gmail.com
