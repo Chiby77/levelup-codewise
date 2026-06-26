@@ -982,6 +982,9 @@ export type Database = {
         | "c"
         | "cpp"
         | "javascript"
+        | "sql"
+        | "vbnet"
+        | "pseudocode"
       question_type: "multiple_choice" | "coding" | "flowchart" | "short_answer"
     }
     CompositeTypes: {
@@ -1112,7 +1115,17 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "student", "user"],
       exam_status: ["draft", "active", "completed", "archived"],
-      programming_language: ["python", "java", "vb", "c", "cpp", "javascript"],
+      programming_language: [
+        "python",
+        "java",
+        "vb",
+        "c",
+        "cpp",
+        "javascript",
+        "sql",
+        "vbnet",
+        "pseudocode",
+      ],
       question_type: ["multiple_choice", "coding", "flowchart", "short_answer"],
     },
   },
