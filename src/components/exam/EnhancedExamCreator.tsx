@@ -317,13 +317,11 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
     const allowedDiff = ['easy', 'medium', 'hard'];
     const allowedLangs = ['python', 'java', 'vb', 'c', 'cpp', 'javascript'];
     const langAliases: Record<string, string> = {
-      'py': 'python', 'python3': 'python',
-      'js': 'javascript', 'node': 'javascript', 'typescript': 'javascript', 'ts': 'javascript',
-      'c++': 'cpp', 'cplusplus': 'cpp',
-      'vb.net': 'vb', 'vbnet': 'vb', 'visualbasic': 'vb', 'visual basic': 'vb',
-ровин: undefined as any,
+      py: 'python', python3: 'python',
+      js: 'javascript', node: 'javascript', typescript: 'javascript', ts: 'javascript',
+      'c++': 'cpp', cplusplus: 'cpp',
+      'vb.net': 'vb', vbnet: 'vb', visualbasic: 'vb', 'visual basic': 'vb',
     };
-    delete (langAliases as any).ровин;
     const skipped: string[] = [];
 
     const mapped: Question[] = qArray.map((q, idx) => {
