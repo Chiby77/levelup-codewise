@@ -489,9 +489,16 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         }
       }
 
+      const allowedLangs = ['python', 'java', 'vb', 'c', 'cpp', 'javascript'];
       const questionsToInsert = questions.map((q, index) => {
         const options = q.question_type === 'multiple_choice'
           ? (q.options || []).map((o) => o.trim()).filter(Boolean)
+          : null;
+
+        const lang = q.question_type === 'coding'
+          ? (allowedLangs.includes((q.programming_language || '').toLowerCase())
+              ? (q.programming_language as string).toLowerCase()
+              : 'python')
           : null;
 
         return {
@@ -501,7 +508,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
           options,
           correct_answer: q.correct_answer || null,
           sample_code: q.sample_code || null,
-          programming_language: q.programming_language || null,
+          programming_language: lang as any,
           marks: q.marks,
           order_number: index + 1,
         };
