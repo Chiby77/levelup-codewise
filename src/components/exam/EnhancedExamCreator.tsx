@@ -491,7 +491,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         }
       }
 
-      const allowedLangs = ['python', 'java', 'vb', 'c', 'cpp', 'javascript'];
+      const allowedLangs = ['python', 'java', 'vb', 'vbnet', 'c', 'cpp', 'javascript', 'sql', 'pseudocode'];
       const questionsToInsert = questions.map((q, index) => {
         const options = q.question_type === 'multiple_choice'
           ? (q.options || []).map((o) => o.trim()).filter(Boolean)
