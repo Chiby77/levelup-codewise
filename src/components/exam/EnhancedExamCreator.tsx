@@ -398,12 +398,12 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
 
   const saveExam = async () => {
     if (!examData.title.trim()) {
-      toast.error('Please enter an exam title');
+      toast.error('Please enter an exam title (the JSON may be missing a "title" field).');
       return;
     }
 
     if (questions.length === 0) {
-      toast.error('Please add at least one question');
+      toast.error('No questions to save. Click "Build exam from JSON" first, then "Save Exam".');
       return;
     }
 
@@ -422,6 +422,14 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
     }
 
     setLoading(true);
+    console.info('[saveExam] start', { questions: questions.length, audience });
+
+    // Hard safety net so the button never stays stuck on "Saving..."
+    const safety = setTimeout(() => {
+      console.warn('[saveExam] safety timeout fired — releasing loading state');
+      setLoading(false);
+      toast.error('Save took too long. Check your connection and try again.');
+    }, 45000);
 
     let createdExamId: string | null = null;
 
@@ -429,28 +437,23 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
       const { data: userRes, error: userErr } = await supabase.auth.getUser();
       if (userErr) throw userErr;
       const user = userRes.user;
+      console.info('[saveExam] user', user?.id);
 
-      if (!user) {
-        throw new Error('You must be logged in to create an exam');
-      }
+      if (!user) throw new Error('You must be logged in to create an exam');
 
-      // Verify admin role (avoid .single() hard-failing when row not found)
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
         .eq('role', 'admin')
         .maybeSingle();
+      console.info('[saveExam] role check', { roleData, roleError });
 
       if (roleError) throw roleError;
-      if (!roleData) {
-        throw new Error('You must be an admin to create exams');
-      }
+      if (!roleData) throw new Error('You must be an admin to create exams');
 
       const startTime = schedule.start ? new Date(schedule.start).toISOString() : null;
       const endTime = schedule.end ? new Date(schedule.end).toISOString() : null;
-
-      // If scheduling auto-activation for the future, keep status as draft so students don't see it early.
       const effectiveStatus: 'draft' | 'active' = scheduledActivationEnabled ? 'draft' : examData.status;
 
       const { data: examResponse, error: examError } = await supabase
@@ -471,6 +474,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         })
         .select('id')
         .single();
+      console.info('[saveExam] exam insert result', { examResponse, examError });
 
       if (examError) throw examError;
       if (!examResponse?.id) throw new Error('Exam creation failed: no ID returned');
@@ -492,34 +496,39 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
       }
 
       const allowedLangs = ['python', 'java', 'vb', 'vbnet', 'c', 'cpp', 'javascript', 'sql', 'pseudocode'];
+      const allowedTypes = ['multiple_choice', 'coding', 'flowchart', 'short_answer'];
       const questionsToInsert = questions.map((q, index) => {
-        const options = q.question_type === 'multiple_choice'
-          ? (q.options || []).map((o) => o.trim()).filter(Boolean)
+        const qType = allowedTypes.includes(q.question_type) ? q.question_type : 'short_answer';
+        const options = qType === 'multiple_choice'
+          ? (q.options || []).map((o) => String(o).trim()).filter(Boolean)
           : null;
 
-        const lang = q.question_type === 'coding'
-          ? (allowedLangs.includes((q.programming_language || '').toLowerCase())
-              ? (q.programming_language as string).toLowerCase()
-              : 'python')
+        const rawLang = (q.programming_language || '').toString().toLowerCase();
+        const lang = qType === 'coding'
+          ? (allowedLangs.includes(rawLang) ? rawLang : 'python')
           : null;
+
+        const marks = Number.isFinite(Number(q.marks)) && Number(q.marks) > 0 ? Number(q.marks) : 1;
 
         return {
           exam_id: createdExamId,
-          question_text: q.question_text,
-          question_type: q.question_type,
+          question_text: String(q.question_text || '').slice(0, 8000),
+          question_type: qType,
           options,
-          correct_answer: q.correct_answer || null,
-          sample_code: q.sample_code || null,
+          correct_answer: q.correct_answer ? String(q.correct_answer) : null,
+          sample_code: q.sample_code ? String(q.sample_code) : null,
           programming_language: lang as any,
-          marks: q.marks,
+          marks,
           order_number: index + 1,
         };
       });
+      console.info('[saveExam] inserting questions', questionsToInsert.length, questionsToInsert[0]);
 
-      for (const chunk of chunkArray(questionsToInsert, 500)) {
+      for (const chunk of chunkArray(questionsToInsert, 100)) {
         const { error: questionsError } = await supabase
           .from('questions')
           .insert(chunk);
+        console.info('[saveExam] chunk insert', { size: chunk.length, error: questionsError });
         if (questionsError) throw questionsError;
       }
 
@@ -543,10 +552,11 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
       if (createdExamId) {
         await supabase.from('exams').delete().eq('id', createdExamId);
       }
-
-      console.error('Error creating exam:', error);
-      toast.error(error?.message || 'Failed to create exam');
+      console.error('[saveExam] failed', error);
+      const msg = error?.message || error?.details || error?.hint || 'Failed to create exam';
+      toast.error(msg);
     } finally {
+      clearTimeout(safety);
       setLoading(false);
     }
   };
