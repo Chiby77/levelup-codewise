@@ -315,12 +315,26 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
 
     const allowedTypes = ['multiple_choice', 'coding', 'flowchart', 'short_answer'];
     const allowedDiff = ['easy', 'medium', 'hard'];
+    const allowedLangs = ['python', 'java', 'vb', 'c', 'cpp', 'javascript'];
+    const langAliases: Record<string, string> = {
+      'py': 'python', 'python3': 'python',
+      'js': 'javascript', 'node': 'javascript', 'typescript': 'javascript', 'ts': 'javascript',
+      'c++': 'cpp', 'cplusplus': 'cpp',
+      'vb.net': 'vb', 'vbnet': 'vb', 'visualbasic': 'vb', 'visual basic': 'vb',
+ровин: undefined as any,
+    };
+    delete (langAliases as any).ровин;
     const skipped: string[] = [];
 
     const mapped: Question[] = qArray.map((q, idx) => {
       const type = allowedTypes.includes(q.question_type) ? q.question_type : 'multiple_choice';
       const opts = Array.isArray(q.options) ? q.options.map((o: any) => String(o)) : [];
       const correct = q.correct_answer != null ? String(q.correct_answer) : '';
+
+      const rawLang = (q.programming_language || '').toString().trim().toLowerCase();
+      const normLang = allowedLangs.includes(rawLang)
+        ? rawLang
+        : (langAliases[rawLang] || (type === 'coding' ? 'python' : undefined));
 
       if (!q.question_text || typeof q.question_text !== 'string') {
         skipped.push(`Q${idx + 1}: missing question_text`);
@@ -339,7 +353,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         options: opts,
         correct_answer: correct,
         sample_code: q.sample_code ? String(q.sample_code) : '',
-        programming_language: q.programming_language || (type === 'coding' ? 'python' : undefined),
+        programming_language: normLang,
         marks: Number(q.marks) || 10,
         difficulty: allowedDiff.includes(q.difficulty) ? q.difficulty : 'medium',
         category: q.category ? String(q.category) : '',
