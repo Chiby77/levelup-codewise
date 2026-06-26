@@ -315,12 +315,14 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
 
     const allowedTypes = ['multiple_choice', 'coding', 'flowchart', 'short_answer'];
     const allowedDiff = ['easy', 'medium', 'hard'];
-    const allowedLangs = ['python', 'java', 'vb', 'c', 'cpp', 'javascript'];
+    const allowedLangs = ['python', 'java', 'vb', 'vbnet', 'c', 'cpp', 'javascript', 'sql', 'pseudocode'];
     const langAliases: Record<string, string> = {
       py: 'python', python3: 'python',
       js: 'javascript', node: 'javascript', typescript: 'javascript', ts: 'javascript',
       'c++': 'cpp', cplusplus: 'cpp',
-      'vb.net': 'vb', vbnet: 'vb', visualbasic: 'vb', 'visual basic': 'vb',
+      'vb.net': 'vbnet', visualbasic: 'vbnet', 'visual basic': 'vbnet', vb: 'vbnet',
+      mysql: 'sql', postgres: 'sql', postgresql: 'sql', tsql: 'sql', plsql: 'sql',
+      pseudo: 'pseudocode', 'pseudo-code': 'pseudocode',
     };
     const skipped: string[] = [];
 
@@ -489,7 +491,7 @@ export const EnhancedExamCreator: React.FC<EnhancedExamCreatorProps> = ({ onExam
         }
       }
 
-      const allowedLangs = ['python', 'java', 'vb', 'c', 'cpp', 'javascript'];
+      const allowedLangs = ['python', 'java', 'vb', 'vbnet', 'c', 'cpp', 'javascript', 'sql', 'pseudocode'];
       const questionsToInsert = questions.map((q, index) => {
         const options = q.question_type === 'multiple_choice'
           ? (q.options || []).map((o) => o.trim()).filter(Boolean)

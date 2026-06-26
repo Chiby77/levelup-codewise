@@ -321,6 +321,7 @@ export const EnhancedQuestionBuilder: React.FC<EnhancedQuestionBuilderProps> = (
                       <SelectItem value="vbnet">VB.NET</SelectItem>
                       <SelectItem value="java">Java</SelectItem>
                       <SelectItem value="javascript">JavaScript</SelectItem>
+                      <SelectItem value="sql">SQL</SelectItem>
                       <SelectItem value="c">C</SelectItem>
                       <SelectItem value="cpp">C++</SelectItem>
                       <SelectItem value="pseudocode">Pseudocode</SelectItem>
