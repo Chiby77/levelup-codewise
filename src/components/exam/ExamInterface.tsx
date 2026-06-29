@@ -161,23 +161,36 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   };
 
   const fetchQuestions = async () => {
+    setLoading(true);
+    setLoadError(null);
     try {
-      // Use questions_public view — never exposes correct_answer to students
-      const { data, error } = await (supabase as any)
-        .from('questions_public')
-        .select('*')
-        .eq('exam_id', exam.id)
-        .order('order_number');
-
-      if (error) throw error;
+      // Use questions_public view — never exposes correct_answer to students.
+      // Retry on transient network errors (common on mobile / slow links).
+      const data = await withRetry(async () => {
+        const { data, error } = await (supabase as any)
+          .from('questions_public')
+          .select('*')
+          .eq('exam_id', exam.id)
+          .order('order_number');
+        if (error) throw error;
+        return data;
+      }, {
+        retries: 3,
+        onAttempt: (attempt) => {
+          if (attempt > 1) console.warn(`[questions] retry attempt ${attempt}`);
+        },
+      });
       setQuestions((data || []) as Question[]);
     } catch (error) {
+      const msg = friendlyNetworkMessage(error, 'Failed to load questions');
       console.error('Error fetching questions:', error);
-      toast.error('Failed to load questions');
+      setLoadError(msg);
+      toast.error(msg, { description: 'Tap "Try again" to reload the exam.' });
     } finally {
       setLoading(false);
     }
   };
+
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {
