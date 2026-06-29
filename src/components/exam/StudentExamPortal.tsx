@@ -156,14 +156,39 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading exams...</p>
+      <div className="min-h-dvh bg-gradient-to-br from-primary/10 via-background to-secondary/10 px-3 py-4 sm:p-6">
+        <div className="container mx-auto max-w-4xl space-y-6">
+          <div className="text-center space-y-2">
+            <Skeleton className="h-8 w-64 mx-auto" />
+            <Skeleton className="h-4 w-80 mx-auto" />
+          </div>
+          <div className="grid gap-4">
+            {[0, 1, 2].map((i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                    <Skeleton className="h-10 w-full sm:w-28" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-6">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <p className="text-center text-sm text-muted-foreground">Loading exams…</p>
         </div>
       </div>
     );
   }
+
 
   if (step === 'exam' && selectedExam) {
     return (
