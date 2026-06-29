@@ -34,6 +34,10 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
   });
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [startingExamId, setStartingExamId] = useState<string | null>(null);
+
+
 
   // Auto-jump to the chosen exam's details screen when launched from the dashboard
   useEffect(() => {
