@@ -154,7 +154,7 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
+    <div className="min-h-dvh bg-gradient-to-br from-primary/10 via-background to-secondary/10 px-3 py-4 sm:p-6">
       <div className="container mx-auto max-w-4xl">
         <Button 
           variant="ghost" 
