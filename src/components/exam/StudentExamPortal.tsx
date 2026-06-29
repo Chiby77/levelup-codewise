@@ -231,7 +231,21 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
               </p>
             </div>
 
-            {exams.length === 0 ? (
+            {loadError ? (
+              <Card className="border-destructive/40">
+                <CardContent className="py-10 text-center space-y-4">
+                  <WifiOff className="h-10 w-10 mx-auto text-destructive" />
+                  <div>
+                    <p className="font-medium">Couldn't load exams</p>
+                    <p className="text-sm text-muted-foreground mt-1">{loadError}</p>
+                  </div>
+                  <Button onClick={fetchActiveExams} variant="outline">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Try again
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : exams.length === 0 ? (
               <Card className="text-center">
                 <CardContent className="py-12">
                   <p className="text-muted-foreground text-lg mb-4">
@@ -244,36 +258,51 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
               </Card>
             ) : (
               <div className="grid gap-4">
-                {exams.map((exam) => (
-                  <Card 
-                    key={exam.id} 
-                    className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/50"
-                    onClick={() => handleExamSelect(exam)}
-                  >
-                    <CardHeader>
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-                        <div className="flex-1">
-                          <CardTitle className="text-lg sm:text-xl">{exam.title}</CardTitle>
-                          <p className="text-muted-foreground mt-1">{exam.description}</p>
+                {exams.map((exam) => {
+                  const isStarting = startingExamId === exam.id;
+                  const disabled = !!startingExamId;
+                  return (
+                    <Card
+                      key={exam.id}
+                      className={`transition-all duration-300 border-2 ${
+                        disabled ? 'opacity-70' : 'hover:shadow-lg hover:border-primary/50 cursor-pointer'
+                      }`}
+                      onClick={() => !disabled && handleExamSelect(exam)}
+                    >
+                      <CardHeader>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                          <div className="flex-1">
+                            <CardTitle className="text-lg sm:text-xl">{exam.title}</CardTitle>
+                            <p className="text-muted-foreground mt-1">{exam.description}</p>
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                            disabled={disabled}
+                            onClick={(e) => { e.stopPropagation(); if (!disabled) handleExamSelect(exam); }}
+                          >
+                            {isStarting ? (
+                              <><RefreshCw className="h-4 w-4 mr-2 animate-spin" />Starting…</>
+                            ) : (
+                              'Start Exam'
+                            )}
+                          </Button>
                         </div>
-                        <Button variant="outline" className="w-full sm:w-auto">
-                          Start Exam
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4" />
-                          <span>{exam.duration_minutes} minutes</span>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            <span>{exam.duration_minutes} minutes</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span>Total Marks: {exam.total_marks}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span>Total Marks: {exam.total_marks}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>
