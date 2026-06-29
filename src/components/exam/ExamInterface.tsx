@@ -51,6 +51,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [timeLeft, setTimeLeft] = useState(exam.duration_minutes * 60);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [violations, setViolations] = useState<string[]>([]);
