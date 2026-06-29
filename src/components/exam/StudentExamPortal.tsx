@@ -83,29 +83,55 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
   }, []);
 
   const fetchActiveExams = async () => {
+    setLoading(true);
+    setLoadError(null);
     try {
-      // RLS on exams table now handles visibility:
-      // - General exams (is_general=true) visible to all authenticated users
-      // - Class-specific exams visible only to students enrolled in those classes
-      const { data, error } = await supabase
-        .from('exams')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      // RLS handles visibility (general + class-assigned). Retry transient network errors.
+      const data = await withRetry(async () => {
+        const { data, error } = await supabase
+          .from('exams')
+          .select('*')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data;
+      }, {
+        retries: 3,
+        onAttempt: (attempt) => {
+          if (attempt > 1) console.warn(`[exams] retry attempt ${attempt}`);
+        },
+      });
       setExams(data || []);
     } catch (error) {
+      const msg = friendlyNetworkMessage(error, 'Failed to load exams');
       console.error('Error fetching exams:', error);
-      toast.error('Failed to load exams');
+      setLoadError(msg);
+      toast.error(msg, { description: 'We retried a few times. Tap "Try again" when ready.' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleExamSelect = (exam: Exam) => {
-    setSelectedExam(exam);
-    setStep('details');
+  const handleExamSelect = async (exam: Exam) => {
+    // "Starting" = preloading the exam's question metadata so the interface
+    // doesn't crash on a flaky connection mid-exam.
+    setStartingExamId(exam.id);
+    try {
+      await withRetry(async () => {
+        const { error } = await (supabase as any)
+          .from('questions_public')
+          .select('id', { count: 'exact', head: true })
+          .eq('exam_id', exam.id);
+        if (error) throw error;
+      }, { retries: 3 });
+      setSelectedExam(exam);
+      setStep('details');
+    } catch (error) {
+      const msg = friendlyNetworkMessage(error, "Couldn't open the exam");
+      toast.error(msg, { description: 'Please check your connection and try again.' });
+    } finally {
+      setStartingExamId(null);
+    }
   };
 
   const handleStartExam = () => {
