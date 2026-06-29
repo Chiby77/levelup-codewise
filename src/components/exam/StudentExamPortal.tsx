@@ -60,6 +60,20 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
 
   useEffect(() => {
     fetchActiveExams();
+    // Prefill student info from the authenticated profile so mobile users don't have to retype
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .maybeSingle();
+      setStudentData((prev) => ({
+        name: prev.name || profile?.full_name || (user.user_metadata as any)?.full_name || '',
+        email: prev.email || user.email || '',
+      }));
+    })();
   }, []);
 
   const fetchActiveExams = async () => {
