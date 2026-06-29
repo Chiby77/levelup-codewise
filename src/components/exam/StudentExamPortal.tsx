@@ -11,6 +11,7 @@ import { ExamResults } from './ExamResults';
 
 interface StudentExamPortalProps {
   onBack: () => void;
+  initialExamId?: string | null;
 }
 
 interface Exam {
@@ -21,7 +22,7 @@ interface Exam {
   total_marks: number;
 }
 
-export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) => {
+export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, initialExamId }) => {
   const [step, setStep] = useState<'select' | 'details' | 'exam' | 'results'>('select');
   const [exams, setExams] = useState<Exam[]>([]);
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
@@ -32,8 +33,47 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Auto-jump to the chosen exam's details screen when launched from the dashboard
+  useEffect(() => {
+    if (!initialExamId || exams.length === 0 || selectedExam) return;
+    const match = exams.find((e) => e.id === initialExamId);
+    if (match) {
+      setSelectedExam(match);
+      setStep('details');
+    } else {
+      // Fallback: fetch the single exam directly in case RLS filtered the list
+      (async () => {
+        const { data } = await supabase
+          .from('exams')
+          .select('id,title,description,duration_minutes,total_marks')
+          .eq('id', initialExamId)
+          .maybeSingle();
+        if (data) {
+          setSelectedExam(data as Exam);
+          setStep('details');
+        } else {
+          toast.error("This exam isn't available to you. Check your class enrollment or contact your admin.");
+        }
+      })();
+    }
+  }, [initialExamId, exams, selectedExam]);
+
   useEffect(() => {
     fetchActiveExams();
+    // Prefill student info from the authenticated profile so mobile users don't have to retype
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .maybeSingle();
+      setStudentData((prev) => ({
+        name: prev.name || profile?.full_name || (user.user_metadata as any)?.full_name || '',
+        email: prev.email || user.email || '',
+      }));
+    })();
   }, []);
 
   const fetchActiveExams = async () => {
@@ -114,7 +154,7 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack }) 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
+    <div className="min-h-dvh bg-gradient-to-br from-primary/10 via-background to-secondary/10 px-3 py-4 sm:p-6">
       <div className="container mx-auto max-w-4xl">
         <Button 
           variant="ghost" 
