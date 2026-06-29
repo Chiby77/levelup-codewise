@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Clock, User } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowLeft, Clock, User, RefreshCw, WifiOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { withRetry, friendlyNetworkMessage } from '@/utils/retry';
 import { ExamInterface } from './ExamInterface';
 import { ExamResults } from './ExamResults';
 
@@ -32,6 +34,10 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
   });
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [startingExamId, setStartingExamId] = useState<string | null>(null);
+
+
 
   // Auto-jump to the chosen exam's details screen when launched from the dashboard
   useEffect(() => {
@@ -77,29 +83,55 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
   }, []);
 
   const fetchActiveExams = async () => {
+    setLoading(true);
+    setLoadError(null);
     try {
-      // RLS on exams table now handles visibility:
-      // - General exams (is_general=true) visible to all authenticated users
-      // - Class-specific exams visible only to students enrolled in those classes
-      const { data, error } = await supabase
-        .from('exams')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      // RLS handles visibility (general + class-assigned). Retry transient network errors.
+      const data = await withRetry(async () => {
+        const { data, error } = await supabase
+          .from('exams')
+          .select('*')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data;
+      }, {
+        retries: 3,
+        onAttempt: (attempt) => {
+          if (attempt > 1) console.warn(`[exams] retry attempt ${attempt}`);
+        },
+      });
       setExams(data || []);
     } catch (error) {
+      const msg = friendlyNetworkMessage(error, 'Failed to load exams');
       console.error('Error fetching exams:', error);
-      toast.error('Failed to load exams');
+      setLoadError(msg);
+      toast.error(msg, { description: 'We retried a few times. Tap "Try again" when ready.' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleExamSelect = (exam: Exam) => {
-    setSelectedExam(exam);
-    setStep('details');
+  const handleExamSelect = async (exam: Exam) => {
+    // "Starting" = preloading the exam's question metadata so the interface
+    // doesn't crash on a flaky connection mid-exam.
+    setStartingExamId(exam.id);
+    try {
+      await withRetry(async () => {
+        const { error } = await (supabase as any)
+          .from('questions_public')
+          .select('id', { count: 'exact', head: true })
+          .eq('exam_id', exam.id);
+        if (error) throw error;
+      }, { retries: 3 });
+      setSelectedExam(exam);
+      setStep('details');
+    } catch (error) {
+      const msg = friendlyNetworkMessage(error, "Couldn't open the exam");
+      toast.error(msg, { description: 'Please check your connection and try again.' });
+    } finally {
+      setStartingExamId(null);
+    }
   };
 
   const handleStartExam = () => {
@@ -124,14 +156,39 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading exams...</p>
+      <div className="min-h-dvh bg-gradient-to-br from-primary/10 via-background to-secondary/10 px-3 py-4 sm:p-6">
+        <div className="container mx-auto max-w-4xl space-y-6">
+          <div className="text-center space-y-2">
+            <Skeleton className="h-8 w-64 mx-auto" />
+            <Skeleton className="h-4 w-80 mx-auto" />
+          </div>
+          <div className="grid gap-4">
+            {[0, 1, 2].map((i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                    <Skeleton className="h-10 w-full sm:w-28" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-6">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <p className="text-center text-sm text-muted-foreground">Loading exams…</p>
         </div>
       </div>
     );
   }
+
 
   if (step === 'exam' && selectedExam) {
     return (
@@ -174,7 +231,21 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
               </p>
             </div>
 
-            {exams.length === 0 ? (
+            {loadError ? (
+              <Card className="border-destructive/40">
+                <CardContent className="py-10 text-center space-y-4">
+                  <WifiOff className="h-10 w-10 mx-auto text-destructive" />
+                  <div>
+                    <p className="font-medium">Couldn't load exams</p>
+                    <p className="text-sm text-muted-foreground mt-1">{loadError}</p>
+                  </div>
+                  <Button onClick={fetchActiveExams} variant="outline">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Try again
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : exams.length === 0 ? (
               <Card className="text-center">
                 <CardContent className="py-12">
                   <p className="text-muted-foreground text-lg mb-4">
@@ -187,36 +258,51 @@ export const StudentExamPortal: React.FC<StudentExamPortalProps> = ({ onBack, in
               </Card>
             ) : (
               <div className="grid gap-4">
-                {exams.map((exam) => (
-                  <Card 
-                    key={exam.id} 
-                    className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/50"
-                    onClick={() => handleExamSelect(exam)}
-                  >
-                    <CardHeader>
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-                        <div className="flex-1">
-                          <CardTitle className="text-lg sm:text-xl">{exam.title}</CardTitle>
-                          <p className="text-muted-foreground mt-1">{exam.description}</p>
+                {exams.map((exam) => {
+                  const isStarting = startingExamId === exam.id;
+                  const disabled = !!startingExamId;
+                  return (
+                    <Card
+                      key={exam.id}
+                      className={`transition-all duration-300 border-2 ${
+                        disabled ? 'opacity-70' : 'hover:shadow-lg hover:border-primary/50 cursor-pointer'
+                      }`}
+                      onClick={() => !disabled && handleExamSelect(exam)}
+                    >
+                      <CardHeader>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                          <div className="flex-1">
+                            <CardTitle className="text-lg sm:text-xl">{exam.title}</CardTitle>
+                            <p className="text-muted-foreground mt-1">{exam.description}</p>
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                            disabled={disabled}
+                            onClick={(e) => { e.stopPropagation(); if (!disabled) handleExamSelect(exam); }}
+                          >
+                            {isStarting ? (
+                              <><RefreshCw className="h-4 w-4 mr-2 animate-spin" />Starting…</>
+                            ) : (
+                              'Start Exam'
+                            )}
+                          </Button>
                         </div>
-                        <Button variant="outline" className="w-full sm:w-auto">
-                          Start Exam
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4" />
-                          <span>{exam.duration_minutes} minutes</span>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            <span>{exam.duration_minutes} minutes</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span>Total Marks: {exam.total_marks}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span>Total Marks: {exam.total_marks}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>

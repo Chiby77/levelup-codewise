@@ -7,7 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle, Shield } from 'lucide-react';
+import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle, Shield, RefreshCw, WifiOff } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { withRetry, friendlyNetworkMessage } from '@/utils/retry';
 import MotivationalQuotes from '../MotivationalQuotes';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -49,6 +51,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [timeLeft, setTimeLeft] = useState(exam.duration_minutes * 60);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [violations, setViolations] = useState<string[]>([]);
@@ -158,23 +161,36 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
   };
 
   const fetchQuestions = async () => {
+    setLoading(true);
+    setLoadError(null);
     try {
-      // Use questions_public view — never exposes correct_answer to students
-      const { data, error } = await (supabase as any)
-        .from('questions_public')
-        .select('*')
-        .eq('exam_id', exam.id)
-        .order('order_number');
-
-      if (error) throw error;
+      // Use questions_public view — never exposes correct_answer to students.
+      // Retry on transient network errors (common on mobile / slow links).
+      const data = await withRetry(async () => {
+        const { data, error } = await (supabase as any)
+          .from('questions_public')
+          .select('*')
+          .eq('exam_id', exam.id)
+          .order('order_number');
+        if (error) throw error;
+        return data;
+      }, {
+        retries: 3,
+        onAttempt: (attempt) => {
+          if (attempt > 1) console.warn(`[questions] retry attempt ${attempt}`);
+        },
+      });
       setQuestions((data || []) as Question[]);
     } catch (error) {
+      const msg = friendlyNetworkMessage(error, 'Failed to load questions');
       console.error('Error fetching questions:', error);
-      toast.error('Failed to load questions');
+      setLoadError(msg);
+      toast.error(msg, { description: 'Tap "Try again" to reload the exam.' });
     } finally {
       setLoading(false);
     }
   };
+
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {
@@ -321,25 +337,64 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, studentData,
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading exam...</p>
+      <div className="min-h-dvh bg-gradient-to-br from-primary/10 via-background to-secondary/10 px-3 py-4 sm:p-6">
+        <div className="container mx-auto max-w-3xl space-y-6">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-7 w-2/3" />
+              <Skeleton className="h-4 w-1/3 mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-5/6" />
+              <Skeleton className="h-5 w-3/4" />
+              <div className="space-y-3 pt-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+          <p className="text-center text-sm text-muted-foreground">Loading exam…</p>
         </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-dvh bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center px-4">
+        <Card className="max-w-md w-full border-destructive/40">
+          <CardContent className="py-8 text-center space-y-4">
+            <WifiOff className="h-10 w-10 mx-auto text-destructive" />
+            <div>
+              <p className="font-semibold">Couldn't start the exam</p>
+              <p className="text-sm text-muted-foreground mt-1">{loadError}</p>
+            </div>
+            <Button onClick={fetchQuestions} className="w-full">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Try again
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center">
+      <div className="min-h-dvh bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-muted-foreground mb-4">No questions available for this exam.</p>
-          <Button onClick={() => window.location.reload()}>Reload</Button>
+          <Button onClick={fetchQuestions}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Reload
+          </Button>
         </div>
       </div>
     );
   }
+
 
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
